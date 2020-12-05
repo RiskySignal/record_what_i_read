@@ -1,0 +1,8 @@
+# jetbrain
+.idea
+
+# cache file
+~$*.pptx
+
+# mywork
+My Work/
