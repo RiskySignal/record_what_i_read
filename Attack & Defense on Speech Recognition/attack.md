@@ -8,13 +8,56 @@
 
 1. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks. arXiv preprint arXiv:1312.6199, 2013.
 2. Biggio, B., Corona, I., Maiorca, D., Nelson, B., ˇSrndi´c, N., Laskov, P., Giacinto, G., and Roli, F. Evasion attacks against machine learning at test time. In Joint European conference on machine learning and knowledge discovery in databases, pp. 387–402. Springer, 2013.
-5. N. Carlini and D. Wagner. Towards evaluating the robustness of neural networks. In Security and Privacy (SP), 2017 IEEE Symposium on, pages 39–57. IEEE, 2017.
 6. N. Carlini, P. Mishra, T. Vaidya, Y. Zhang, M. Sherr, C. Shields, D. Wagner, and W. Zhou. Hidden voice commands. In 25th USENIX Security Symposium (USENIX Security 16), Austin, TX, 2016.
 6. A. Nguyen, J. Yosinski, and J. Clune, “Deep neural networks are easily fooled: High confidence predictions for unrecognizable images,” in Conference on Computer Vision and Pattern Recognition. IEEE, Jun. 2015, pp. 427–436.
 7. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
 8. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
-9. G. Zhang, C. Yan, X. Ji, T. Zhang, T. Zhang, and W. Xu, “DolphinAttack: Inaudible voice commands,” in Conference on Computer and Communications Security. ACM, Oct. 2017, pp. 103–117.
 10. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
+8. Tavish Vaidya, Yuankai Zhang, Micah Sherr, and Clay Shields. 2015. Cocaine Noodles: Exploiting the gap between human and machine speech recognition. In Proceedings ofthe USENIXWorkshop on Offensive Technologies (WOOT). USENIX Association.
+9. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings ofthe European Symposium on Research in Computer Security. Springer, 599–621.
+
+## DolphinAttack: Inaudible voice commands
+
+### Contribution
+
+1. 利用麦克风非线性的特征，使得高频信号采样后出现额外的低频分量；
+
+### Notes
+
+1. 攻击**语音前端采集模块（麦克风）**的对抗攻击（或者说，更像是一种**漏洞**）。
+
+2. 语音信号是一种波，被麦克风捕获，麦克风把波的声压转换成电信号，再通过对电信号进行采样便可获得离散时间的波形文件（引自 [李理的博客](http://fancyerii.github.io/dev287x/ssp/)）。这个过程中，LPC 模块会过滤掉超过 20kHz 的信号，ADC 模块负责采样信号：
+
+   <img src="pictures/image-20201205153918038.png" alt="image-20201205153918038" style="zoom:25%;" />
+
+3. 👍  麦克风的非线性特征，能够使得高频的语音信号被 **downconversion** (或可以理解为**解调**) 出低频的能量分量，如下图：
+
+   <img src="pictures/image-20201205171056036.png" alt="image-20201205171056036" style="zoom: 33%;" />
+
+   其中第一行是**原始语音的频谱**，第二行是 **MEMS 麦克风接收后的频谱**，第三行是 **ECM 麦克风接收后的频谱**。这里采用的载波信号为 20kHz，语音信号为 2kHz。作者接着测试如果是正常的语音能否被解调：
+
+   <img src="pictures/image-20201205174850556.png" alt="image-20201205174850556" style="zoom: 41%;" />
+
+   其中第一行是原始的 TTS 语音（发音为 Hey）的 MFCC 特征，第二行是正常播放-录音后的 MFCC 特征，第三行是经过 “调制-解调”后的 MFCC 特征。计算得到他们的 MCD 距离分别为 3.1 和 7.6。（**我不是很理解 Amplitude of MFCC 是什么意思，时频的 MFCC 特征应该像热力图才对？**）
+
+4. Voice Command Generation，生成指令用于后续调制过程：
+
+   (1) Activation Commands Generation：使用 TTS (Text to Speech) 的方法或者是语音拼接的方法生成一个唤醒词。（可以看到在智能语音助手邻域，说话人的识别并不是很有效的，可以被说话声音相似的人激活）；
+
+   (2) General Control Commands Generation：直接使用 TTS 生成；
+
+5. Evaluation：这部分和信号的调制非常相关，不太易懂，直接简略地看下结果
+
+   <img src="pictures/image-20201205192628736.png" alt="image-20201205192628736" style="zoom: 40%;" />
+
+### Shortcoming:
+
+这篇文章的攻击非常有效，因为他利用的是麦克风的 “漏洞”，所以几乎能够攻击全部平台设备。但它的缺点是需要一台超声波发生设备。
+
+### Links
+
+- 论文链接：[Roy, Nirupam, et al. "Inaudible voice commands: The long-range attack and defense." *15th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 18)*. 2018.](https://arxiv.org/abs/1708.09537)
+- Github 主页：[USSLab/DolphinAttack: Inaudible Voice Commands (github.com)](https://github.com/USSLab/DolphinAttack)
 
 ## * Did you hear that? Adversarial Examples Against Automatic Speech Recognition
 
@@ -54,7 +97,7 @@
 
    作者提到使用 2 范数而不用无穷范数的原因是，无穷范数可能会导致不收敛的问题，难以训练。在参数的选择上，作者使用 Adam 算法，学习率为 5，迭代论述为 5000。在实验过程中，作者发现**目标指令越长**，需要添加越多的扰动来生成对抗样本；而如果**原始指令越长**，似乎更加容易生成对抗样本（这一点我的想法是，**如果原始指令越长，原始存在更多的音素和能量可以被梯度下降过程利用**）。
 
-3. **改进**的攻击方法（<u>作者称：这种改进的攻击方法只能在 DeepSpeech 使用 Greedy-Search 的情况下有效</u>），loss 函数如下：
+3. 👍  **改进**的攻击方法（<u>作者称：这种改进的攻击方法只能在 DeepSpeech 使用 Greedy-Search 的情况下有效</u>），loss 函数如下：
 
    <img src="./pictures/image-20201129201614604.png" alt="image-20201129201614604" style="zoom: 40%;" />
 
@@ -102,9 +145,13 @@
 
    (2) **Back-propagation in Feature Extraction**：语音识别过程给网络的一般是 MFCC、Mel-log Filter Bank 等语音特征，把它简单地理解成是一张**二维热力图**，算法需要把梯度从这个特征回传到时域信号。（Kaldi 不像 tensorflow 那样直接就帮你把梯度计算好了，所以作者去推导了相关的梯度计算公式。不过，<u>这里作者只推导了对数能量谱的梯度，但是 WSJ 里面用的应该是 MFCC 才对。另外不清楚作者用的是优化器，还需要看一下 Kaldi 代码。</u>）。
 
-   (3) **Hearing Thresholds**：**心理声学掩蔽效应**，可以计算出音频各时间点、各个频率的**能量掩蔽值**，只要修改量不超过这个值，那么人就不会察觉。作者计算样本的能量变化 D，期望 D 在任何时间点、频率点均小于掩蔽阈值 H，公式如下（<u>论文中的公式有个小错误，f 应该是 k</u>）：
+   (3) 👍  **Hearing Thresholds**：**心理声学掩蔽效应**，可以计算出音频各个时间、各个频率点的**能量掩蔽值**，只要修改量不超过这个值，那么人就不会察觉。下图展示了在 1kHz 处 60dB 信号的能量掩蔽曲线（黑色），绿色的为人耳能够感受到声音的最小能量（如 20kHz 的声音，至少要达到 70dB 我们才听得到）：
 
-   <img src="pictures/image-20201201101756118.png" alt="image-20201201101756118" style="zoom: 29%;" />
+   <img src="pictures/image-20201205193855101.png" alt="image-20201205193855101" style="zoom: 25%;" />
+
+   作者计算样本的能量变化 D，并期望 D 在任何时间、频率点均小于掩蔽阈值 H，公式如下（<u>论文中的公式有个小错误，f 应该是 k</u>）：
+
+   <img src="pictures/image-20201201101756118.png" alt="image-20201201101756118" style="zoom: 27%;" />
 
    变量 <img src="pictures/image-20201201101959466.png" alt="image-20201201101959466" style="zoom: 20%;" /> 度量能量变化 D 和 掩蔽阈值 H 之间的差值。如果 D 在任何点都不能超过 H ，这样的限制条件过于苛刻，可能会导致无法生成对抗样本。故作者添加一个系数来放宽这个限制条件，公式如下：
 
@@ -130,11 +177,11 @@
 
    最后思考一个问题：**这样用掩蔽阈值和 perturbation 的差值来度量真的是一种好的方法吗？可能不是，我们其实更希望的是去度量 频率掩蔽曲线 的变化有多大。举例来说，计算掩蔽阈值的时候首先得到的是 masker（可以理解为一个频率点，其能量是个极值点），我们在 masker 处增加能量来抬高 masker（完全可以做到增加的能量低于 masker 处的掩蔽值，因为这个点的掩蔽值等于 masker 的能量，这个值是很大的），这样人耳的听觉感受已经发生了改变。但是如果要这么来做，就要用可求解梯度的方法来实现 ”计算掩蔽值“ 的过程，过程实在是很复杂，这也可能是大家不这么做的原因（代价太大，做出来还不知道能不能收敛，效果好不好）。**
 
-3. Evaluation：
+3. 👍  Evaluation：
 
    (1) 目标指令：
 
-   <img src="pictures/image-20201201144854938.png" alt="image-20201201144854938" style="zoom: 43%;" />
+   <img src="pictures/image-20201201144854938.png" alt="image-20201205194302490" style="zoom: 33%;" />
 
    (2) 原始音频：Speech (从 WSJ 数据集中获取) + Music
 
@@ -154,15 +201,15 @@
 
    (7) 和 CommandSong 进行对比，对比的指标为 SNR ：
 
-   <img src="pictures/image-20201201151416298.png" alt="image-20201201151416298" style="zoom: 37%;" />
+   <img src="pictures/image-20201201151416298.png" alt="image-20201201151416298" style="zoom: 36%;" />
 
    
 
 ### Links
 
-1. 论文链接：[Schönherr, Lea, et al. "Adversarial attacks against automatic speech recognition systems via psychoacoustic hiding." *arXiv preprint arXiv:1808.05665* (2018).](https://arxiv.org/abs/1808.05665)
-2. 论文主页：[Adversarial Attacks (adversarial-attacks.net)](https://adversarial-attacks.net/)
-3. 论文代码：[rub-ksv/adversarialattacks: Adversarial Attacks (github.com)](https://github.com/rub-ksv/adversarialattacks)
+- 论文链接：[Schönherr, Lea, et al. "Adversarial attacks against automatic speech recognition systems via psychoacoustic hiding." *arXiv preprint arXiv:1808.05665* (2018).](https://arxiv.org/abs/1808.05665)
+- 论文主页：[Adversarial Attacks (adversarial-attacks.net)](https://adversarial-attacks.net/)
+- 论文代码：[rub-ksv/adversarialattacks: Adversarial Attacks (github.com)](https://github.com/rub-ksv/adversarialattacks)
 
 ## * Targeted adversarial examples for black box audio systems
 
@@ -221,19 +268,19 @@
 
    (1) **带通滤波器**。因为人的听觉频率范围是有限的，听筒-扬声器在工作的时候很多会直接丢弃其他频率的能量，所以作者设置了一个 **1000~4000** 范围的带通滤波器来减少修改量（我的看法：**我觉得 4000 这个上界是比较靠谱的，而 1000 这个下界可能并不合理，因为语音中低频的能量是比较多的，这部分的能量应该也是比较重要的；而这种带通滤波器的方法是否真的能够减少修改量也是存在问题的，因为依靠梯度下降算法，可能你限制了它修改的频带范围，需要的修改量可能是更多的**）。形式化公式如下：
 
-   <img src="pictures/image-20201201234713041.png" alt="image-20201201234713041" style="zoom:25%;" />
+   <img src="pictures/image-20201201234713041.png" alt="image-20201201234713041" style="zoom:22%;" />
 
-   (2) **脉冲响应**。作者在生成对抗样本的过程中，添加脉冲响应的卷积来增强对抗样本对不同房间环境的鲁棒性。形式化公式如下：
+   (2) 👍  **脉冲响应**。作者在生成对抗样本的过程中，添加脉冲响应的卷积来增强对抗样本对不同房间环境的鲁棒性。形式化公式如下：
 
-   <img src="pictures/image-20201201235718462.png" alt="image-20201201235718462" style="zoom: 23%;" />
+   <img src="pictures/image-20201201235718462.png" alt="image-20201201235718462" style="zoom: 21%;" />
 
    (3) **高斯白噪声**。作者在生成对抗样本的过程中，添加高斯白噪声来增强对抗样本对背景白噪声的鲁棒性。形式化公式如下：
 
-   <img src="pictures/image-20201202000105905.png" alt="image-20201202000105905" style="zoom: 28%;" />
+   <img src="pictures/image-20201202000105905.png" alt="image-20201202000105905" style="zoom: 27%;" />
 
 4. Evaluation：
 
-   (1) 作者其他的实现的细节与文章 ”Audio Adversarial Examples: Targeted Attacks on Speech-to-Text“ 是一样的，Adam 迭代器和 CTC-Loss 函数；
+   (1) 作者其他的实现的细节与文章 [”Audio Adversarial Examples: Targeted Attacks on Speech-to-Text“](#Audio Adversarial Examples: Targeted Attacks on Speech-to-Text) 是一样的，Adam 迭代器和 CTC-Loss 函数；
 
    (2) 提到了一个比较有意思的攻击场景：FM radio；
 
@@ -241,13 +288,13 @@
 
    (3) 分析针对 API 的攻击：
 
-   <img src="pictures/image-20201202002001695.png" alt="image-20201202002001695" style="zoom:32%;" />
+   <img src="pictures/image-20201202002001695.png" alt="image-20201202002001695" style="zoom:28%;" />
 
    (4) 分析针对物理的攻击：
 
-   <img src="pictures/image-20201202002630244.png" alt="image-20201202002630244" style="zoom:35%;" />
+   <img src="pictures/image-20201202002630244.png" alt="image-20201202002630244" style="zoom:33%;" />
 
-   这里作者每个样本都尝试 10 次，统计成功率，并且发现只保证成功率高于 50% 的情况下，可以适当减少修改量。
+   每个样本尝试 10 次（**测试次数太少了**），统计成功率，并且发现只保证成功率高于 50% 的情况下，可以适当减少修改量。
 
 ### Links
 
@@ -283,11 +330,11 @@
 
 2. 关键点在于两方面，一点是使用了**心理掩蔽效应**来提高对抗样本的隐蔽性，另一点是**模拟房间声学响应**来提高对抗样本的鲁棒性;
 
-3. 心理掩蔽效应，简单来说就是能量大的声音可能会能量小的声音，主要分为时间掩蔽和频率掩蔽。其中频率掩蔽是作者在文章中用到的，可以将其理解为语音在各个时间各个频率的一个阈值，修改量超出这个阈值，那么人就可以听到这个改动。添加心理掩蔽效应后的 loss 函数：
+3. **心理掩蔽效应，（简单来讲）就是能量大的声音可以频闭能量小的声音，主要分为时间掩蔽和频率掩蔽**。与 [“Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding”](#Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding) 相同，作者也用频率掩蔽效应。添加心理掩蔽效应后的 loss 函数：
    
-    <img src="pictures/Snipaste_2020-11-29_15-54-36.png" alt="Snipaste_2020-11-29_15-54-36" style="zoom: 45%;" />
+    <img src="pictures/Snipaste_2020-11-29_15-54-36.png" alt="Snipaste_2020-11-29_15-54-36" style="zoom: 40%;" />
     
-    <img src="pictures/Snipaste_2020-11-29_15-57-05.png" alt="Snipaste_2020-11-29_15-57-05" style="zoom: 4%;" />
+    <img src="pictures/Snipaste_2020-11-29_15-57-05.png" alt="Snipaste_2020-11-29_15-57-05" style="zoom: 35%;" />
     
     
     前面部分保证**样本的成功率**，后面部分保证**样本的隐藏性**，**alpha** 控制两者的权重。作者生成对抗样本的时候有一个 **trick**（因为作者把两个放在一起时发现很难生成对抗样本）：( **Stage-1** ) 先根据前面的 loss 函数生成一轮对抗样本，( **Stage-2** ) 然后根据后面的 loss 函数生成一轮对抗样本，如果 stage-2 迭代 **20** 轮后，成功生成了对抗样本，那就把 alpha 增大一些（**说明可以增加一些隐藏性**）；如果 stage-2 迭代 **50** 轮，都没能生成对抗样本，那就把 alpha 减小一些（**说明需要牺牲一些隐藏性**）。具体的迭代生成算法如下：
@@ -300,7 +347,7 @@
 
     训练的 **trick** ：( **Stage-1** ) 使用  `lr_1=50` 迭代 *2000* 轮保证在其中 **1 个房间声学响应**下能够生成对抗样本，( **Stage-2** ) 然后使用 `lr_2=5` 迭代 *5000* 轮来保证在另外随机采样的 **10 个房间声学响应**下都能够生成对抗样本（这个期间不再减小 **perturbation** 的上限）。
 
-5. 结合心理掩蔽效应和模型房间声学响应。结合后的 loss 函数:
+5. 👍  结合心理掩蔽效应和模型房间声学响应。结合后的 loss 函数:
 
     <img src="./pictures/image-20201129180621070.png" alt="image-20201129180621070" style="zoom: 65%;" />
 
@@ -310,7 +357,7 @@
 
     <img src="./pictures/image-20201129183521406.png" alt="image-20201129183521406" style="zoom: 60%;" />
 
-    作者采用的对抗样本的评价指标分别是：Accuracy - 整句话的成功率，WER - 词错率，和隐藏性。其中隐藏性没有采用常用的 SNR 来度量，而是直接采用问卷调查的形式，作者的问卷调查的问题分别为：
+    作者采用的对抗样本的评价指标分别是：Accuracy - 整句话的成功率，WER - 词错率，和隐藏性。其中隐藏性没有采用常用的 SNR 来度量，而是直接采用**问卷调查**的形式，作者的问卷调查的问题分别为：
 
     (1) 音频是否清晰；
 
