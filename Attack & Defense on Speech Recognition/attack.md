@@ -4,6 +4,8 @@
 
 [TOC]
 
+
+
 ## Todo List
 
 1. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks. arXiv preprint arXiv:1312.6199, 2013.
@@ -13,8 +15,43 @@
 7. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
 8. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
 10. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
-8. Tavish Vaidya, Yuankai Zhang, Micah Sherr, and Clay Shields. 2015. Cocaine Noodles: Exploiting the gap between human and machine speech recognition. In Proceedings ofthe USENIXWorkshop on Offensive Technologies (WOOT). USENIX Association.
-9. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings ofthe European Symposium on Research in Computer Security. Springer, 599–621.
+8. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings ofthe European Symposium on Research in Computer Security. Springer, 599–621.
+
+
+
+
+
+## Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition
+
+### Contribution
+
+1. 这篇文章可以说是语音识别对抗攻击的开山之祖；
+2. 攻击特征提取模块；
+
+### Notes
+
+1. 攻击 **特征提取(MFCC)** 模块的对抗攻击；
+
+2. 👍  攻击方法的流程图如下：
+
+   <img src="pictures/image-20201205201454735.png" alt="image-20201205201454735" style="zoom:28%;" />
+
+   作者的攻击思路非常简单，从语音中提取出 MFCC 特征（这个过程会 **丢失一些语音的信息**，如 MFCC 特征往往只取前 13 个参数，而高维的 MFCC 特征代表着能量变化的高频信息），然后**把 MFCC 特征逆转为语音信号**，只要该样本同时满足 “**人耳无法理解**”，“**机器可以理解**” 两个条件，那么这就是一个成功的对抗样本。
+
+### Shortcoming
+
+1. 需要大量的时间去生成一个对抗样本，因为要调参数使得满足 **“人耳无法理解“，”机器可以理解“** 两个条件；
+2. （<u>纯属吐槽</u>）文章的编写我觉得挺烂的，你想知道的你都没有知道，你不想知道的他介绍了一堆。如果你熟悉语音识别、MFCC的话，会发现整篇文章就只有两块（介绍了语音识别和做了个问卷调查），对于实际的攻击算法的实现、如何去调参生成一个对抗样本（作者的描述是：我生成了 500 个样本）并没有提及，甚至没有介绍相关的一些参数，代码也是没有开源的（计算 MFCC 的链接在下面）；
+3. （<u>猜测一下</u>）整个算法的流程大概是：正常计算得到MFCC特征，然后用 **逆 DCT 变换**（对应 Mel Filter Bank Energy 到 MFCC 过程）和 **逆 DFT 变换**（对应 时域信号到频谱 过程）。虽然算法特别简单，但是因为涉及到帧之间的重叠（分帧的时候一般 `step_length < frame_length`），整个调试过程应该是比较麻烦的事情；
+
+### Links
+
+- 论文链接：[Vaidya, Tavish, et al. "Cocaine noodles: exploiting the gap between human and machine speech recognition." *9th {USENIX} Workshop on Offensive Technologies ({WOOT} 15)*. 2015.](https://www.usenix.org/conference/woot15/workshop-program/presentation/vaidya)
+- MFCC 实现：[PLP and RASTA (and MFCC, and inversion) in Matlab using melfcc.m and invmelfcc.m (columbia.edu)](https://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/)
+
+
+
+
 
 ## DolphinAttack: Inaudible voice commands
 
@@ -52,12 +89,16 @@
 
 ### Shortcoming:
 
-这篇文章的攻击非常有效，因为他利用的是麦克风的 “漏洞”，所以几乎能够攻击全部平台设备。但它的缺点是需要一台超声波发生设备。
+这篇文章的攻击非常有效，因为他利用的是麦克风的 “漏洞”，所以几乎能够攻击全部平台设备。但**它的缺点是需要一台超声波发生设备**。
 
 ### Links
 
 - 论文链接：[Roy, Nirupam, et al. "Inaudible voice commands: The long-range attack and defense." *15th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 18)*. 2018.](https://arxiv.org/abs/1708.09537)
 - Github 主页：[USSLab/DolphinAttack: Inaudible Voice Commands (github.com)](https://github.com/USSLab/DolphinAttack)
+
+
+
+
 
 ## * Did you hear that? Adversarial Examples Against Automatic Speech Recognition
 
@@ -80,6 +121,10 @@
 - 论文链接：[Alzantot, Moustafa, Bharathan Balaji, and Mani Srivastava. "Did you hear that? adversarial examples against automatic speech recognition." *NIPS Machine Deception Workshop* (2017).](https://arxiv.org/abs/1801.00554)
 - 论文主页：[Adversarial Speech Commands | adversarial_audio (nesl.github.io)](https://nesl.github.io/adversarial_audio/)
 - 论文代码：[nesl/adversarial_audio (github.com)](https://github.com/nesl/adversarial_audio)
+
+
+
+
 
 ## Audio Adversarial Examples: Targeted Attacks on Speech-to-Text
 
@@ -124,6 +169,10 @@
 - 论文链接：[Carlini, Nicholas, and David Wagner. "Audio adversarial examples: Targeted attacks on speech-to-text." *2018 IEEE Security and Privacy Workshops (SPW)*. IEEE, 2018.](https://arxiv.org/abs/1801.01944)
 - 论文主页：[Audio Adversarial Examples (carlini.com)](https://nicholas.carlini.com/code/audio_adversarial_examples)
 - 论文代码：[carlini/audio_adversarial_examples: Targeted Adversarial Examples on Speech-to-Text systems (github.com)](https://github.com/carlini/audio_adversarial_examples)
+
+
+
+
 
 ## Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding
 
@@ -211,6 +260,10 @@
 - 论文主页：[Adversarial Attacks (adversarial-attacks.net)](https://adversarial-attacks.net/)
 - 论文代码：[rub-ksv/adversarialattacks: Adversarial Attacks (github.com)](https://github.com/rub-ksv/adversarialattacks)
 
+
+
+
+
 ## * Targeted adversarial examples for black box audio systems
 
 ### Contribution
@@ -249,6 +302,10 @@
 
 - 论文链接：[Taori, Rohan, et al. "Targeted adversarial examples for black box audio systems." *2019 IEEE Security and Privacy Workshops (SPW)*. IEEE, 2019.](https://arxiv.org/abs/1805.07820)
 - 论文代码：[rtaori/Black-Box-Audio: Targeted Adversarial Examples for Black Box Audio Systems (github.com)](https://github.com/rtaori/Black-Box-Audio)
+
+
+
+
 
 ## Robust Audio Adversarial Example for a Physical Attack
 
@@ -315,6 +372,10 @@
    [Evaluation of speech dereverberation algorithms using the MARDY database (2006) (ist.psu.edu)](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.727.1869)
 
    [Acoustic measurement data from the varechoic chamber (nist.gov)](https://www.nist.gov/document-14705)
+
+
+
+
 
 ## Imperceptible, Robust, and Targeted Adversarial Examples for Automatic Speech Recognition
 
