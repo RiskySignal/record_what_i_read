@@ -10,18 +10,18 @@
 
 1. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks. arXiv preprint arXiv:1312.6199, 2013.
 2. Biggio, B., Corona, I., Maiorca, D., Nelson, B., ˇSrndi´c, N., Laskov, P., Giacinto, G., and Roli, F. Evasion attacks against machine learning at test time. In Joint European conference on machine learning and knowledge discovery in databases, pp. 387–402. Springer, 2013.
-6. N. Carlini, P. Mishra, T. Vaidya, Y. Zhang, M. Sherr, C. Shields, D. Wagner, and W. Zhou. Hidden voice commands. In 25th USENIX Security Symposium (USENIX Security 16), Austin, TX, 2016.
 6. A. Nguyen, J. Yosinski, and J. Clune, “Deep neural networks are easily fooled: High confidence predictions for unrecognizable images,” in Conference on Computer Vision and Pattern Recognition. IEEE, Jun. 2015, pp. 427–436.
 7. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
 8. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
 10. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
 8. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings ofthe European Symposium on Research in Computer Security. Springer, 599–621.
+8. Practical Hidden Voice Attacks against Speech and Speaker Recognition Systems
 
 
 
 
 
-## Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition
+## * Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition
 
 ### Contribution
 
@@ -41,7 +41,7 @@
 ### Shortcoming
 
 1. 需要大量的时间去生成一个对抗样本，因为要调参数使得满足 **“人耳无法理解“，”机器可以理解“** 两个条件；
-2. （<u>纯属吐槽</u>）文章的编写我觉得挺烂的，你想知道的你都没有知道，你不想知道的他介绍了一堆。如果你熟悉语音识别、MFCC的话，会发现整篇文章就只有两块（介绍了语音识别和做了个问卷调查），对于实际的攻击算法的实现、如何去调参生成一个对抗样本（作者的描述是：我生成了 500 个样本）并没有提及，甚至没有介绍相关的一些参数，代码也是没有开源的（计算 MFCC 的链接在下面）；
+2. ~~（<u>纯属吐槽</u>）文章的编写我觉得挺烂的，你想知道的你都没有知道，你不想知道的他介绍了一堆。如果你熟悉语音识别、MFCC的话，会发现整篇文章就只有两块（介绍了语音识别和做了个问卷调查），对于实际的攻击算法的实现、如何去调参生成一个对抗样本（作者的描述是：我生成了 500 个样本）并没有提及，甚至没有介绍相关的一些参数，代码也是没有开源的（计算 MFCC 的链接在下面）；~~（立马拥抱 Carlini 大佬）
 3. （<u>猜测一下</u>）整个算法的流程大概是：正常计算得到MFCC特征，然后用 **逆 DCT 变换**（对应 Mel Filter Bank Energy 到 MFCC 过程）和 **逆 DFT 变换**（对应 时域信号到频谱 过程）。虽然算法特别简单，但是因为涉及到帧之间的重叠（分帧的时候一般 `step_length < frame_length`），整个调试过程应该是比较麻烦的事情；
 
 ### Links
@@ -53,11 +53,185 @@
 
 
 
+## Hidden Voice Commands
+
+### Contribution
+
+1. “实验设定” 值得借鉴，让阅读者很清晰地了解实验情景，能够对攻击性有一个简单的预估；
+2. 攻击特征提取模块；
+3. 使用梯度下降算法攻击 GMM-HMM 模型；
+4. 虽然这篇文章有挺多的不足，但语音识别的对抗攻击从这篇文章开始有了比较清晰的思路；
+5. 可以看到，Carlini 等人在对抗攻击上面是非常有经验的，其实他们已经看到了全部的攻击向量：**特征提取模块能不能攻击，模型能不能攻击，环境如何影响攻击的成功率，人对对抗样本的感受是怎样的，如何防御对抗样本** 等等。
+
+### Notes
+
+#### Black-box Attacks
+
+1. 整体思路：**将正常的 TTS 语音模糊化**； 
+
+2. 这部分是对文章 [”Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition“](#* Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition) 的完善。算法流程如下：
+
+   <img src="pictures/image-20201205220257429.png" alt="image-20201205220414037" style="zoom:27%;" />
+
+   通过计算 MFCC 然后 MFCC 逆转为时域信号这个过程，算法就能够从理论上**保留语音识别算法关注的语音特征，而抹除不相关的语音特征**（上一篇论文中已经解释这个原理），而抹除的这部分特征又很可能是对人的听觉影响是很大的，导致人无法听清对抗样本；
+
+3. 实验设定：介绍了使用的扬声器的型号，实验房间的大小、背景噪声，测试时设备的距离为 **3米** ，使用三星和苹果手机中的 Google；背景噪声使用 JBL 播放，噪声的大小约为 53dB；
+
+4. Evaluation：
+
+   (1) Attack Range：当攻击距离大于 **3.5米** 或者 **SNR小于5dB** 时，攻击就无法成功；、
+
+   (2) Obfuscating  Parameter：
+
+   <img src="pictures/image-20201206140204959.png" alt="image-20201206140204959" style="zoom:25%;" />
+
+   (2) Results：简单比较人和机器在指令模糊后的识别率的变化
+
+   <img src="pictures/image-20201206132829769.png" alt="image-20201206132829769" style="zoom: 34%;" />
+
+#### White-box Attacks
+
+1. 整体思路：**梯度下降算法寻找一个样本点**；
+
+2. Simple Approach：使用梯度下降算法，生成对抗样本；但是作者发现这样找到的样本**并没有比 Black-box Attacks 找到的样本要更好**；梯度下降算法的目标函数：
+   $$
+   f(x) = (MFCC(x) - y)^2 · z
+   $$
+   即希望计算得到的 MFCC 特征和目标的 MFCC 相近，z 是一个权重因子，作者直接取单位向量；
+
+3. Improved Approach：
+
+   (1) 扩展 MFCC 维度：计算 MFCC 后输出的是 13 维的 MFCC 特征，**通常在语音识别中会用它的导数将其扩展到 39 维**；<u>这边有一个不太好理解的地方，前面输出 13 维的时候是将 MFCC 特征给截断了，为什么又要把它扩展到 39 维呢？</u>因为前面截断特征舍弃的是 **一帧中** MFCC 的高维分量，这个分量指的是该帧能量谱变化较快的信息（这部分对我们语音识别是没有用的，但可能对说话人识别是有用的），保留的低维分量是能量谱变化较慢的信息（**能量谱的包络**）；而后面扩展维度作导数是将 **前后帧** MFCC 作差求导，得到的是前后帧 MFCC 的**变化信息**（语音的前后帧具有很强的相关性）。求导的方式就是前后做差，如下：
+
+   <img src="pictures/image-20201206161637008.png" alt="image-20201206161637008" style="zoom: 24%;" />
+
+   (2) 模糊 MFCC 序列：Black-box Attacks 中 MFCC 的序列是固定的，然后去模糊输入序列。在 White-box Attacks 中 MFCC 也是“模糊”的，**其原理在于不同的人发同一个音的方式是不同的，那么他发这个音的方式只是这个音所有发音方式的其中一种**。有一个目标字符串，从中抽取去目标音素序列，一个音素对应一个 HMM 状态，一个 HMM 状态 对应一个 GMM 模型（由多个高斯分布函数组成，代表着一个音素的不同发音方式），我们从中随机挑选一个高斯分布作为我们的目标分布，即可将 MFCC 给“模糊”化了；
+
+   (3) 缩短音素的发音时长：GMM-HMM 模型识别一个音素最短**只需要 4 帧即可**，但这么短的时间（大约为 0.5s）对人来说识别一个音素是比较困难的，因此作者通过让音素发音尽可能地短来增强指令的隐藏性；
+
+   (4) 优化目标：（<u>作者这边的公式有问题</u>）
+
+   假设我们确定了一个目标 GMM 序列，我们希望通过梯度下降算法让 MFCC 分类为该序列的概率最大（**Maximize the likelihood**）：
+   $$
+   \prod_i {
+   	exp
+   	\{
+   		\sum_{j=1}^{39} {
+   			\frac{\alpha_i^j - (y_i^j - \mu_i^j)^2}{\delta_i^j}
+   		}
+   	\}
+   }
+   $$
+   其中，$y$ 为 39 维 MFCC，$\alpha$ 为 混合高斯中的权重系数，$\mu$ 为均值向量，$\delta$ 为方差向量，$i$ 为帧的序号，$j$ 为维度的序号。**Maximize the log likelihood**：
+   $$
+   log
+   \begin{bmatrix}
+   \prod_i {
+   	exp
+   	\{
+   		\sum_{j=1}^{39} {
+   			\frac{\alpha_i^j - (y_i^j - \mu_i^j)^2}{\delta_i^j}
+   		}
+   	\}
+   }
+   \end{bmatrix}
+   =
+   \sum_i {
+   	\sum_j {
+           \frac{\alpha_i^j - (y_i^j - \mu_i^j)^2}{\delta_i^j}
+   	}
+   }
+   $$
+   等同于**最小化负的 log 似然**：
+   $$
+   \sum_i {
+   	\sum_j {
+           \frac{-\alpha_i^j + (y_i^j - \mu_i^j)^2}{\delta_i^j}
+   	}
+   }
+   $$
+   这是一个非线性的 [最小二乘问题](https://blog.csdn.net/fangqingan_java/article/details/48948487)（作者在文章中称 $y=MFCC(x)$ 是线性关系，<u>但我认为 $x$ 和 $y$ 之间是非线性的，因为在求能量谱时存在平方</u>）。
+   
+   (5) 算法简述：（作者的描述实在是无法理解，在没有代码参考的情况下，以下算法简述含有大量的个人猜测成分，请阅读文章后再看）
+   
+   - 贪婪算法：算法每一次都往前走一帧，生成最优的 160 个采样点（帧移大小），使得当前的最小二乘的累和最小；（对应伪代码第 10 行开始的代码块）
+   
+   - 每一个 HMM 状态对应着多个高斯分布，作者期望的是逼近其中某一个高斯分布使得最小二乘最小化即可；（对应伪代码第 14 行开始的代码块）
+   
+   - LSTDERIV：根据前 $k-1$ 帧的 $MFCC_{13}$ ，**期望拟合**的前 $k-1$ 帧的 $MFCC_{39}$ ，和**当前期望拟合**的第 $k$ 帧的 $MFCC_{39}$ , 求解最小二乘优化问题，得到**当前帧局部最优**的 $MFCC_{13}$ 和 $MFCC_{39}$ 。<u>为什么是求解一个当前局部最优的解呢？</u>1. 采用的是贪婪算法，每看一帧便确定一个局部最优的 $MFCC$ ；2. 每一步实际并没有求得一个时序序列使得其 $MFCC$ 满足当前局部最优，看函数的参数，我们的 $f$ 是从时序序列里面求出来的 $MFCC$ 特征；3. 每一步的最小 likelihood 值受到**前后 3 帧** $MFCC$ 的影响（查看前面求导公式），同样当前帧的 $MFCC$ 会影响前 3 帧的 likelihood，见下图；（我不是很理解文章里面的 $k+6$ 怎么来的）（对应伪代码第 15 行）
+   
+     <img src="pictures/image-20201207153905361.png" alt="image-20201207153905361" style="zoom: 40%;" />
+   
+   - GRADDESC：使用 Conjugate Gradient 算法，生成 160 个采样点；（对应伪代码第21 行）
+   
+   ```
+   变量定义：
+   s := 语音序列
+   f := 语音序列的 13维MFCC 特征
+   g := 期望的 39维MFCC 特征
+   h := 目标 HMM 状态序列
+   
+   def main()：
+       init variables as empty list: s,f,g
+       select HMM state sequence according to Target Command: h
+       for i in range(len(h)):
+           m_l_score = MAX_FLOAT  # min LST score
+           t_mfcc = None  # target MFCC, 13维
+           t_g = None  # target expanded MFCC, 39维
+           for j in range(len(h[i].g_mean_list))  # h[i].g_mean_list is the mean value of each Gaussian for h[i]
+               (l_score, tmp_mfcc, tmp_g) = LSTDERIV(f, g, h[i].g_mean_list[j]) # tmp_mfcc is the optimal MFCC(13维) to minimize l_score, and tmp_g is the expanded MFCC(39维) extracted according to the optimal MFCC(13维).
+               if l_score < m_l_score:
+               	m_l_score = m_score
+               	t_g = tmp_g
+               	t_mfcc = tmp_mfcc
+           g.append(t_g)
+           s = GRADDESC(s, t_mfcc)  # 使用梯度下降算法生成新的语音序列 (新增160个点)
+           f = MFCC(s)
+       return s
+   ```
+   
+4. 👍Playing over the air：
+
+   (1) 让音频在扬声器上更易播放：在梯度下降过程中增加音频二阶导的惩罚项；
+
+   (2) 预测音频在物理信道上的失真；
+
+   (3) 通过实际的物理播放来调整目标 MFCC；
+
+5. Evaluation：
+
+   <img src="pictures/image-20201207160728922.png" alt="image-20201207160728922" style="zoom:16%;" />
+
+#### Defense
+
+1. 使用提醒用户的方式进行防御；
+2. 使用要求用户确认的方式进行防御；
+3. 使用低通滤波器的方式进行防御；
+4. 训练一个对抗样本的分类器进行防御；
+
+### Shortcoming
+
+1. 对于实验目标的指令选择上，不够充分，只选择了三个较短的指令进行尝试；
+2. 算法的解释上面不清楚；
+3. 攻击十分的耗时，文章中提到，在白盒攻击下生成一个好的对抗样本可能需要 30 个小时左右；
+4. 白盒攻击中 “Playing over the air” 依赖于设备和周围环境，实际中我们并不能很好地模拟攻击场景下的噪声环境和设备；
+
+### Links
+
+- 论文链接：[Carlini, Nicholas, et al. "Hidden voice commands." *25th {USENIX} Security Symposium ({USENIX} Security 16)*. 2016.](https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/carlini)
+- 论文主页：[Hidden Voice Commands](https://www.hiddenvoicecommands.com/home)
+- 👍 背景噪声数据集： [Crowd Sounds — Free Sounds at SoundBible.](http://soundbible.com/tagscrowd.html)
+
+
+
+
+
 ## DolphinAttack: Inaudible voice commands
 
 ### Contribution
 
 1. 利用麦克风非线性的特征，使得高频信号采样后出现额外的低频分量；
+2. 攻击的原理：**让正常语音隐藏到高频波段中，从而让其无法被听到**；
 
 ### Notes
 
