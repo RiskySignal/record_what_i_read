@@ -13,6 +13,10 @@
 5. Amodei, Dario, et al. "Deep speech 2: End-to-end speech recognition in english and mandarin." *International conference on machine learning*. 2016.
 6. Battenberg, Eric, et al. "Exploring neural transducers for end-to-end speech recognition." *2017 IEEE Automatic Speech Recognition and Understanding Workshop (ASRU)*. IEEE, 2017.
 
+
+
+
+
 ## Listen, Attend and Spell
 
 ### Notes
@@ -84,9 +88,12 @@
 ### Links
 
 - 论文链接：[Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)
-
 - LAS 模型缺点参考链接：[LAS 语音识别框架发展简述](https://blog.csdn.net/weixin_39529413/article/details/103570831)
 - Pytorch 实现：[End-to-end-ASR-Pytorch](https://github.com/Alexander-H-Liu/End-to-end-ASR-Pytorch) ( <u>**暂未阅读代码**</u> )
+
+
+
+
 
 ## Lingvo: a modular and scalable framework for sequence-to-sequence modeling
 
