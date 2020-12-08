@@ -10,8 +10,6 @@
 
 
 
-
-
 ## Word2vec
 
 ### Contribution
