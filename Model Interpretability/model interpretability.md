@@ -20,6 +20,56 @@
 8. Papernot N, Mcdaniel P, Goodfellow I, et al. Practical blackbox attacks against machine learning [C] //Proc of the 12th ACM Asia Conf on Computer and Communications Security. New York: ACM, 2017: 506-519
 10. Ghorbani A, Abid A, Zou J. Interpretation of neural networks is fragile [J]. arXiv preprint arXiv:1710.10547, 2017
 11. Zhang Xinyang, Wang Ningfei, Ji Shouling, et al. Interpretable Deep Learning under Fire [C] //Proc of the 29th USENIX Security Symp. Berkele, CA: USENIX Association, 2020
+11. GRADIENTS OF COUNTERFACTUALS(ICLR 2017)
+12. Simonyan, Karen, Vedaldi, Andrea, and Zisserman, Andrew. Deep inside convolutional networks: Visualising image classification models and saliency maps. arXiv preprint arXiv:1312.6034, 2013.
+
+
+
+
+
+## SmoothGrad: removing noise by adding noise
+
+### Contributes
+
+1. 在一定程度上去除 Grad 方法中的噪声;
+
+### Notes
+
+1. 已有的基于梯度的算法能够得到一个重要性关联的图, 但是带有很多的噪点, 即直接计算梯度, 会出现梯度饱和的问题 (在当前图中, 羊的特征对当前的分类概率影响不大, 因为它的分类结果可能已经是0.999了)
+
+   <img src="images/image-20201210234923895.png" alt="image-20201210234923895" style="zoom: 22%;" />
+
+2. 👍 作者提出的想法是添加扰动后再对图片求梯度, 然后将这些梯度求一个均值, 故论文名称为 Removing noise by adding noise, 求导的时候添加扰动, 是为了除去在重要性结果上的噪声:
+   $$
+   \hat{M}_c(x) = \frac{1}{n} \sum_1^n M_c(x+\mathcal{N}(0, \sigma^2))
+   $$
+
+3. Evaluation:
+
+   (1) 模型+数据集: Inception v3 trained on ILSVRC-2013 dataset, convolutional MNIST model
+
+   (2) 噪声大小的影响: 噪声过大的情况下也会使得效果变差, 从图中的效果来看, 添加 10% 的噪声效果是最好的
+
+   <img src="images/image-20201211002446839.png" alt="image-20201211002446839" style="zoom: 50%;" />
+
+   (3) 求梯度次数的影响: 从图中的效果来看, 计算的次数越多越好
+
+   <img src="images/image-20201211002936728.png" alt="image-20201211002936728" style="zoom: 43%;" />
+
+   (4) 和其他工作的对比: **作者在对比的过程中, 只是简单地抽取出几张图片对比了一下效果, 说明这个方向缺乏一个 ground truth 来检验各种可解释性方法的好坏**
+
+   <img src="images/image-20201211003218352.png" alt="image-20201211003218352" style="zoom: 67%;" />
+
+   (5) 最后作者在 MNIST 上面发现, 训练的时候就添加噪声进行训练, 也同样能够达到一定的 "**重要性降噪**" 的作用:
+
+   <img src="images/image-20201211003543788.png" alt="image-20201211003543788" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接: [Smilkov, Daniel, et al. "Smoothgrad: removing noise by adding noise." *ICML* (2017).](https://arxiv.org/abs/1706.03825)
+- 论文主页: https://pair-code.github.io/saliency/
+- Pytorch 实现: [pytorch-smoothgrad](https://github.com/hs2k/pytorch-smoothgrad)
+- Tensorflow 实现 (论文源码): [saliency](https://github.com/PAIR-code/saliency)
 
 
 
