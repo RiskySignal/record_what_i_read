@@ -15,7 +15,9 @@
 8. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
 10. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
 8. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings ofthe European Symposium on Research in Computer Security. Springer, 599–621.
-8. Practical Hidden Voice Attacks against Speech and Speaker Recognition Systems
+8. Mel-Frequency Spectral Coefficients (MFSC)
+9. Linear Predictive Coding
+10. Perceptual Linear Prediction (PLP)
 
 
 
@@ -204,10 +206,10 @@
 
 #### Defense
 
-1. 使用提醒用户的方式进行防御；
-2. 使用要求用户确认的方式进行防御；
-3. 使用低通滤波器的方式进行防御；
-4. 训练一个对抗样本的分类器进行防御；
+1. 使用**提醒用户的方式**进行防御；
+2. 使用**要求用户确认的方式**进行防御；
+3. 使用**低通滤波器的方式**进行防御；
+4. 训练一个**对抗样本的分类器**进行防御；
 
 ### Shortcoming
 
@@ -237,15 +239,19 @@
 
 1. 攻击**语音前端采集模块（麦克风）**的对抗攻击（或者说，更像是一种**漏洞**）。
 
-2. 语音信号是一种波，被麦克风捕获，麦克风把波的声压转换成电信号，再通过对电信号进行采样便可获得离散时间的波形文件（引自 [李理的博客](http://fancyerii.github.io/dev287x/ssp/)）。这个过程中，LPC 模块会过滤掉超过 20kHz 的信号，ADC 模块负责采样信号：
+2. **麦克风工作原理**: 语音信号是一种波，被麦克风捕获，麦克风把波的声压转换成电信号，再通过对电信号进行采样便可获得离散时间的波形文件（引自 [李理的博客](http://fancyerii.github.io/dev287x/ssp/)）。这个过程中，LPC 模块会过滤掉超过 20kHz 的信号，ADC 模块负责采样信号：
 
    <img src="pictures/image-20201205153918038.png" alt="image-20201205153918038" style="zoom:25%;" />
 
-3. 👍  麦克风的非线性特征，能够使得高频的语音信号被 **downconversion** (或可以理解为**解调**) 出低频的能量分量，如下图：
+3. 👍  麦克风的非线性特征，能够使得高频的语音信号被 **downconversion** (或可以理解为**解调**) 出低频的能量分量. 
+
+   (1) 非线性特征对**单频率语音**转录的影响, 如下图：
 
    <img src="pictures/image-20201205171056036.png" alt="image-20201205171056036" style="zoom: 33%;" />
 
-   其中第一行是**原始语音的频谱**，第二行是 **MEMS 麦克风接收后的频谱**，第三行是 **ECM 麦克风接收后的频谱**。这里采用的载波信号为 20kHz，语音信号为 2kHz。作者接着测试如果是正常的语音能否被解调：
+   其中第一行是**原始语音的频谱**，第二行是 **MEMS 麦克风接收后的频谱**，第三行是 **ECM 麦克风接收后的频谱**。这里采用的载波信号为 20kHz，语音信号为 2kHz。
+
+   (2) 非线性特征对**正常说话**的影响, 如下图：
 
    <img src="pictures/image-20201205174850556.png" alt="image-20201205174850556" style="zoom: 41%;" />
 
@@ -257,7 +263,7 @@
 
    (2) General Control Commands Generation：直接使用 TTS 生成；
 
-5. Evaluation：这部分和信号的调制非常相关，不太易懂，直接简略地看下结果
+5. Evaluation：这部分和信号的调制非常相关，不太易懂，直接简略地贴上结果
 
    <img src="pictures/image-20201205192628736.png" alt="image-20201205192628736" style="zoom: 40%;" />
 
@@ -360,7 +366,7 @@
 
 1. **白盒**、**有目标**的、**只针对API**的对抗攻击算法。攻击的模型为 Kaldi 的 **WSJ** 模型（或称为 recipe）；
 
-2. 攻击方法整体架构图如下：
+2. 攻击方法整体架构如下：
 
    <img src="pictures/image-20201201013545300.png" alt="image-20201201013545300" style="zoom: 35%;" />
 
@@ -450,9 +456,9 @@
 
 1. **黑盒**、**有目标**的对抗攻击算法。攻击的模型为 **DeepSpeech** 模型，选择的方式是 **遗传算法和梯度下降算法的结合**；
 
-2. 从 CommonVoice 测试机中挑选出前100个样本作为原始音频，目标指令都是 **2** 个词的指令，比较短；
+2. 原始音频与目标指令: 从 CommonVoice 测试集中挑选出**前100个样本**作为原始音频，目标指令都是 **2** 个词的指令，比较短；
 
-3. 作者假设 DeepSpeech 模型是不可知探知的，但是知道模型最后的概率分布的输出，并且针对 Greedy Decoding 进行攻击 （我的想法：**这样的攻击场景其实是不常见的，所以这个工作可能指导意义不大，但是我们应该思考一下，如果 ASR 模型经过了 LM 模型的修饰，还能不能用黑盒探测的方法来生成对抗样本？如果能，代价又有多大？**）；
+3. 攻击场景: 作者假设 DeepSpeech 模型是不可知探知的，但是知道模型最后的概率分布的输出，并且针对 Greedy Decoding 进行攻击 （我的想法：**这样的攻击场景其实是不常见的，所以这个工作可能指导意义不大，但是我们应该思考一下，如果 ASR 模型经过了 LM 模型的修饰，还能不能用黑盒探测的方法来生成对抗样本？如果能，代价又有多大？**）；
 
 4. 算法流程：
 
@@ -513,9 +519,11 @@
 
    (1) 作者其他的实现的细节与文章 [”Audio Adversarial Examples: Targeted Attacks on Speech-to-Text“](#Audio Adversarial Examples: Targeted Attacks on Speech-to-Text) 是一样的，Adam 迭代器和 CTC-Loss 函数；
 
-   (2) 提到了一个比较有意思的攻击场景：FM radio；
+   (2) 👍 提到了一个比较有意思的攻击场景：**FM radio**；
 
    <img src="pictures/image-20201202001721712.png" alt="image-20201202001721712" style="zoom:35%;" />
+
+   > 思考一下: 这种攻击场景多吗? 未来的车辆控制可能会受到 FM 的攻击!
 
    (3) 分析针对 API 的攻击：
 
@@ -524,7 +532,7 @@
    (4) 分析针对物理的攻击：
 
    <img src="pictures/image-20201202002630244.png" alt="image-20201202002630244" style="zoom:33%;" />
-
+   
    每个样本尝试 10 次（**测试次数太少了**），统计成功率，并且发现只保证成功率高于 50% 的情况下，可以适当减少修改量。
 
 ### Links
@@ -563,7 +571,7 @@
 
 1. **白盒**、**有目标**的对抗攻击算法。攻击的模型为  Lingvo 框架的 **LAS** 模型，攻击的指令选取了 1000 条**中等长度**的字符串;
 
-2. 关键点在于两方面，一点是使用了**心理掩蔽效应**来提高对抗样本的隐蔽性，另一点是**模拟房间声学响应**来提高对抗样本的鲁棒性;
+2. 论文方法的关键点在于两方面，一是使用了**心理掩蔽效应**来提高对抗样本的隐蔽性，另一是**模拟房间声学响应**来提高对抗样本的鲁棒性;
 
 3. **心理掩蔽效应，（简单来讲）就是能量大的声音可以频闭能量小的声音，主要分为时间掩蔽和频率掩蔽**。与 [“Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding”](#Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding) 相同，作者也用频率掩蔽效应。添加心理掩蔽效应后的 loss 函数：
    
@@ -576,7 +584,7 @@
     
     <img width="33%" src="./pictures/Snipaste_2020-11-29_16-45-46.png"/>
     
-4. 模拟房间声学响应，简单来说，当固定了房间的参数和你设备的参数，你可以将整个物理信道用一个函数 t(x) 来建模。添加房间声学响应后的 loss 函数：
+4. **模拟房间声学响应**，简单来说，当固定了房间的参数和你设备的参数，你可以将整个物理信道用一个函数 t(x) 来建模。添加房间声学响应后的 loss 函数：
 
     <img src="./pictures/image-20201129170241799.png" alt="image-20201129170241799" style="zoom: 45%;" />
 
@@ -588,17 +596,23 @@
 
     训练的 **trick** ：( 在 **4** 的对抗样本基础上 ) 结合整个 loss 函数来生成具有隐藏性的对抗样本，和 3 中的分两步生成不同。
 
-6. Evaluation 部分，我觉得封面给的 100% 其实不是关键，因为该实验给的样本只是使用了心理掩蔽效应，考虑到这个攻击是个白盒攻击，所以白盒的非物理攻击其实在现实中意义不大，但是可以去论文主页听一下效果，<u>确实添加的扰动几乎无法听到</u>。所以主要还是关注它的第二个实验结果：
+6. Evaluation: 
+
+    (1) 直接攻击 API: 成功率 100%, 添加的扰动几乎无法察觉; ( <u>可以直接上主页听一下效果, 直接攻击的效果还是非常不错的, 不过意义不是很大, 打比赛的时候可能效果会很好</u> )
+
+    (2) 转录后攻击 API: 大概的成功率在 60% 左右
 
     <img src="./pictures/image-20201129183521406.png" alt="image-20201129183521406" style="zoom: 60%;" />
 
-    作者采用的对抗样本的评价指标分别是：Accuracy - 整句话的成功率，WER - 词错率，和隐藏性。其中隐藏性没有采用常用的 SNR 来度量，而是直接采用**问卷调查**的形式，作者的问卷调查的问题分别为：
+    (3) 隐藏性, 隐藏性没有采用常用的 SNR 来度量, 而是直接采用**问卷调查**的形式, 作者的问卷调查的问题分别为:
 
-    (1) 音频是否清晰；
-
-    (2) 分辨两个音频哪一个是原始音频；
-
-    (3) 判断两个音频是否相同；
+    - 音频是否清晰；
+    
+    
+    - 分辨两个音频哪一个是原始音频；
+    
+    
+    - 判断两个音频是否相同；
 
 ### Links
 - 论文链接：[Qin, Yao, et al. "Imperceptible, robust, and targeted adversarial examples for automatic speech recognition." International Conference on Machine Learning. PMLR, 2019](https://arxiv.org/abs/1903.10346).
@@ -610,3 +624,91 @@
 
 
 
+## * Practical Hidden Voice Attacks against Speech and Speaker Recognition Systems
+
+### Contribution
+
+1. Hidden Voice Commands 的延续, 将正常语音模糊化, 攻击特征提取模块;
+2. 从这篇文章可以看到**语音对抗攻击在物理, 黑盒环境下的重重困难**;
+
+### Notes
+
+1. **黑盒**, (自称) **对不同硬件设备鲁棒**的, 攻击**特征提取模块**的语音对抗攻击.
+
+2. 作者指出前面工作的一些**问题**:
+
+   - 需要借助白盒知识进行攻击;
+   - 对不同的硬件 ( 麦克风和扬声器 ) 有不同的效果;
+
+3. 这篇文章是对 Hidden Voice Commands Black-box 攻击的扩展, 首先看一下语音识别的各个模块:
+
+   <img src="pictures/image-20201215235124132.png" alt="image-20201215235124132" style="zoom: 33%;" />
+
+   大多数的白盒攻击关注的是深度神经网络模块, 对这个模块运用梯度下降算法生成对抗样本, 而这里作者则是考虑**攻击 Signal Processing 模块**, 即攻击特征提取模块;
+
+> 思考一下: 文章指出, 使用低维有限的语音特征训练神经网络 为 ( 添加扰动 )生成对抗样本 提供了可能, 那么高采样率训练的模型一定不容易受到对抗攻击吗?
+
+4. 攻击距离约为 **34 cm**;
+
+5. 👍 作者的攻击方法很简单, **利用特征提取过程中的"多对一"问题**, 结合下面这幅图来看:
+
+   <img src="pictures/image-20201216001052359.png" alt="image-20201216001052359" style="zoom:35%;" />
+
+   - Time Domain Inversion (TDI): 在时域上, 在每个小窗内前后翻转信号. 攻击的是**特征提取过程中的分帧**, 如果窗口大小刚好重合的话, 那么翻转后的信号计算FFT是不变的 ( ~~这里作者没有考虑到帧移的问题~~, 作者在实验部分称, **TDI 的窗口大小并不需要和特征提取算法的窗口大小一致** ). 而翻转后的语音因为不连续的问题, 人耳听起来更像噪声;
+
+   - Random Phase Generation (RPG): 随机挑选一些实数域和虚数域的值来代替原频谱的值. 攻击的是**频谱求能量谱的环节( 平方求能量 )**, 如下公式:
+     $$
+     magnitude_{original} = Y = \sqrt{a_0^2+b_0^2i} = \sqrt{a_n^2+b_n^2i}
+     $$
+     这里可以看到, 一个能量谱可以对应多个不同的频谱, 所以就可以去替换 $a_0$ 和 $b_0$ 的值达到模糊的效果;
+
+   - High Frequency Addition (HFA): 高频掩蔽低频 ( 心理声学掩蔽效应 ), 而高频的声音会在特征提取之前就被过滤;
+
+   - Time Scaling (TS): 加速语音, 语音加速之后人耳更不容易听清 ( <u>作者这里没有考虑应用 TS 会导致语音实际计算出的 MFCC 值会发生改变. 这种改变, 不只是时间上的不对应; 想象一下, 语音加快了, 那么声音的频率势必会上升啊</u> ). 作者实际在做的时候, 直接就探测黑盒能够承受的最快加快速度;
+
+   - Improved Attack Method: 不同的词可以修改的程度是不一样的, 所以可以让不同词经过不同的参数生成对抗样本;
+
+   - <u>从后面的实验来看, 作者在物理攻击下其实只用了 TDI 和 TS 两种修改方法, 故我挺好奇该攻击方法的实用性的</u>;
+
+6. Evaluation
+
+   (1) 不同的攻击场景: Over-the-Line 和 Over-the-Air, 直接将样本交给 API 或者是经过物理信道以后再交给 API. 这里作者提到了一个点: **在 Over-the-Air 下成功的样本, 并不一定能够在 Over-the-Line 情况下成功**, 作者在实际攻击的过程中, 还是拿的 Over-the-Line 的样本进行 Over-the-Air 的测试;
+
+   (2) 攻击的模型: 测试的模型还是比较全面的;
+
+   <img src="pictures/image-20201216101230676.png" alt="image-20201216101230676" style="zoom:33%;" />
+
+   (3) 指令: 在 ASR 的测试上, 作者使用了 4 条指令 ( 其中 I, J, K, L 只用在 `Intel Neon Deepspeech` 上 ), 长度为 2~4 个单词;
+
+   <img src="pictures/image-20201216101629480.png" alt="image-20201216101629480" style="zoom: 23%;" />
+
+   ⭐ **测试的指令少, 并且短, 是黑盒, 物理的语音对抗攻击存在的通病**. 这里作者提到了一个点: **他没有使用如 `Ok Google` 这样的唤醒词作为目标指令, 因为唤醒词通常使用的模型, 训练的方法都会和正常的语音识别有所不同, 并且不同平台之间唤醒词的鲁棒性也存在差异, 因此对这些词进行攻击是存在偏差的**;
+
+   > 思考一下: 
+   >
+   > ​	我们如何增强黑盒, 物理语音对抗攻击的攻击能力( **鲁棒性, 迁移性, 隐藏性** )呢?
+   >
+   > ​	对于攻击的偏差, 不仅仅存在于唤醒词部分. 每个目标模型的训练过程都不可能相同, 可能存在 "不同模型被攻击的成功率不同", "相同模型对不同词攻击的成功率不同" 等偏差, 这些偏差如何来衡量?
+   >
+   > ​	黑盒, 物理语音对抗攻击缺乏一个衡量他们攻击能力的指标.
+
+   (4) 👎 实验设备: Audioengine A5 speaker + Behringer microphone, iMac speaker + Motorola Nexus 6; ( <u>作者只用了两套设备进行测试, 但是直接下了一个设备鲁棒的结论, 这个我是不太赞同的</u> )
+
+   (5) 实验结果:
+
+   - Over-the-Line: 如"指令"图中, 作者测试为 100% 成功率, 但是未给出相关的参数;
+
+   - Over-the-Air: 如下图
+
+     <img src="pictures/image-20201216111813769.png" alt="image-20201216111813769" style="zoom: 20%;" />
+
+   - 对参数的解释: -- 攻击中使用的窗口大小( 影响 TDI 和 RPG )越小, 音频的修改量越大; -- 最小的窗口大小为 1ms; -- 作者在实验中使用 150% 的加速, 1ms 左右的窗口大小以及 8000Hz 左右的高频扰动;
+
+   - 选择音质最差的音频: 作者称, 窗口越小, 或高频扰动约多, 或加速越快, 使得音频修改量越大; 在这个前提下, 作者从 2W 个样本中挑选出 10 个样本, 然后**通过人耳来听** ( <u>隐蔽性的度量问题, 作者并不考虑修改量的问题</u> );
+
+   - 👎 样本: 在论文主页可以看到 4 个他们展示的样本( <u>实在是太少了</u> ), 第四个样本的指令是 "call to mom", 我认为听觉还算比较明显, 其他几条指令听起来更像是噪声;
+
+### Links
+
+- 论文链接:  [Abdullah, Hadi, et al. "Practical hidden voice attacks against speech and speaker recognition systems." *NDSS* (2019).](https://arxiv.org/abs/1904.05734)
+- 论文主页: [pratical hidden voice](https://sites.google.com/view/practicalhiddenvoice)
