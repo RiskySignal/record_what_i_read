@@ -300,7 +300,7 @@
 
 - 论文链接：[Alzantot, Moustafa, Bharathan Balaji, and Mani Srivastava. "Did you hear that? adversarial examples against automatic speech recognition." *NIPS Machine Deception Workshop* (2017).](https://arxiv.org/abs/1801.00554)
 - 论文主页：[Adversarial Speech Commands | adversarial_audio (nesl.github.io)](https://nesl.github.io/adversarial_audio/)
-- 论文代码：[nesl/adversarial_audio (github.com)](https://github.com/nesl/adversarial_audio)
+- 论文代码：[nesl / adversarial_audio (github.com)](https://github.com/nesl/adversarial_audio)
 
 
 
@@ -559,6 +559,24 @@
 
 
 
+## Hear "No Evil", See "Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems
+
+### Contribution
+
+1. 一种黑盒的无目标对抗攻击
+
+### Notes
+
+<u>不是很值得看, 故仅做罗列.</u>
+
+### Links
+
+- 论文链接: [Abdullah, Hadi, et al. "Hear" No Evil", See" Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems." *arXiv preprint arXiv:1910.05262* (2019).](https://arxiv.org/abs/1910.05262)
+
+
+
+
+
 ## Imperceptible, Robust, and Targeted Adversarial Examples for Automatic Speech Recognition
 
 ### Contribution
@@ -660,7 +678,7 @@
      $$
      magnitude_{original} = Y = \sqrt{a_0^2+b_0^2i} = \sqrt{a_n^2+b_n^2i}
      $$
-     这里可以看到, 一个能量谱可以对应多个不同的频谱, 所以就可以去替换 $a_0$ 和 $b_0$ 的值达到模糊的效果;
+     这里可以看到, 一个能量谱可以对应多个不同的频谱, 所以就可以去替换 $a_0$ 和 $b_0$ 的值达到模糊的效果; ( <u>进一步思考后, 我认为这种变换是不靠谱的, 因为语音信号是实信号, 如果用复数域来表示的话, 在存储时应该会丢弃虚数部分, 那么这样变换后的频谱就发生了改变</u> )
 
    - High Frequency Addition (HFA): 高频掩蔽低频 ( 心理声学掩蔽效应 ), 而高频的声音会在特征提取之前就被过滤;
 
