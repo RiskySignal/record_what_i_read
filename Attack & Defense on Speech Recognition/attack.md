@@ -23,6 +23,24 @@
 
 
 
+## Overview
+
+1. 语音识别的流程
+
+   todo there
+
+2. 针对不同截断的攻击
+
+   todo there
+
+3. 语音识别领域对抗攻击的演变
+
+   todo there
+
+
+
+
+
 ## * Cocaine Noodles: Exploiting the Gap between Human and Machine Speech Recognition
 
 ### Contribution
@@ -730,3 +748,31 @@
 
 - 论文链接:  [Abdullah, Hadi, et al. "Practical hidden voice attacks against speech and speaker recognition systems." *NDSS* (2019).](https://arxiv.org/abs/1904.05734)
 - 论文主页: [pratical hidden voice](https://sites.google.com/view/practicalhiddenvoice)
+
+
+
+
+
+## * Adversarial Black-Box Attacks on Automatic Speech Recognition Systems using Multi-Objective Evolutionary Optimization
+
+### Contribution
+
+1. 设想在黑盒攻击的过程中, 引入两个评价指标, 以**解决 声学相似性 和 文本相似性 这两个 trade off 的问题**;
+
+### Notes
+
+1. 黑盒, 有目标 / 无目标的对抗攻击;
+
+2. 方法: 
+
+   <img src="pictures/image-20201220012959464.png" alt="image-20201220012959464" style="zoom: 40%;" />
+
+   整体的方法是**遗传算法**, 和前面用的遗传算法的不同之处在于作者使用了两个目标作为 fitness 的度量: (1) 声学的相似性 - MFCC距离; (2) 文本的相似性 - 文字编辑距离; 
+
+3. 需要大量 query 是当前黑盒攻击的痛点;
+
+### Links
+
+- 论文链接:  [Khare, Shreya, Rahul Aralikatte, and Senthil Mani. "Adversarial black-box attacks on automatic speech recognition systems using multi-objective evolutionary optimization." *arXiv preprint arXiv:1811.01312* (2018).](https://arxiv.org/abs/1811.01312)
+- 论文主页:  https://shreyakhare.github.io/audio-adversarial/
+
