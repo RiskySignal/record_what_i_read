@@ -19,6 +19,20 @@
 11. Anish Athalye, Nicholas Carlini, and David Wagner. Obfuscated gradients give a false sense of security: Circumventing defenses to adversarial examples. arXiv preprint arXiv:1802.00420, 2018.
 12. advbox
 13. paddlepaddle 对抗工具箱
+14. Stealthy Porn: Understanding Real-World Adversarial Images for Illicit Online Promotion
+15. Stealing Hyperparameters in Machine Learning
+16. Phantom of the ADAS: Securing Advanced Driver-Assistance Systems from Split-Second Phantom Attacks
+17. Text Captcha Is Dead? A Large Scale Deployment and Empirical Study
+18. A Tale of Evil Twins: Adversarial Inputs versus Poisoned Models
+19. Adversarial Sensor Attack on LiDAR-based Perception in Autonomous Driving
+20. Privacy Risks of Securing Machine Learning Models against Adversarial Examples
+21. Procedural Noise Adversarial Examples for Black-Box Attacks on Deep Convolutional Networks
+22. Seeing isn’t Believing: Towards More Robust Adversarial Attack Against Real World Object Detectors
+23. Model-Reuse Attacks on Learning Systems
+
+
+
+
 
 ## Synthesizing Robust Adversarial Examples
 

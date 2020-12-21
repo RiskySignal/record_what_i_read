@@ -16,6 +16,11 @@
 6. Z. Gong, W. Wang, B. Li, D. Song, and W.-S. Ku, “Adversarial texts with gradient methods,” arXiv preprint arXiv:1801.07175, 2018.
 7. Y. Zhang and B. Wallace, “A sensitivity analysis of (and practitioners guide to) convolutional neural networks for sentence classification,” in IJCNLP, vol. 1, 2017, pp. 253–263.
 8. I. J. Goodfellow, J. Shlens, and C. Szegedy, “Explaining and harnessing adversarial examples,” in ICLR, 2015, pp. 1–11.
+9. Privacy Risks of General-Purpose Language Models
+10. Analyzing Information Leakage of Updates to Natural Language Models
+11. information leakage in embedding models
+12. LEAF: A Faster Secure Search Algorithm via Localization, Extraction, and Reconstruction
+13. Yet Another Text Captcha Solver: A Generative Adversarial Network Based Approach
 
 
 
