@@ -17,6 +17,8 @@
 9. Cassidy Laidlaw and Soheil Feizi. Functional adversarial attacks, 2019
 10. Mahmood Sharif, Sruti Bhagavatula, Lujo Bauer, and Michael K Reiter. Adversarial generative nets: Neural network attacks on state-of-the-art face recognition. arXiv preprint arXiv:1801.00349, 2017.
 11. Anish Athalye, Nicholas Carlini, and David Wagner. Obfuscated gradients give a false sense of security: Circumventing defenses to adversarial examples. arXiv preprint arXiv:1802.00420, 2018.
+12. advbox
+13. paddlepaddle 对抗工具箱
 
 ## Synthesizing Robust Adversarial Examples
 

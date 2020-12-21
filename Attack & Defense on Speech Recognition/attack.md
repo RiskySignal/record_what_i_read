@@ -18,6 +18,7 @@
 8. Mel-Frequency Spectral Coefficients (MFSC)
 9. Linear Predictive Coding
 10. Perceptual Linear Prediction (PLP)
+11. Wang, Qing, Pengcheng Guo, and Lei Xie. "Inaudible Adversarial Perturbations for Targeted Attack in Speaker Recognition." *arXiv preprint arXiv:2005.10637* (2020).
 
 
 
@@ -776,3 +777,12 @@
 - 论文链接:  [Khare, Shreya, Rahul Aralikatte, and Senthil Mani. "Adversarial black-box attacks on automatic speech recognition systems using multi-objective evolutionary optimization." *arXiv preprint arXiv:1811.01312* (2018).](https://arxiv.org/abs/1811.01312)
 - 论文主页:  https://shreyakhare.github.io/audio-adversarial/
 
+
+
+
+
+## SoK: The Faults in our ASRs: An Overview of Attacks against Automatic Speech Recognition and Speaker Identification Systems
+
+### Notes
+
+### Links
