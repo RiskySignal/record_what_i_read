@@ -29,6 +29,8 @@
 21. Procedural Noise Adversarial Examples for Black-Box Attacks on Deep Convolutional Networks
 22. Seeing isn’t Believing: Towards More Robust Adversarial Attack Against Real World Object Detectors
 23. Model-Reuse Attacks on Learning Systems
+24. A. Ilyas, L. Engstrom, A. Athalye, and J. Lin, “Black-box adversarial attacks with limited queries and information,” in ICML, 2018.
+25. A. Kurakin, I. J. Goodfellow, and S. Bengio, “Adversarial examples in the physical world,” in ICLR, 2017.
 
 
 
