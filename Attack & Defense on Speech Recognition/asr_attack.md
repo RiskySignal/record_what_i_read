@@ -22,13 +22,15 @@
 13. Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
 14. DeepSec: A Uniform Platform for Security Analysis of Deep Learning Models
 15. Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
-16. AdvPulse: Universal, Synchronization-free, and Targeted Audio Adversarial Attacks via Subsecond Perturbations
 17. Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms
 18. When the Differences in Frequency Domain are Compensated: Understanding and Defeating Modulated Replay Attacks on Automatic Speech Recognition
 18. PatternListener: Cracking Android Pattern Lock Using Acoustic Signals
 19. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
 20. F. Kreuk, Y. Adi, M. Cisse, and J. Keshet, “Fooling end-to-end speaker verification with adversarial examples,” in ICASSP, 2018.
 21. 更新 Overview
+21. Tao Chen, Longfei Shangguan, Zhenjiang Li, and Kyle Jamieson. 2020. Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems. In Proceedings ofthe Network and Distributed System Security Symposium (NDSS)
+22. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
+23. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In AnnualConference ofthe International Speech Communication Association (INTERSPEECH).
 
 
 
@@ -413,7 +415,7 @@
 
    (1) 如果使用 CTC-Loss，会添加不必要的修改。**如果已经解码出 ”ABCX“，目标指令为 ”ABCD“，在使用 CTC-Loss时，梯度下降算法仍然会在 ”A“ 上添加扰动使得其变得更像 ”A“**；
 
-   (2) **不同的字符生成的难易程度是不同的**，所以把权重系数 c 移到了累加的里面。( **这一点作者称是在 [Hidden Voice Command]() 中发现的规律，但其实只是在附录中给出了不同的单词可能需要的最短音素帧的数量是不同的，并没有给出字符难易程度的结论；并且这篇文章开源的代码中也没有给出这个改进的 loss 函数，所以可以直接把这个 c 移出去作为单个参数进行调参** )；
+   (2) **不同的字符生成的难易程度是不同的**，所以把权重系数 c 移到了累加的里面。( **这一点作者称是在 [Hidden Voice Command](#Hidden Voice Commands) 中发现的规律，但其实只是在附录中给出了不同的单词可能需要的最短音素帧的数量是不同的，并没有给出字符难易程度的结论；并且这篇文章开源的代码中也没有给出这个改进的 loss 函数，所以可以直接把这个 c 移出去作为单个参数进行调参** )；
 
    训练的 **trick**：首先用 CTC-Loss 生成一个对抗样本，以这个对抗样本为参照固定 alignment（在 CTC 中，可能有许多种alignment，作者通过这种方法来确定选择其中一种），然后用改进的 loss 函数来生成；（这边，我的想法是，**改进的攻击方法会使得对抗样本丧失其迁移性，因为它只是恰好将特征拟合到模型的边界而已，而没有去进一步地逼近泛化的特征上**）
 
@@ -642,24 +644,6 @@
 
 
 
-## Hear "No Evil", See "Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems
-
-### Contribution
-
-1. 一种黑盒的无目标对抗攻击
-
-### Notes
-
-
-
-### Links
-
-- 论文链接: [Abdullah, Hadi, et al. "Hear" No Evil", See" Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems." *S&P* (2021).](https://arxiv.org/abs/1910.05262)
-
-
-
-
-
 ## Imperceptible, Robust, and Targeted Adversarial Examples for Automatic Speech Recognition
 
 ### Contribution
@@ -691,7 +675,7 @@
 
     训练的 **trick** ：( **Stage-1** ) 使用  `lr_1=50` 迭代 *2000* 轮保证在其中 **1 个房间声学响应**下能够生成对抗样本，( **Stage-2** ) 然后使用 `lr_2=5` 迭代 *5000* 轮来保证在另外随机采样的 **10 个房间声学响应**下都能够生成对抗样本（这个期间不再减小 **perturbation** 的上限）。
 
-5. 👍  结合心理掩蔽效应和模型房间声学响应。结合后的 loss 函数:
+5. 👍👍  结合心理掩蔽效应和模型房间声学响应。结合后的 loss 函数:
 
     <img src="./pictures/image-20201129180621070.png" alt="image-20201129180621070" style="zoom: 65%;" />
 
@@ -793,7 +777,7 @@
    >
    > ​	黑盒, 物理语音对抗攻击缺乏一个衡量他们攻击能力的指标.
 
-   (4) 👎 实验设备: Audioengine A5 speaker + Behringer microphone, iMac speaker + Motorola Nexus 6; ( <u>作者只用了两套设备进行测试, 但是直接下了一个设备鲁棒的结论, 这个我是不太赞同的</u> )
+   (4) 👎 实验设备: Audio engine A5 speaker + Behringer microphone, iMac speaker + Motorola Nexus 6; ( <u>作者只用了两套设备进行测试, 但是直接下了一个设备鲁棒的结论, 这个我是不太赞同的</u> )
 
    (5) 实验结果:
 
@@ -830,7 +814,7 @@
 
 2. 方法: 
 
-   <img src="pictures/image-20201220012959464.png" alt="image-20201220012959464" style="zoom: 40%;" />
+   <img src="pictures/image-20201220012959464.png" alt="image-20201220012959464" style="zoom: 38%;" />
 
    整体的方法是**遗传算法**, 和前面用的遗传算法的不同之处在于作者使用了两个目标作为 fitness 的度量: (1) 声学的相似性 - MFCC距离; (2) 文本的相似性 - 文字编辑距离; 
 
@@ -845,6 +829,122 @@
 
 
 
+## AdvPulse: Universal, Synchronization-free, and Targeted Audio Adversarial Attacks via Subsecond Perturbations
+
+### Contribution
+
+
+
+### Notes
+
+1. 一种**白盒的**, **有目标的**, **物理的**, **通用 (与原始音频无关) 的**对抗攻击;
+
+2. 👍👍 创新的攻击场景:
+
+   <img src="pictures/image-20201224200654616.png" alt="image-20201224200654616" style="zoom:25%;" />
+
+   前面的攻击 $a$ 都是预先知道要嵌入对抗扰动的原始音频, 而作者的攻击 $b$ 则是根据环境声音实时生成对抗扰动;
+
+3. 目标模型:
+
+   - 说话人识别模型: X-vectors 系统, 一个文本无关的 DNN 模型;
+   - 语音识别模型: Tensorflow 官方实现的基于 CNN 的关键词检测模型;
+   
+4. 👍 生成算法: <u>算法整体的思路十分清晰, 就是要产生一个载体无关的通用对抗扰动 (和后门的形式差不多), 然后过程中让它更具隐藏性和物理鲁棒性</u>;
+
+   (1) 生成**短时** (秒级别的) **异步的** (插入位置无关的) **有目标的** 对抗扰动
+
+   - 生成有目标的对抗扰动;
+   
+     算法的目标是**生成一个被错误分类为目标标签的对抗样本**:
+   
+     <img src="pictures/image-20201224213757082.png" alt="image-20201224213757082" style="zoom:12%;" />
+   
+     其中 $dB_x(\delta) = dB(\delta)-dB(x)$, 即表示添加扰动的大小. 用**最优化的方法**来求解上述目标:
+   
+     <img src="pictures/image-20201224214005656.png" alt="image-20201224214005656" style="zoom:13%;" />
+   
+     
+   
+   - 生成异步的对抗扰动;
+   
+     为了使得对抗扰动插入到任何位置都能够成功攻击, 即生成一个通用的对抗特征. 改进上述式子, **在时间上随机采样**:
+   
+     <img src="pictures/image-20201224232546555.png" alt="image-20201224232546555" style="zoom:19%;" />
+   
+   (2) 生成 **通用的** 对抗扰动
+   
+   ​	根据方法 (1) 生成对抗样本, 需要知道前后时间段内的原始音频, 不符合原始音频未知的攻击场景. 作者的解决思路是, **保证生成的对抗扰动叠加在任何可能的原始音频上都能够成功**. 改进上述式子, 在**训练样本集**上随机采样:
+   
+   <img src="pictures/image-20201224235153714.png" alt="image-20201224235153714" style="zoom:20%;" />
+   
+   ​	程序的伪代码如下:
+   
+   <img src="pictures/image-20201225000653553.png" alt="image-20201225000653553" style="zoom: 35%;" />
+   
+   ​	其中有几个点:
+   
+   - $\mathcal{D}=\{(x_1,y_1), \dots,(x_k,y_k)\}$ 是从训练集中进行采样的;
+   - 每一次更新参数都是针对一组随机采样 $\left[\tau, (x_i, y_i)\right]$ 的, 而并非对多组采样进行更新;
+   - 使用 $tanh(\cdot)$ 函数将有限取值域的 $\delta$ 转换到无线取值域的 $z$ ;
+   
+   (3) 提高隐藏性
+   
+   ​	为了提高样本的隐藏性, 作者希望生成的扰动和自然界的声音更加接近. 改进上述式子, **希望对抗扰动和某种自然界的声音距离尽可能得小**:
+   
+   <img src="pictures/image-20201225003411303.png" alt="image-20201225003411303" style="zoom:18%;" />
+   
+   ​	其中 $dist(\delta, \hat\delta)$ 是 L2 距离.
+   
+   (4) 提高物理鲁棒性
+   
+   ​	为了提高样本得隐藏性, 作者模拟物理环境中可能出现的噪声, 采用的方法和工作 ["Robust Audio Adversarial Example for a Physical Attack"](#Robust Audio Adversarial Example for a Physical Attack) 相同.
+   
+   - 带通滤波器: 
+   
+     <img src="pictures/image-20201225004655398.png" alt="image-20201225004655398" style="zoom:19%;" />
+   
+     其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau))$.
+   
+   - 房间冲击响应:
+   
+     <img src="pictures/image-20201225005322050.png" alt="image-20201225005322050" style="zoom:18%;" />
+   
+     其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau)) \otimes h$ , $h$ 为从 REVERB challenge database, RWCP sound scene database 和 Aachen impulse response database 三个数据集中随机采样的房间冲激响应.
+   
+   - 环境噪声:
+   
+     <img src="pictures/image-20201225005808787.png" alt="image-20201225005808787" style="zoom:20%;" />
+   
+     其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau)) \otimes h + w$ , $w$ 为从 RWCP sound scene database 中采样的环境噪声.
+   
+5. Evaluation
+
+### Links
+
+- 论文链接: [Li Z, Wu Y, Liu J, et al. AdvPulse: Universal, Synchronization-free, and Targeted Audio Adversarial Attacks via Subsecond Perturbations[C]//Proceedings of the 2020 ACM SIGSAC Conference on Computer and Communications Security. 2020: 1121-1134.](https://dl.acm.org/doi/10.1145/3372297.3423348)
+- 论文主页: [AdvPulse: Universal, Synchronization-free, and Targeted Audio Adversarial Attacks via Subsecond Perturbations (utk.edu)](https://mosis.eecs.utk.edu/advpulse.html)
+- RWCP 噪声数据集: http://www.openslr.org/13/
+
+
+
+
+
+
+## Hear "No Evil", See "Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems
+
+### Contribution
+
+1. 一种黑盒的无目标对抗攻击
+
+### Notes
+
+
+
+### Links
+
+- 论文链接: [Abdullah, Hadi, et al. "Hear" No Evil", See" Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems." *S&P* (2021).](https://arxiv.org/abs/1910.05262)
+
 
 
 
@@ -855,4 +955,5 @@
 
 ### Links
 
-- 
+- 论文链接
+
