@@ -31,7 +31,7 @@
 
    (1) 经典的 UBM-GMM 模型
 
-   <img src="pictures/image-20201221235758794.png" alt="image-20201222000354583" style="zoom:33%;" />
+   <img src="pictures/image-20201221235758794.png" alt="image-20201222000354583" style="zoom:25%;" />
 
    (2) 说话人识别处理的任务:
 

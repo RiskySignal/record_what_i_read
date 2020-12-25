@@ -833,92 +833,148 @@
 
 ### Contribution
 
+- 这篇文章有意思的点在于 **在语音对抗攻击中提出了通用的对抗扰动**;
 
 
 ### Notes
 
 1. 一种**白盒的**, **有目标的**, **物理的**, **通用 (与原始音频无关) 的**对抗攻击;
 
-2. 👍👍 创新的攻击场景:
+> 思考, 语音领域的后门攻击!
+
+1. 👍👍 创新的攻击场景:
 
    <img src="pictures/image-20201224200654616.png" alt="image-20201224200654616" style="zoom:25%;" />
 
    前面的攻击 $a$ 都是预先知道要嵌入对抗扰动的原始音频, 而作者的攻击 $b$ 则是根据环境声音实时生成对抗扰动;
 
-3. 目标模型:
+2. 目标模型:
 
    - 说话人识别模型: X-vectors 系统, 一个文本无关的 DNN 模型;
    - 语音识别模型: Tensorflow 官方实现的基于 CNN 的关键词检测模型;
-   
-4. 👍 生成算法: <u>算法整体的思路十分清晰, 就是要产生一个载体无关的通用对抗扰动 (和后门的形式差不多), 然后过程中让它更具隐藏性和物理鲁棒性</u>;
+
+3. 👍 生成算法: <u>算法整体的思路十分清晰, 就是要产生一个载体无关的通用对抗扰动 (和后门的形式差不多), 然后过程中让它更具隐藏性和物理鲁棒性</u>;
 
    (1) 生成**短时** (秒级别的) **异步的** (插入位置无关的) **有目标的** 对抗扰动
 
    - 生成有目标的对抗扰动;
-   
+
      算法的目标是**生成一个被错误分类为目标标签的对抗样本**:
-   
+
      <img src="pictures/image-20201224213757082.png" alt="image-20201224213757082" style="zoom:12%;" />
-   
+
      其中 $dB_x(\delta) = dB(\delta)-dB(x)$, 即表示添加扰动的大小. 用**最优化的方法**来求解上述目标:
-   
+
      <img src="pictures/image-20201224214005656.png" alt="image-20201224214005656" style="zoom:13%;" />
-   
+
      
-   
+
    - 生成异步的对抗扰动;
-   
+
      为了使得对抗扰动插入到任何位置都能够成功攻击, 即生成一个通用的对抗特征. 改进上述式子, **在时间上随机采样**:
-   
+
      <img src="pictures/image-20201224232546555.png" alt="image-20201224232546555" style="zoom:19%;" />
-   
+
    (2) 生成 **通用的** 对抗扰动
-   
+
    ​	根据方法 (1) 生成对抗样本, 需要知道前后时间段内的原始音频, 不符合原始音频未知的攻击场景. 作者的解决思路是, **保证生成的对抗扰动叠加在任何可能的原始音频上都能够成功**. 改进上述式子, 在**训练样本集**上随机采样:
-   
+
    <img src="pictures/image-20201224235153714.png" alt="image-20201224235153714" style="zoom:20%;" />
-   
+
    ​	程序的伪代码如下:
-   
+
    <img src="pictures/image-20201225000653553.png" alt="image-20201225000653553" style="zoom: 35%;" />
-   
+
    ​	其中有几个点:
-   
+
    - $\mathcal{D}=\{(x_1,y_1), \dots,(x_k,y_k)\}$ 是从训练集中进行采样的;
    - 每一次更新参数都是针对一组随机采样 $\left[\tau, (x_i, y_i)\right]$ 的, 而并非对多组采样进行更新;
    - 使用 $tanh(\cdot)$ 函数将有限取值域的 $\delta$ 转换到无线取值域的 $z$ ;
-   
+   - 学习率固定为 $\beta$ ;
+
    (3) 提高隐藏性
-   
+
    ​	为了提高样本的隐藏性, 作者希望生成的扰动和自然界的声音更加接近. 改进上述式子, **希望对抗扰动和某种自然界的声音距离尽可能得小**:
-   
+
    <img src="pictures/image-20201225003411303.png" alt="image-20201225003411303" style="zoom:18%;" />
-   
+
    ​	其中 $dist(\delta, \hat\delta)$ 是 L2 距离.
-   
+
    (4) 提高物理鲁棒性
-   
+
    ​	为了提高样本得隐藏性, 作者模拟物理环境中可能出现的噪声, 采用的方法和工作 ["Robust Audio Adversarial Example for a Physical Attack"](#Robust Audio Adversarial Example for a Physical Attack) 相同.
-   
+
    - 带通滤波器: 
-   
+
      <img src="pictures/image-20201225004655398.png" alt="image-20201225004655398" style="zoom:19%;" />
-   
+
      其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau))$.
-   
+
    - 房间冲击响应:
-   
+
      <img src="pictures/image-20201225005322050.png" alt="image-20201225005322050" style="zoom:18%;" />
-   
+
      其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau)) \otimes h$ , $h$ 为从 REVERB challenge database, RWCP sound scene database 和 Aachen impulse response database 三个数据集中随机采样的房间冲激响应.
-   
+
    - 环境噪声:
-   
+
      <img src="pictures/image-20201225005808787.png" alt="image-20201225005808787" style="zoom:20%;" />
-   
+
      其中 $\hat{x}=x + BPF_{50 \sim 8000Hz}(Shift(\delta, \tau)) \otimes h + w$ , $w$ 为从 RWCP sound scene database 中采样的环境噪声.
-   
-5. Evaluation
+
+4. Evaluation of Digital Attack
+
+   (1) 参数设置: $\alpha=0.01$, $\beta=0.001$ , $\gamma=0.01$ , $l=0.5s$ ;
+
+   (2) 评价指标: 
+
+   - Attack Success Rate (**因为存在插入位置无关的评价, 所以作者以 0.001s 的间隔插入到原始声音中生成样本进行测试**)
+   - Confusion Matrix
+   - SNR
+
+   (3) 攻击 (数字世界) 说话人识别: 平均 SNR 为 8.3dB, 成功率如下
+
+   <img src="pictures/image-20201226004551828.png" alt="image-20201226004551828" style="zoom: 33%;" />
+
+   (4) 攻击 (数字世界) 语音识别: 平均 SNR 为 13.7dB, 成功率如下
+
+   <img src="pictures/image-20201226004847064.png" alt="image-20201226004847064" style="zoom:32%;" />
+
+   (5) 对抗扰动时长
+
+   <img src="pictures/image-20201226010641975.png" alt="image-20201226010641975" style="zoom: 21%;" />
+
+6. Evaluation of Physical Over-the-Air Attack
+
+   (1) 攻击场景:
+
+   <img src="pictures/image-20201226011301194.png" alt="image-20201226011301194" style="zoom: 33%;" />                                                      <img src="pictures/image-20201226011331502.png" alt="image-20201226011331502" style="zoom: 25%;" />
+
+   (2) 攻击 Office 和 Apartment 成功率:
+
+   <img src="pictures/image-20201226011729254.png" alt="image-20201226011729254" style="zoom:25%;" />
+
+   (3) 攻击 Inside-vehicle 成功率:
+
+   <img src="pictures/image-20201226011831610.png" alt="image-20201226011831610" style="zoom:25%;" />
+
+   (4) Attacking live human speech
+
+   <img src="pictures/image-20201226012542887.png" alt="image-20201226012542887" style="zoom: 22%;" />
+
+   其中 `p-1` 和 `p-4` 是男生, `p-2` 和 `p-3` 是女生, 红线是这些实验者测试时的系统基准成功率;
+
+   (5) 对抗扰动大小的影响:
+
+   <img src="pictures/image-20201226012813089.png" alt="image-20201226012813089" style="zoom: 33%;" />
+
+   > 看了这么多文章, 有些文章的实验很全面, 但是另一些文章的实验则是缺点东西. 我觉得可能在实验上我们很难做到极致, 可以做到差不多的程度, 毕竟对抗攻击在实际中运用起来才是最有效的, 最有价值的.
+
+7. 一些简单的防御方法
+
+   <img src="pictures/image-20201226013412375.png" alt="image-20201226013412375" style="zoom:80%;" />
+
+   > 防御这一块真的有很多的不足, 有待研究人员的挖掘.
 
 ### Links
 
