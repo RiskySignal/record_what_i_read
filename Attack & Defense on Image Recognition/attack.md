@@ -98,3 +98,47 @@
 
 - 论文链接：[Athalye, Anish, et al. "Synthesizing robust adversarial examples." *International conference on machine learning*. PMLR, 2018.](https://arxiv.org/abs/1707.07397)
 - 开源代码：[prabhant/synthesizing-robust-adversarial-examples (github.com)](https://github.com/prabhant/synthesizing-robust-adversarial-examples)
+
+
+
+
+
+## NES: Black-box Adversarial Attacks with Limited Queries and Information
+
+### Notes
+
+1. 黑盒设定：
+
+   - Query-limited Setting: 限制访问次数 ;
+   - Partial-information Setting: 只知道 Top-K 的结果 (包括概率);
+   - Label-only Setting: 只知道 Top-K 的标签 (不包括概率); (<u>这一项我觉得没必要看</u>)
+
+2. NES (Natural Evolutionary Strategies) 进行梯度估计: 最小化期望的损失大小, 算法伪代码如下 (<u>如何挑选这个参数?</u>)
+
+   <img src="pictures/image-20201228005801444.png" alt="image-20201228005801444" style="zoom: 28%;" />
+
+3. PGD (Projected Gradient Descent) 进行梯度更新:
+
+   <img src="pictures/image-20201228010620801.png" alt="image-20201228010620801" style="zoom:15%;" />
+
+4. 仅知道 Top-K 的概率:
+
+   <img src="pictures/image-20201228011853945.png" alt="image-20201228012415004" style="zoom: 60%;" />
+
+   - 使用目标分类的样本来初始化扰动，从而减少 query 的数量；
+   - 在保证目标分类在 Top-K 中的前提下，不断缩小对抗扰动，直至生成对抗样本且满足修改量的限制；
+
+5. Evaluation：
+
+   (1) 参数的选择：
+
+   <img src="pictures/image-20201228014735192.png" alt="image-20201228014735192" style="zoom: 25%;" />
+
+   (2) On ImageNet：这里大概的 query 数量级为上万级别的
+
+   <img src="pictures/image-20201228015018920.png" alt="image-20201228015018920" style="zoom:28%;" />
+
+### Links
+
+- 论文链接: [Ilyas, Andrew, et al. "Black-box adversarial attacks with limited queries and information." *PRML* (2018).](https://arxiv.org/abs/1804.08598)
+- 论文代码: https://github.com/labsix/limited-blackbox-attacks

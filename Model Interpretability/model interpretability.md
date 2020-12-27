@@ -22,6 +22,7 @@
 11. Zhang Xinyang, Wang Ningfei, Ji Shouling, et al. Interpretable Deep Learning under Fire [C] //Proc of the 29th USENIX Security Symp. Berkele, CA: USENIX Association, 2020
 11. GRADIENTS OF COUNTERFACTUALS(ICLR 2017)
 12. Simonyan, Karen, Vedaldi, Andrea, and Zisserman, Andrew. Deep inside convolutional networks: Visualising image classification models and saliency maps. arXiv preprint arXiv:1312.6034, 2013.
+13. Explainable Neural Network based on Generalized Additive Model.
 
 
 
