@@ -305,7 +305,7 @@
 
 ### Links
 
-- 论文链接：[Carlini, Nicholas, et al. "Hidden voice commands." *25th {USENIX} Security Symposium ({USENIX} Security 16)*. 2016.](https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/carlini)
+- 论文链接：[Carlini, Nicholas, et al. "Hidden voice commands." *25th {USENIX} Security Symposium (USENIX Security 16)*. 2016.](https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/carlini)
 - 论文主页：[Hidden Voice Commands](https://www.hiddenvoicecommands.com/home)
 - 👍 背景噪声数据集： [Crowd Sounds — Free Sounds at SoundBible.](http://soundbible.com/tagscrowd.html)
 
@@ -651,6 +651,7 @@
 1. 白盒、有目标的、针对端到端 LAS 模型的对抗攻击算法；
 2. 心理掩蔽效应；
 3. 模拟房间声学响应；
+4. 这篇文章有意思
 
 ### Notes
 
@@ -675,7 +676,7 @@
 
     训练的 **trick** ：( **Stage-1** ) 使用  `lr_1=50` 迭代 *2000* 轮保证在其中 **1 个房间声学响应**下能够生成对抗样本，( **Stage-2** ) 然后使用 `lr_2=5` 迭代 *5000* 轮来保证在另外随机采样的 **10 个房间声学响应**下都能够生成对抗样本（这个期间不再减小 **perturbation** 的上限）。
 
-5. 👍👍  结合心理掩蔽效应和模型房间声学响应。结合后的 loss 函数:
+5. 👍👍  **结合心理掩蔽效应和模型房间声学响应**。结合后的 loss 函数:
 
     <img src="./pictures/image-20201129180621070.png" alt="image-20201129180621070" style="zoom: 65%;" />
 
@@ -991,15 +992,71 @@
 
 ### Contribution
 
-1. 一种黑盒的无目标对抗攻击
+1. 一种黑盒的针对 ASR 和 AVI 的无目标对抗攻击;
+2. 从语音特征的角度进行攻击，去除语音中人耳感知弱、但机器敏感的特征；
+3. 由于是采用攻击语音特征的方法，所以在一定程度上实现了低 query 、高 transferability 的性能；
+4. 攻击方法上面缺乏创新性，但**文章的亮点在于分析了平台之间的差异、攻击的音素之间的差异**；
 
 ### Notes
 
+1. 👎 攻击场景：作者考虑的是电话语音信道中，为了防止自己的对话被监听，故要实现一个 untargeted 攻击，并且不需要考虑物理信道对攻击的影响；（<u>攻击场景危险性比较小</u>）
 
+2. 攻击流程：
+
+   <img src="pictures/image-20201228235750846.png" alt="image-20201228235750846" style="zoom: 33%;" />
+
+   (1) 整体思想：（**抹除机器敏感的特征**）首先将语音根据 ASR 使用的特征 ( **DFT、SSA** ) 进行分解，然后对不同的成分作相应的过滤 ( **乘一个放缩系数** )，然后逆运算生成语音；这个过程中要保证过滤掉的特征成分尽可能得少，从而保证修改对人耳是不敏感的；
+
+   (2) 👎 <u>缺乏创新</u>：我们把这篇文章和 Hidden Voice Commands 的 Black-box 攻击放到一起看，攻击的目标从 Targeted Attack 变成了 Untargeted Attack，对特征的修改从 **抹除人耳敏感特征使得人耳无法分辨、机器可以识别** 变成了 **抹除人耳不敏感特征使得人耳可以分辨、机器不能识别**；（<u>所以我认为作者的这种方法没啥创新型</u>）
+
+   (3) 如何寻找边界放缩系数：二分查找法；
+
+3. 实验设定：
+
+   (1) 数据集：TIMIT 数据集和 Word Audio 数据集（作者自己生成的字级语音数据集）；
+
+   (2) Attack Scenarios:
+
+   - 词级别的对抗扰动，观察能否使得模型识别出错；
+   - 音素级别的对抗扰动，观察仅修改一个音素能否使得模型识别出错；
+   - ASR Poisoning（<u>我直译过来是 ASR 投毒</u>），观察仅修改一个音素对模型解码后续单词的概率影响；
+   - AVI Poisoning，观察仅修改一个音素能否使得 AVI 模型识别出错；
+
+   (3) 攻击的模型：Google (Normal)， Google (Phone)， Facebook Wit， Deep Speech-1， Deep Speech-2， CMU Sphinx， Microsoft Azure；
+
+4. 结果：
+
+   (1) 词级别的对抗扰动：
+
+   <img src="pictures/image-20201229005322163.png" alt="image-20201229005322163" style="zoom:45%;" />
+
+   ​	其中竖的红线是一种扰动的标准 MSE；
+
+   (2) 👍 音素级别的扰动：**元音对攻击更加关键**；
+
+   <img src="pictures/image-20201229005806673.png" alt="image-20201229005806673"  />
+
+   (3) 👍 ASR Poisoning: **这个结果还是非常有意思的**；
+
+   <img src="pictures/image-20201229010421839.png" alt="image-20201229010421839" style="zoom: 45%;" />
+
+   (4) AVI Poisoning: 同样，**元音对攻击更加关键**；
+
+   ![image-20201229010621677](pictures/image-20201229010621677.png)
+
+   (5) 迁移效果：结合上面的结果可以发现 Google Phone 模型会更加鲁棒一些，不容易受到这种对抗攻击；
+
+   <img src="pictures/image-20201229010846226.png" alt="image-20201229010846226" style="zoom: 37%;" />
+
+   (6) 观察 DeepSpeech 网络中间激活值变化：**作者指出底层的卷积层可能是这种攻击能够实现的关键音素**；
+
+   <img src="pictures/image-20201229011341742.png" alt="image-20201229011423552" style="zoom: 40%;" />
 
 ### Links
 
 - 论文链接: [Abdullah, Hadi, et al. "Hear" No Evil", See" Kenansville": Efficient and Transferable Black-Box Attacks on Speech Recognition and Voice Identification Systems." *S&P* (2021).](https://arxiv.org/abs/1910.05262)
+- 论文主页: https://sites.google.com/view/transcript-evasion
+- 论文代码: https://github.com/kwarren9413/kenansville_attack
 
 
 

@@ -15,7 +15,7 @@
 
 
 
-## CERTIFIED DEFENSES FOR ADVERSARIAL PATCHES
+## Certified Defenses For Adversarial Patches
 
 ### Contribution
 
