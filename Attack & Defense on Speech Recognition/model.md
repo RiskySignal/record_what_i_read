@@ -18,6 +18,57 @@
 
 
 
+## Optimizer in Deep Learning
+
+### 梯度下降法（Gradient Descent）
+
+梯度下降法的计算过程就是沿梯度下降的方向求解极小值，也可以沿梯度上升方向求解最大值。使用梯度下降法更新参数：
+$$
+\theta_{t+1} = \theta_t - \alpha \cdot \nabla_{\theta} J(\theta)
+$$
+
+#### 	批量梯度下降法（BGD）
+
+在整个训练集上计算梯度，对参数进行更新：
+$$
+\theta_{t+1} = \theta_t - \alpha \cdot \frac{1}{n} \cdot \sum_{i=1}^{n}\nabla_\theta J_i(\theta, x^i, y^i)
+$$
+因为要计算整个数据集，收敛速度慢，但其优点在于更趋近于全局最优解；
+
+#### 	随机梯度下降法（SGD）
+
+每次只随机选择一个样本计算梯度，对参数进行更新：
+$$
+\theta_{t+1} = \theta_t - \alpha \cdot \nabla_\theta J_i(\theta,x^i,y^i)
+$$
+训练速度快，但是容易陷入局部最优点，导致梯度下降的波动非常大；
+
+#### 	小批量梯度下降法（Mini-batch Gradient Descent）
+
+每次随机选择 n 个样本计算梯度，对参数进行更新：
+$$
+\theta_{t+1} = \theta_t  - \alpha \cdot \frac{1}m \cdot \sum_{i=x}^{i=x+m-1} \cdot \nabla_\theta J_i(\theta, x^i, y^i)
+$$
+这种方法是 BGD 和 SGD 的折衷；
+
+### 动量优化法（Momentum）
+
+参数更新时在一定程度上保留之前更新的方向，同时又利用当前 batch 的梯度微调最终的更新方向。在 SGD 的基础上增加动量，则参数更新公式如下：
+$$
+\m_{t+1} = \mu \cdot m_t + \alpha \cdot \nabla_\theta J(\theta) \\
+\theta_{t+1} = \theta_t - m_{t+1}
+$$
+在梯度方向发生改变时，Momentum 能够降低参数更新速度，从而减少震荡；在梯度方向相同时，Momentum 可以加速参数更新，从而加速收敛。
+
+
+### Links
+
+- 参考链接：https://zhuanlan.zhihu.com/p/55150256
+
+
+
+
+
 ## Listen, Attend and Spell
 
 ### Notes

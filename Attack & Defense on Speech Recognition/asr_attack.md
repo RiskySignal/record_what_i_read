@@ -985,6 +985,18 @@
 
 
 
+## SkillExplorer: Understanding the Behavior of Skills in Large Scale
+
+> 让我们来拜读一下师姐和子晋“老师”的工作，虽然这个方向的工作开始了即是结束了。
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接: [Guo Z, Lin Z, Li P, et al. SkillExplorer: Understanding the Behavior of Skills in Large Scale[C]//29th {USENIX} Security Symposium (USENIX Security 20). 2020: 2649-2666.](https://www.usenix.org/conference/usenixsecurity20/presentation/guo)
+
 
 
 
