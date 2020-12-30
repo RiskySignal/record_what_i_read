@@ -467,19 +467,19 @@
 
    <img src="pictures/image-20201201101756118.png" alt="image-20201201101756118" style="zoom: 27%;" />
 
-   变量 <img src="pictures/image-20201201101959466.png" alt="image-20201201101959466" style="zoom: 20%;" /> 度量能量变化 D 和 掩蔽阈值 H 之间的差值。如果 D 在任何点都不能超过 H ，这样的限制条件过于苛刻，可能会导致无法生成对抗样本。故作者添加一个系数来放宽这个限制条件，公式如下：
+   变量 $\Phi$ 度量能量变化 D 和 掩蔽阈值 H 之间的差值。如果 D 在任何点都不能超过 H ，这样的限制条件过于苛刻，可能会导致无法生成对抗样本。故作者添加一个系数来放宽这个限制条件，公式如下：
 
    <img src="pictures/image-20201201102258486.png" alt="image-20201201102258486" style="zoom: 11%;" />
 
    <img src="pictures/image-20201201102441645.png" alt="image-20201201102441645" style="zoom: 8%;" />
 
-   将 <img src="pictures/image-20201201101959466.png" alt="image-20201201101959466" style="zoom: 20%;" /> 小于 0 的值置为 0 并归一化到 0~1，公式如下：
+   将 $\Phi$ 小于 0 的值置为 0 并归一化到 0~1，公式如下：
 
    <img src="pictures/image-20201201103739369.png" alt="image-20201201103739369" style="zoom: 63%;" />
 
    <img src="pictures/image-20201201103829555.png" alt="image-20201201103829555" style="zoom: 33%;" />
 
-   只添加 <img src="pictures/image-20201201101959466.png" alt="image-20201201101959466" style="zoom: 20%;" /> 到梯度回传中时，作者发现差点意思。将 H 归一化到 0~1，公式如下：
+   只添加 $\Phi$ 到梯度回传中时，作者发现差点意思。将 H 归一化到 0~1，公式如下：
 
    <img src="pictures/image-20201201104415164.png" alt="image-20201201104415164" style="zoom: 60%;" />
 

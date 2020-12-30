@@ -12,7 +12,8 @@
 4. Hannun, Awni, et al. "Deep speech: Scaling up end-to-end speech recognition." *arXiv preprint arXiv:1412.5567* (2014).
 5. Amodei, Dario, et al. "Deep speech 2: End-to-end speech recognition in english and mandarin." *International conference on machine learning*. 2016.
 6. Battenberg, Eric, et al. "Exploring neural transducers for end-to-end speech recognition." *2017 IEEE Automatic Speech Recognition and Understanding Workshop (ASRU)*. IEEE, 2017.
-7. T. N. Sainath and C. Parada. Convolutional neural networks for small-footprint keyword spotting. In Sixteenth Annual Conference ofthe International Speech Communication Association, 2015
+7. T. N. Sainath and C. Parada. Convolutional neural networks for small-footprint keyword spotting. In Sixteenth Annual Conference of the International Speech Communication Association, 2015
+8. tensorflow优化器源码
 
 
 
@@ -51,19 +52,90 @@ $$
 $$
 这种方法是 BGD 和 SGD 的折衷；
 
-### 动量优化法（Momentum）
+### 动量优化法
+
+#### 	Momentum
 
 参数更新时在一定程度上保留之前更新的方向，同时又利用当前 batch 的梯度微调最终的更新方向。在 SGD 的基础上增加动量，则参数更新公式如下：
 $$
-\m_{t+1} = \mu \cdot m_t + \alpha \cdot \nabla_\theta J(\theta) \\
+m_{t+1} = \mu \cdot m_t + \alpha \cdot \nabla_\theta J(\theta) \\
 \theta_{t+1} = \theta_t - m_{t+1}
 $$
 在梯度方向发生改变时，Momentum 能够降低参数更新速度，从而减少震荡；在梯度方向相同时，Momentum 可以加速参数更新，从而加速收敛。
 
+#### 	NAG（Nesterov Accelerated Gradient）
+
+与 Momentum 不同的是，NAG 是在更新梯度是做一个矫正，即提前往前探一步，并对梯度作修改。参数更新公式如下：
+$$
+m_{t+1} = \mu \cdot m_t + \alpha \cdot \nabla_\theta J(\theta - \mu \cdot m_t)
+\\
+\theta_{t+1} = \theta_t - m_{t+1}
+$$
+两者的对比：蓝色为 Momentum， 剩下的是 NAG；
+
+![First-Order Optimization Algorithms](pictures/First-Order%20Optimization%20Algorithms.png)
+
+### 自适应学习率
+
+#### 	AdaGrad
+
+AdaGrad 算法期望在模型训练时有一个较大的学习率，而随着训练的不断增多，学习率也跟着下降。参数更新公式如下：
+$$
+g \leftarrow \nabla_\theta J(\theta) \\
+r \leftarrow r + g^2 \\
+\Delta \theta \leftarrow \frac{\delta}{\sqrt{r+\epsilon}} \cdot g \\
+\theta \leftarrow \theta - \Delta \theta
+$$
+学习率随着 **梯度的平方和**（$r$）的增加而减少. 缺点：
+
+- 需要手动设置学习率 $\delta$ ，如果 $\delta$ 过大，会使得正则化项 $\frac{\delta}{\sqrt{r+\epsilon}}$ 对梯度的调节过大；
+- 中后期，参数的更新量会趋近于 0，使得模型无法学习；
+
+#### 	Adadelta
+
+Adadelta 算法将 梯度的平方和 改为 **梯度平方的加权平均值**。参数更新公式如下：
+$$
+g_t \leftarrow \nabla_\theta J(\theta) \\
+E[g^2]_t \leftarrow \gamma \cdot E[g^2]_{t-1} + (1-\gamma) \cdot g_t^2 \\
+\Delta \theta_t \leftarrow - \frac{\eta}{\sqrt{E[g^2]_t + \epsilon}} \cdot g_t \\
+\theta_{t+1} \leftarrow \theta_t + \Delta \theta_t
+$$
+上式中仍存在一个需要自己设置的全局学习率 $\eta$，可以通过下式**消除全局学习率的影响**：
+$$
+E[\Delta\theta^2]_t \leftarrow \gamma \cdot E[\Delta\theta^2]_{t-1} + (1-\gamma) \cdot \Delta\theta_t^2 \\
+\Delta \theta_t \leftarrow - \frac{\sqrt{E[\Delta\theta^2]_{t-1}+\epsilon}}{\sqrt{E[g^2]_t+\epsilon}} \cdot g_t \\
+\theta_{t+1} \leftarrow \theta_t + \Delta\theta_t
+$$
+
+#### 	RMSProp
+
+RMSProp 算法是 AdaGrad 算法的改进，修改 梯度平方和 为 **梯度平方的指数加权移动平均**，解决了学习率急剧下降的问题。参数更新公式如下：
+$$
+g_t \leftarrow \nabla_\theta J(\theta) \\
+E[g^2]_t \leftarrow \rho \cdot E[g^2]_{t-1} + (1-\rho) \cdot g_t^2 \\
+\Delta\theta \leftarrow \frac{\delta}{\sqrt{E[g^2]_t+\epsilon}} \cdot g \\
+\theta \leftarrow \theta - \Delta\theta
+$$
+
+#### 	Adam（Adaptive Moment Estimation）
+
+Adam 算法在动量的基础上，结合了偏置修正。参数更新公式如下：
+$$
+g_t \leftarrow \Delta_\theta J(\theta) \\
+m_t \leftarrow \beta_1 \cdot m_{t-1} + (1-\beta_1) \cdot g_t \\
+v_t \leftarrow \beta_2 \cdot v_{t-1} + (1-\beta_2) \cdot g_t^2 \\
+\hat{m}_t \leftarrow \frac{m_t}{1-(\beta_1)^t} \\
+\hat{v}_t \leftarrow \frac{v_t}{1-(\beta_2)^t} \\
+\theta_{t+1} = \theta_t - \frac{\delta}{\sqrt{\hat{v}_t}+\epsilon} \cdot\hat{m}_t
+$$
+论文伪代码：
+
+<img src="pictures/image-20201230130939776.png" alt="image-20201230130939776" style="zoom: 43%;" />
 
 ### Links
 
-- 参考链接：https://zhuanlan.zhihu.com/p/55150256
+- 参考链接：[优化算法Optimizer比较和总结](https://zhuanlan.zhihu.com/p/55150256)
+- Adam 论文链接：[Kingma D P, Ba J. Adam: A method for stochastic optimization[J]. arXiv preprint arXiv:1412.6980, 2014.](https://arxiv.org/abs/1412.6980)
 
 
 
