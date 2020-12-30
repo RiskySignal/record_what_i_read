@@ -8,7 +8,6 @@
 
 1. Kurakin, A., Goodfellow, I., and Bengio, S. Adversarial examples in the physical world. 2016. 
 2. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks. 2013.
-3. Goodfellow, I. J., Shlens, J., and Szegedy, C. Explaining and harnessing adversarial examples. In Proceedings ofthe International Conference on Learning Representations (ICLR), 2015.
 4. Carlini, N. and Wagner, D. Towards evaluating the robustness of neural networks. In IEEE Symposium on Security & Privacy, 2017c.
 5. Evtimov, I., Eykholt, K., Fernandes, E., Kohno, T., Li, B., Prakash, A., Rahmati, A., and Song, D. Robust PhysicalWorld Attacks on Deep Learning Models. 2017.
 6. Tom B Brown, Dandelion Man´e, Aurko Roy, Mart´ın Abadi, and Justin Gilmer. Adversarial patch. arXiv preprint arXiv:1712.09665, 2017.
@@ -32,6 +31,57 @@
 24. A. Ilyas, L. Engstrom, A. Athalye, and J. Lin, “Black-box adversarial attacks with limited queries and information,” in ICML, 2018.
 25. A. Kurakin, I. J. Goodfellow, and S. Bengio, “Adversarial examples in the physical world,” in ICLR, 2017.
 26. Yue Zhao, Hong Zhu, Ruigang Liang, Qintao Shen, Shengzhi Zhang, Kai Chen, "Seeing isn’t Believing: Towards More Robust Adversarial Attack Against Real World Object Detectors", CCS 2019
+
+
+
+
+
+## Explaining and Harnessing Adversarial Examples
+
+### Notes
+
+1. 线性解释：作者提出了对抗样本存在的**线性解释**。如果将神经网络泛化成如下所示的**线性**点积形式：
+
+   <img src="pictures/image-20201231010621616.png" alt="image-20201231010621616" style="zoom: 10%;" />
+
+   其中 $\tilde{x}$ 为目标类的一个样本，$x$ 为原始样本，$\eta$ 为添加的对抗扰动。当输入的维度无限扩大时，很显然我们可以保证 $\lVert \eta \rVert_\infty$ 很小的情况下，而点积后的值却变化很大，使得上式两侧的值相等，即生成了一个成功的对抗扰动；
+
+2. 对抗样本生成算法：作者提出了基于对抗样本线性解释的快速对抗样本生成算法，**Fast Gradient Sign Method（FGSM）生成对抗样本只需要计算一次梯度，然后在梯度上走一小步**：
+
+   <img src="pictures/image-20201231011859924.png" alt="image-20201231011859924" style="zoom: 12%;" />
+
+3. 对抗训练：作者提出了在深度神经网络中可以通过对抗训练的方法来防御对抗攻击。下面利用 FGSM 进行对抗训练：
+
+   <img src="pictures/image-20201231012210113.png" alt="image-20201231012210113" style="zoom:27%;" />
+
+   公式的含义为，**在训练网络的过程中，不仅要保证现有样本能够被成功分类，对于那些添加了一小步的对抗样本应该同样被正确分类**；
+
+4. 泛化原因：作者解释**对抗样本的存在位置并不是一个特定的点，而是一个区域，或称为子空间**。由于子空间的这个属性，以及深度学习模型对训练集拟合的相同效果，可能出现了**对抗样本子空间的重叠，使得对抗样本可以在不同的模型之间进行迁移**；
+
+### Links
+
+- 论文链接：[Goodfellow I J, Shlens J, Szegedy C. Explaining and harnessing adversarial examples[J]. arXiv preprint arXiv:1412.6572, 2014.](https://arxiv.org/abs/1412.6572)
+- 论文代码：https://github.com/lisa-lab/pylearn2/tree/master/pylearn2/scripts/papers/maxout
+- 前人笔记：https://zhuanlan.zhihu.com/p/32784766
+
+
+
+
+
+## ZOO: Zeroth Order Optimization Based Black-box Attacks to Deep Neural Networks without Training Substitute Models
+
+### Contribution
+
+### Notes
+
+1. 作者提出了一种针对黑盒的优化攻击算法；
+2. 
+
+### Links
+
+- 论文链接：[Chen P Y, Zhang H, Sharma Y, et al. Zoo: Zeroth order optimization based black-box attacks to deep neural networks without training substitute models[C]//Proceedings of the 10th ACM Workshop on Artificial Intelligence and Security. 2017: 15-26.](https://arxiv.org/abs/1708.03999)
+
+- 论文代码：https://github.com/IBM/ZOO-Attack
 
 
 
@@ -106,6 +156,10 @@
 
 ## NES: Black-box Adversarial Attacks with Limited Queries and Information
 
+### Contribution
+
+1. 体用 NES 算法减少黑盒攻击的访问次数
+
 ### Notes
 
 1. 黑盒设定：
@@ -143,3 +197,28 @@
 
 - 论文链接: [Ilyas, Andrew, et al. "Black-box adversarial attacks with limited queries and information." *PRML* (2018).](https://arxiv.org/abs/1804.08598)
 - 论文代码: https://github.com/labsix/limited-blackbox-attacks
+
+
+
+
+
+## Hybrid Batch Attacks: Finding Black-box Adversarial Examples with Limited Queries
+
+### Contribution
+
+
+
+### Notes
+
+1. 作者结合 迁移攻击（Transfer Attack） 和 优化攻击（Optimization Attack），并且利用种子优先级策略对模型进行黑盒攻击，目标是在保证攻击成功率的前提下，减少 Query 的数量；
+
+2. 现有的优化攻击算法：
+
+   <img src="pictures/image-20201230225437994.png" alt="image-20201230225437994" style="zoom: 45%;" />
+
+   
+
+### Links
+
+- 论文链接：[Suya F, Chi J, Evans D, et al. Hybrid batch attacks: Finding black-box adversarial examples with limited queries[C]//29th {USENIX} Security Symposium (USENIX Security 2020). 2020: 1327-1344.](https://www.usenix.org/conference/usenixsecurity20/presentation/suya)
+- 论文代码：https://github.com/suyeecav/Hybrid-Attack
