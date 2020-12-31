@@ -72,16 +72,135 @@
 
 ### Contribution
 
+1. 提出了第一个基于梯度估计的黑盒优化攻击算法；
+2. 针对梯度估计过程中需要大量访问黑盒模型的问题，提出了 3 中可行的缓解方法（<u>访问次数依然很大</u>）；
+
 ### Notes
 
-1. 作者提出了一种针对黑盒的优化攻击算法；
-2. 
+1. 作者提出了一种**针对黑盒的优化攻击（Optimization Attack）算法**；
+
+2. Introduction：（<u>文章比较早，故作者用较多的篇幅介绍了对抗攻击领域的工作</u>）
+
+   (1) 白盒攻击算法：FGSM（Fast Gradient Sign Method），JSMA（Jacobian-based Saliency Map Attack），DeepFool，Carlini & Wagner (C&W) Attack；
+
+   (2) 本文攻击场景：攻击黑盒模型，攻击者只知道输入和相应的输出；
+
+   (3) 对抗攻击防御：Detection-based Defense，Gradient and Representation Masking，Adversarial training；
+
+   > 企业更加看重黑盒攻击和防御，所以如果以工作为目标的同学，需要多学习、思考这方面的内容
+
+3. ZOO 攻击算法：
+
+   (1) 借鉴 C&W Attack，将生成对抗样本的过程转换成一个最优化问题：
+
+   <img src="pictures/image-20201231093224292.png" alt="image-20201231093224292" style="zoom: 15%;" />
+
+   ​	其中 $f(x,t)$ 为损失函数；
+
+   (2) 损失函数：
+
+   - 有目标攻击的损失函数如下：
+
+     <img src="pictures/image-20201231095157405.png" alt="image-20201231095157405" style="zoom:20%;" />
+
+   - 无目标攻击的损失函数如下：
+
+     <img src="pictures/image-20201231095257739.png" alt="image-20201231095257739" style="zoom: 20.5%;" />
+
+   (3) 零阶优化：
+
+   - 一阶导数估计：
+
+     <img src="pictures/image-20201231100111028.png" alt="image-20201231100111028" style="zoom: 15%;" />
+
+   - 二阶导数估计：
+
+     <img src="pictures/image-20201231100158156.png" alt="image-20201231100158156" style="zoom: 19%;" />
+
+     其中 $h$ 为一个极小的固定值，文章中作者取 $0.0001$，$e_i$ 为只有第 $i$ 个值为 $1$ 的矩阵。如果输入的矩阵（图像）含有 $p$ 个像素点的话，那么通过作者的方法需要访问模型 $2p$ 次。
+
+   (4) Stochastic Coordinate Descent：（<u>直译过来为”随机坐标下降”</u>）随机从输入中挑选一个点，使用梯度下降算法进行修改；
+
+   - Stochastic Coordinate Descent：
+
+     <img src="pictures/image-20201231101508857.png" alt="image-20201231101508857" style="zoom: 24%;" />
+
+   - ZOO-ADAM：
+
+     <img src="pictures/image-20201231101554869.png" alt="image-20201231101554869" style="zoom:33%;" />
+
+   - ZOO-Newton：
+
+     <img src="pictures/image-20201231101634223.png" alt="image-20201231101634223" style="zoom: 29%;" />
+
+     作者实验中发现，ADAM 比 Newton 生成对抗样本来得更快；
+
+   (5) 缩小迭代空间：为了减少 ZOO 的 Query 数量，从而加快算法的运行。大致的思想是进行**对抗扰动特征空间的映射**，定义一个 （更小的）扰动特征空间 $\mathbb{R}^p$ 和特征映射函数 $D(\cdot)$，那么转换（原特征空间-像素空间的）最优化问题为扰动特征空间的最优化问题：
+
+   <img src="pictures/image-20201231103044288.png" alt="image-20201231103044288" style="zoom: 16%;" />
+
+   其中 $y$ 表示在扰动特征空间的对抗扰动；作者提到的特征映射方法有 Up-Sampling （升采样） 和 DCT（时频变换）；
+
+   (6) 分层递进攻击：前一个方法可以大大减小对抗样本的搜索空间，但是由于搜索空间的受限，会导致无法生成成功的对抗样本的问题。大致的思想是定义**多个**对抗扰动特征空间的映射 $D_1(\cdot), D_2(\cdot), \dots$，攻击过程中首先使用 $D_1$ 生成对抗样本，如果在一定轮数后仍未生成成功的对抗样本，那么将最后一轮的样本转换到 $D_2$ 的特征空间（**后面使用的特征空间应保证比前面的特征空间更广**），继续生成对抗样本。
+
+   (7) 重要像素点优先迭代：作者虽然缩小了查询的特征空间（$32*32*3 \text{ for example}$），但是在这个空间中生成对抗样本还是需要花费大量的 Query 次数，并且不一定能够生成成功的对抗样本。大致的思想是**将图像切块，分块定义像素点被随机采样的概率，概率的大小和区域中像素值的变化大小成正相关**。作者给出了大致的采样概率变化示意图：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20201231105134731.png" alt="image-20201231105134731" style="zoom:55%;" />
+
+   作者指出在小的扰动空间时，并不采用这种优先采样算法；
+
+4. Evaluation 1：
+
+   (1) 实验 1 的目标：这是第一个在黑盒模型上做的优化攻击，所以作者的目标是和已有的白盒攻击（C&W Attack）和迁移攻击（CleverHans）做对比，希望能够达到这样的效果：
+
+   - 攻击的成功率和添加的对抗扰动大小能够和白盒攻击算法相近；
+   - 攻击的成功率应该远优于迁移攻击；
+
+   (2) 黑盒模型：
+
+   <img src="pictures/image-20201231130226748.png" alt="image-20201231130226748" style="zoom: 90%;" /><img src="pictures/image-20201231130309608.png" alt="image-20201231130309608" style="zoom:90%;" />
+
+   (3) 样本数量：
+
+   - 有目标攻击，生成 900 个对抗样本；（其他细节见原文）
+   - 无目标攻击，生成 200 个对抗样本；
+
+   (4) 实验结果：
+
+   <img src="pictures/image-20201231130656635.png" alt="image-20201231130656635" style="zoom: 50%;" />
+
+5. Evaluation 2:
+
+   (1) 实验 2 目标：作者尝试将这种攻击运用在更大的模型上，并且探讨文章提出的缓解方法的作用；
+
+   (2) 黑盒模型：Inception-V3;
+
+   (3) 实验设定：
+
+   - 无目标攻击：
+
+     生成150张对抗样本；保证每张对抗样本的大小都大于 $299*299$；不使用分层递进方法，只使用一个 $32*32*3$ 的对抗扰动域进行攻击；限制算法的迭代轮数为 1500 轮（$1500*128$ 次 Query）；
+
+   - 有目标攻击：
+
+     只选择了一张在无目标攻击中无法成功攻击的样本；扩大对抗扰动域为 $64*64*3$ 和 $128*128*3$；最大迭代轮数上升为 20000 轮（$20000*128$ 次 Query）；（<u>可以看到，黑盒下面的 Query 数量是十分惊人的</u>）
+
+   (4) 实验结果：
+
+   - 无目标攻击：
+
+     <img src="pictures/image-20201231143233361.png" alt="image-20201231143233361" style="zoom:22%;" />
+
+   - 有目标攻击：
+
+     <img src="pictures/image-20201231143330484.png" alt="image-20201231143330484" style="zoom:23%;" />
 
 ### Links
 
 - 论文链接：[Chen P Y, Zhang H, Sharma Y, et al. Zoo: Zeroth order optimization based black-box attacks to deep neural networks without training substitute models[C]//Proceedings of the 10th ACM Workshop on Artificial Intelligence and Security. 2017: 15-26.](https://arxiv.org/abs/1708.03999)
-
 - 论文代码：https://github.com/IBM/ZOO-Attack
+- C&W Attack 代码：https://github.com/carlini/nn_robust_attacks
+- CleverHans：https://github.com/cleverhans-lab/cleverhans
 
 
 
@@ -158,7 +277,7 @@
 
 ### Contribution
 
-1. 体用 NES 算法减少黑盒攻击的访问次数
+1. 利用 NES 算法大大减少黑盒攻击的访问次数；
 
 ### Notes
 
@@ -214,7 +333,7 @@
 
 2. 现有的优化攻击算法：
 
-   <img src="pictures/image-20201230225437994.png" alt="image-20201230225437994" style="zoom: 45%;" />
+   <img src="pictures/image-20201230225437994.png" alt="image-20201230225437994" style="zoom: 35%;" />
 
    
 
