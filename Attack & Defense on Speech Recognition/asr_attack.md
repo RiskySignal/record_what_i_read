@@ -30,7 +30,7 @@
 21. 更新 Overview
 21. Tao Chen, Longfei Shangguan, Zhenjiang Li, and Kyle Jamieson. 2020. Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems. In Proceedings ofthe Network and Distributed System Security Symposium (NDSS)
 22. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
-23. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In AnnualConference ofthe International Speech Communication Association (INTERSPEECH).
+23. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
 
 
 
@@ -985,17 +985,23 @@
 
 
 
-## SkillExplorer: Understanding the Behavior of Skills in Large Scale
 
-> 让我们来拜读一下师姐和子晋“老师”的工作，虽然这个方向的工作开始了即是结束了。
+
+## SkillExplorer: Understanding the Behavior of Skills in Large Scale
 
 ### Contribution
 
-### Notes
+1. 文章的亮点在于提出了一种自动化方法，对大量的 Skill 进行了恶意形为分析；
+2. 提出了一种基于 NLP 的自动化方法，对 **30801** 个 Skill 进行了分析；
+3. 新发现了 1141 个 Skill 会在执行过程中向用户请求未指定的用户隐私信息；
+4. 新发现了 68 个Skill 会在用户命令退出 Skill 后，继续监听用户的对话；
+5. 这些恶意形为都是通过结合平台提供的 **不发音字符** 来实现的；
 
 ### Links
 
 - 论文链接: [Guo Z, Lin Z, Li P, et al. SkillExplorer: Understanding the Behavior of Skills in Large Scale[C]//29th {USENIX} Security Symposium (USENIX Security 20). 2020: 2649-2666.](https://www.usenix.org/conference/usenixsecurity20/presentation/guo)
+
+
 
 
 
