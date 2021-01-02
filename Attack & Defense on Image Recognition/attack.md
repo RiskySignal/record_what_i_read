@@ -36,6 +36,72 @@
 
 
 
+## 范数
+
+> （**向量**）范数在对抗样本、模型可解释性等方向经常遇到，主要用来限制扰动的“形状”和范围，本人经常是看一次忘一次，故将这个知识点列在最前面；
+
+### 向量范数
+
+#### 	1-范数
+
+向量元素绝对值之和：$\lVert \mathbf{x} \rVert_1 = \sum_{i=1}^N |x_i|$；
+
+#### 	2-范数
+
+向量的欧几里得长度：$\lVert \mathbf{x} \rVert_2 = \sqrt{\sum_{i=1}^N x_i^2}$；
+
+#### 	无穷范数
+
+(1) $\infty$-范数，向量元素绝对值中的最大值：$\lVert \mathbf{x} \rVert = \max_i{|x_i|}$；
+
+(2) $-\infty$-范数，向量元素绝对值中的最小值：$\lVert \mathbf{x} \rVert = \min_i{|x_i|}$；
+
+#### 	p-范数
+
+向量元素绝对值的 **$p$ 次方和**的 **$p$ 次幂**：$\lVert \mathbf{x} \rVert = (\sum_{i=1}^N |x|^p)^{\frac{1}p}$；
+
+### * 矩阵范数
+
+#### 	1-范数
+
+矩阵**列向量**绝对值之和的最大值：$\lVert \boldsymbol{A} \rVert_1 = \max_j \sum_{i=1}^m |x_{i,j}|$；
+
+#### 	2-范数
+
+$\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 是 $\boldsymbol{A}^T \boldsymbol{A}$ 的最大特征值；
+
+#### 	无穷范数
+
+矩阵**行向量**绝对值之和的最大值：$\lVert \boldsymbol{A} \rVert_\infty = \max_i \sum_{j=1}^N |a_{i,j}|$
+
+### 参考链接
+
+- 知乎回答：https://www.zhihu.com/question/20473040
+
+
+
+
+
+## Intriguing properties of neural networks
+
+### Contribution
+
+1. 首次提出了对抗样本（Adversarial Examples）概念；
+
+### Notes
+
+1. 生成对抗样本：保证在原输入的
+
+### Links
+
+- 论文链接：[Szegedy C, Zaremba W, Sutskever I, et al. Intriguing properties of neural networks[J]. arXiv preprint arXiv:1312.6199, 2013.](https://arxiv.org/abs/1312.6199)
+
+- 前人笔记：[Jun Tao 的个人博客](https://tanjuntao.github.io/2019/07/10/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0%EF%BC%9AIntriguing-Properties-of-Neural-Network/)
+
+
+
+
+
 ## Explaining and Harnessing Adversarial Examples
 
 ### Notes
@@ -331,7 +397,7 @@
 
 1. 作者结合 迁移攻击（Transfer Attack） 和 优化攻击（Optimization Attack），并且利用种子优先级策略对模型进行黑盒攻击，目标是在保证攻击成功率的前提下，减少 Query 的数量；
 
-2. 现有的优化攻击算法：
+2. 现有的梯度优化攻击算法：
 
    <img src="pictures/image-20201230225437994.png" alt="image-20201230225437994" style="zoom: 35%;" />
 
