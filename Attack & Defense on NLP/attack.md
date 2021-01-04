@@ -26,13 +26,26 @@
 
 
 
+## Black-box Generation of Adversarial Text Sequences to Evade Deep Learning Classifiers
+
+### Notes
+
+### Links
+
+- [Gao J, Lanchantin J, Soffa M L, et al. Black-box generation of adversarial text sequences to evade deep learning classifiers[C]//2018 IEEE Security and Privacy Workshops (SPW). IEEE, 2018: 50-56.](https://arxiv.org/abs/1801.04354)
+
+
+
+
+
 ## TEXTBUGGER: Generating Adversarial Text Against Real-world Applications
+
+> 文章的编写十分简洁明了，一眼看下去便能知其大概；
 
 ### Contribution
 
 1. 提出了一种白盒/黑盒上的无目标的针对 NLP 分类任务的对抗攻击算法；
-2. 作者采用的思想很简单：一是词的重要程度；二是 OOV 问题；三是相近词替换；
-3. 文章的编写十分简洁明了，一眼看下去便能知其大概；
+2. 作者采用的思想很简单：一是根据梯度计算词的重要程度；二是 OOV 问题；三是 Embedding 相近词替换；
 
 ### Notes
 

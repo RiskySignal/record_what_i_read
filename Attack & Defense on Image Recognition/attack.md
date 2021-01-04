@@ -7,7 +7,6 @@
 ## Todo List
 
 1. Kurakin, A., Goodfellow, I., and Bengio, S. Adversarial examples in the physical world. 2016. 
-2. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks. 2013.
 4. Carlini, N. and Wagner, D. Towards evaluating the robustness of neural networks. In IEEE Symposium on Security & Privacy, 2017c.
 5. Evtimov, I., Eykholt, K., Fernandes, E., Kohno, T., Li, B., Prakash, A., Rahmati, A., and Song, D. Robust PhysicalWorld Attacks on Deep Learning Models. 2017.
 6. Tom B Brown, Dandelion Man´e, Aurko Roy, Mart´ın Abadi, and Justin Gilmer. Adversarial patch. arXiv preprint arXiv:1712.09665, 2017.
@@ -119,6 +118,11 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 ## Explaining and Harnessing Adversarial Examples
+
+### Contribution
+
+1. 提出了对抗样本存在的线性解释；
+2. 首次提出了对抗训练的防御方法；
 
 ### Notes
 
@@ -398,6 +402,100 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接: [Ilyas, Andrew, et al. "Black-box adversarial attacks with limited queries and information." *PRML* (2018).](https://arxiv.org/abs/1804.08598)
 - 论文代码: https://github.com/labsix/limited-blackbox-attacks
+- NES原理: [Lil‘Log - Evolution Strategies](https://lilianweng.github.io/lil-log/2019/09/05/evolution-strategies.html#natural-evolution-strategies)
+
+
+
+
+
+### Generating Adversarial Examples with Adversarial Networks
+
+#### Contribution
+
+1. 使用 GAN 网络的方法可以**快速**生成一些逼真的对抗样本；
+2. 实验中生成成功对抗样本的最大概率为 $98\%$（在白盒情况下 MNSIT 模型）；
+3. <u>生成的样本不一定是一个对抗样本，如果要用来做对抗训练的话需要经过目标模型的验证</u>；
+4. <u>使用 GAN 来生成对抗样本还是比较有意思的一个点，但是实际的价值可能并不大</u>；
+
+#### Notes
+
+1. 作者提出了一种使用 GAN 生成对抗样本的算法，可以在白盒、黑盒情况下进行有目标攻击；
+
+2. ⭐ AdvGAN 架构：
+
+   <img src="pictures/image-20210103220625178.png" alt="image-20210103220625178" style="zoom: 30%;" />
+
+   从架构中可以看出，整个网络通过判别模型保证生成的样本更像”真实“的样本，通过分类模型来保证生成的样本能够被错误分类为目标样本，再结合（图中没有画出的）扰动应该尽可能小，这三个部分一起构成了 `Generator` 的损失函数 $\mathcal{L}=\alpha\mathcal{L}_{GAN}+\mathcal{L}_{adv}^f+\beta\mathcal{L}_{hinge}$：
+
+   - 保证样本的真实性：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210103221317713.png" alt="image-20210103221317713" style="zoom:20%;" />
+
+   - 保证样本的目标分类：
+
+     <img src="pictures/image-20210103221459830.png" alt="image-20210103221459830" style="zoom:10%;" />
+
+   - 保证样本的扰动大小：
+
+     <img src="pictures/image-20210103221625487.png" alt="image-20210103221625487" style="zoom:13%;" />
+
+3. ⭐ 蒸馏模型（本质上是 **替代模型**）：如上所示，如果要训练一个 AdvGAN 网络，就需要有一个目标分类模型，但是在黑盒的情况下，我们无法得到目标模型的损失。面对这个问题，作者的想法是使用 **蒸馏(distill)模型** 的方法，即在一个数据集中，训练一个本地模型使得：
+
+   <img src="pictures/image-20210103222829366.png" alt="image-20210103222829366" style="zoom:11%;" />
+
+   其中 $f(x)$ 是本地模型的输出概率，$b(x)$ 是目标模型的输出概率，$\mathcal{H}(\cdot)$ 常用交叉熵损失函数；由于涉及到蒸馏模型和原始模型的相似程度，所以作者提出了一个动态训练蒸馏模型的方法（<u>实际上和本身训练一个 GAN 网络的方法是一样的</u>）：
+
+   - 固定分类模型 $f_{i-1}$ ，训练判别器 $\mathcal{D}_i$ 和生成器 $\mathcal{G}_i$：$\arg\min_\mathcal{G}\max_\mathcal{D}{\alpha\mathcal{L}_{GAN}+\mathcal{L}_{adv}^{f_{i-1}}+\beta\mathcal{L}_{hinge}}$ ；
+   - 固定生成器 $\mathcal{G}_i$，继续训练分类模型 $f_i$：$\arg\min_f\mathbb{E}_x\mathcal{H}(f(x), b(x)) + \mathbb{E}_x\mathcal{H}(f(x+\mathcal{G}_i(x)), b(x+\mathcal{G}_i(x)))$；
+
+   > 👎 用蒸馏模型的方法来训练一个 替代模型 的想法，然后用于对抗样本生成是十分**耗费 Query 数量**的。我作为一个攻击者，看到这么大的代价，可能会选择使用本地语料训练模型然后生成对抗样本；
+
+4. 实验：
+
+   (1) 数据集：MNIST 和 CIFAR-10；
+
+   (2) 参数设置：
+
+   - 使用 C&W 损失函数；
+   - 损失范围使用无穷范数，在 MNIST 上的大小为 $0.3$ ，在 CIFAR-10 上的大小为 $8$；
+
+   (3) 实验结果：
+
+   <img src="pictures/image-20210104094049449.png" alt="image-20210104094049449" style="zoom:30%;" />
+
+   - 白盒攻击下的攻击成功率达到了 $95\%$；
+
+   - 同一张原始图片针对 **不同的目标类别生成** 的对抗样本在视觉上的区别不大；（👎 <u>讲到 ”**不同的目标类别生成**“ 这一点，我们回过头来审视一下 分类目标损失函数，可以发现我们训练的模型只能生成一个目标分类，所以这种方法的一个缺点在于对于不同的目标分类需要训练不同的 GAN 网络</u>）
+
+     <img src="pictures/image-20210104100542064.png" alt="image-20210104100542064" style="zoom: 33%;" />
+
+   - 动态训练蒸馏模型的效果大大优于静态训练蒸馏模型；
+
+5. 针对对抗训练的防御方法：
+
+   (1) 对抗训练的算法：
+
+   - FGSM Adversarial Training (简称 **Adv.**)；
+   - Ensemble Adversarial Training (简称 **Ens.**)；
+   - Iterative Training (简称 **Iter.Adv.**)；
+
+   (2) 👎 参照的对抗样本生成算法：FGSM 和 C&W Attack (文章中称为 **Opt.**)；
+
+   > 我觉得这样进行对比，在一定程度上是不合理的。首先我们来看这些对抗训练算法，本身就是用来针对 **单次迭代和多次迭代生成算法** 进行加强训练的，故通过这样得到的模型本身对 FGSM 和 C&W Attack 是更加容易攻击的，即 AdvGAN 在这个测试上面有一些天然优势，在最后的测试结果上多几个点也（大体上）是理所当然的。转过来想，我们可能会更加希望看到这样的结果：**即使防御者知道我们用的是怎样的对抗攻击算法，但是他都无法用对抗训练的方法把我们防御住，那么这就是一个好的对抗攻击算法**。
+
+   (3) 白盒上的结果：AdvGAN 的效果来得稍微好一些，但是不明显；（<u>另外，我认为这个结果就不是很合理，或者说作者对实验的设置交代的不够清楚。用了对抗训练以后，我们的模型就可以防御 C&W Attack 了？我觉得不是这样的吧，你用梯度下降的方法，多迭代几轮，增大一些扰动肯定是可以找到对抗样本点的。对抗训练无非是限制了模型在训练数据点处的概率分布，从而能够在整体上增加对抗算法生成样本的难度，但是并不能从根本上改变模型不同类别间存在边界这个固有的特点，通过梯度下降的方法一定是可以越过这个边界的。</u>）
+
+   <img src="pictures/image-20210104171826133.png" alt="image-20210104171826133" style="zoom: 35%;" />
+
+   (4) 黑盒上的结果：
+
+   <img src="pictures/image-20210104173245026.png" alt="image-20210104173245026" style="zoom:23%;" />
+
+6. 用户调查：调查结果说明生成的样本还是很难发觉的，并且和真实的图片相似；
+
+#### Links
+
+- [Xiao C, Li B, Zhu J Y, et al. Generating adversarial examples with adversarial networks[J]. arXiv preprint arXiv:1801.02610, 2018.](https://arxiv.org/abs/1801.02610)
 
 
 
@@ -423,3 +521,4 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Suya F, Chi J, Evans D, et al. Hybrid batch attacks: Finding black-box adversarial examples with limited queries[C]//29th {USENIX} Security Symposium (USENIX Security 2020). 2020: 1327-1344.](https://www.usenix.org/conference/usenixsecurity20/presentation/suya)
 - 论文代码：https://github.com/suyeecav/Hybrid-Attack
+- 
