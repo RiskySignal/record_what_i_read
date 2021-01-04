@@ -8,7 +8,7 @@
 
 1. Kurakin, A., Goodfellow, I., and Bengio, S. Adversarial examples in the physical world. 2016. 
 4. Carlini, N. and Wagner, D. Towards evaluating the robustness of neural networks. In IEEE Symposium on Security & Privacy, 2017c.
-5. Evtimov, I., Eykholt, K., Fernandes, E., Kohno, T., Li, B., Prakash, A., Rahmati, A., and Song, D. Robust PhysicalWorld Attacks on Deep Learning Models. 2017.
+5. Evtimov, I., Eykholt, K., Fernandes, E., Kohno, T., Li, B., Prakash, A., Rahmati, A., and Song, D. Robust Physical World Attacks on Deep Learning Models. 2017.
 6. Tom B Brown, Dandelion Man´e, Aurko Roy, Mart´ın Abadi, and Justin Gilmer. Adversarial patch. arXiv preprint arXiv:1712.09665, 2017.
 7. Danny Karmon, Daniel Zoran, and Yoav Goldberg. Lavan: Localized and visible adversarial noise. arXiv preprint arXiv:1801.02608, 2018.
 8. Zuxuan Wu, Ser-Nam Lim, Larry Davis, and Tom Goldstein. Making an invisibility cloak: Real world adversarial attacks on object detectors. arXiv preprint arXiv:1910.14667, 2019.
@@ -28,7 +28,6 @@
 22. Seeing isn’t Believing: Towards More Robust Adversarial Attack Against Real World Object Detectors
 23. Model-Reuse Attacks on Learning Systems
 24. A. Ilyas, L. Engstrom, A. Athalye, and J. Lin, “Black-box adversarial attacks with limited queries and information,” in ICML, 2018.
-25. A. Kurakin, I. J. Goodfellow, and S. Bengio, “Adversarial examples in the physical world,” in ICLR, 2017.
 26. Yue Zhao, Hong Zhu, Ruigang Liang, Qintao Shen, Shengzhi Zhang, Kai Chen, "Seeing isn’t Believing: Towards More Robust Adversarial Attack Against Real World Object Detectors", CCS 2019
 
 
@@ -423,7 +422,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 2. ⭐ AdvGAN 架构：
 
-   <img src="pictures/image-20210103220625178.png" alt="image-20210103220625178" style="zoom: 30%;" />
+   <img src="pictures/image-20210103220625178.png" alt="image-20210103220625178" style="zoom: 28%;" />
 
    从架构中可以看出，整个网络通过判别模型保证生成的样本更像”真实“的样本，通过分类模型来保证生成的样本能够被错误分类为目标样本，再结合（图中没有画出的）扰动应该尽可能小，这三个部分一起构成了 `Generator` 的损失函数 $\mathcal{L}=\alpha\mathcal{L}_{GAN}+\mathcal{L}_{adv}^f+\beta\mathcal{L}_{hinge}$：
 
@@ -521,4 +520,5 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Suya F, Chi J, Evans D, et al. Hybrid batch attacks: Finding black-box adversarial examples with limited queries[C]//29th {USENIX} Security Symposium (USENIX Security 2020). 2020: 1327-1344.](https://www.usenix.org/conference/usenixsecurity20/presentation/suya)
 - 论文代码：https://github.com/suyeecav/Hybrid-Attack
-- 
+
+  
