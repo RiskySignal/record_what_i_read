@@ -516,8 +516,6 @@
 
    <img src="pictures/image-20201201151416298.png" alt="image-20201201151416298" style="zoom: 36%;" />
 
-   
-
 ### Links
 
 - 论文链接：[Schönherr, Lea, et al. "Adversarial attacks against automatic speech recognition systems via psychoacoustic hiding." *arXiv preprint arXiv:1808.05665* (2018).](https://arxiv.org/abs/1808.05665)

@@ -9,7 +9,6 @@
 ## Todo List
 
 1. Felix Kreuk, Yossi Adi, Moustapha Cisse, and Joseph Keshet. 2018. Fooling endto-end speaker verification with adversarial examples. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 1962–1966.
-2. 
 
 
 

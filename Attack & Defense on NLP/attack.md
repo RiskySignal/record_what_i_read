@@ -220,14 +220,35 @@
 ### Links
 
 - 论文链接：[Li, Jinfeng, et al. "Textbugger: Generating adversarial text against real-world applications." *NDSS* (2019).](https://arxiv.org/abs/1812.05271)
-
 - 论文代码：[CSE544T-Project-TextBugger](https://github.com/LiKev12/CSE544T-Project-TextBugger)
-
 - ParallelDots 情感分析：https://www.paralleldots.com/
-
 - GloVe 词向量：[J. Pennington, R. Socher, and C. Manning, “Glove: Global vectors for word representation,” in EMNLP, 2014, pp. 1532–1543.](https://nlp.stanford.edu/pubs/glove.pdf)
-
 - Kaggle Toxic Comment Classification Competition dataset: https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge
 
-  
 
+
+
+
+## Adversarial Attacks on Deep Learning Models in Natural Language Processing: A Survey
+
+### Notes
+
+1. ⭐ 不能直接将图像中的对抗样本生成算法迁移到文本领域的原因：
+
+   (1) Discrete vs Continuous Inputs. 输入空间的连续性
+
+   (2) Perceivable vs Unperceivable. 添加的扰动能否被感知
+
+   (3) Semantic vs Semantic-less.  添加扰动后原句的语义是否发生变化
+
+2. ⭐ 对抗攻击分类：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210105220056259.png" alt="image-20210105220056259" style="zoom: 40%;" />
+
+   
+
+### Links
+
+- [Zhang W E, Sheng Q Z, Alhazmi A, et al. Adversarial attacks on deep-learning models in natural language processing: A survey[J]. ACM Transactions on Intelligent Systems and Technology (TIST), 2020, 11(3): 1-41.](https://arxiv.org/abs/1901.06796)
+
+- L-BFGS 算法：[数值优化：理解L-BFGS算法](https://www.hankcs.com/ml/l-bfgs.html)
