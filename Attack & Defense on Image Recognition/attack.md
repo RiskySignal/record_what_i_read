@@ -301,7 +301,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 1. 提出了一种增加物理环境下对抗样本鲁棒性的一般化方法 EOT；
 2. 不仅在 2D 下测试，而且在 3D 下测试；
-3. 模拟物理变换的想法十分具有借鉴意义，已被后续的对抗攻击算法广泛使用；
+3. **模拟物理变换**的想法十分具有借鉴意义，已被后续的对抗攻击算法广泛使用；
 
 ### Notes
 
@@ -366,7 +366,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 ### Contribution
 
-1. 利用 NES 算法大大减少黑盒攻击的访问次数；
+1. 利用 NES 算法大大**减少黑盒攻击的访问次数**；
 
 ### Notes
 
@@ -376,13 +376,15 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
    - Partial-information Setting: 只知道 Top-K 的结果 (包括概率);
    - Label-only Setting: 只知道 Top-K 的标签 (不包括概率); (<u>这一项我觉得没必要看</u>)
 
-2. NES (Natural Evolutionary Strategies) 进行梯度估计: 最小化期望的损失大小, 算法伪代码如下 (<u>如何挑选这个参数?</u>)
+2. ⭐ NES (Natural Evolutionary Strategies) 进行梯度估计: 最小化期望的损失大小, 算法伪代码如下 (<u>如何挑选这个参数?</u>)
 
    <img src="pictures/image-20201228005801444.png" alt="image-20201228005801444" style="zoom: 28%;" />
 
-3. PGD (Projected Gradient Descent) 进行梯度更新:
+3. PGD (Projected Gradient Descent) 进行梯度更新，实现**有目标的对抗攻击**:
 
    <img src="pictures/image-20201228010620801.png" alt="image-20201228010620801" style="zoom:15%;" />
+
+   （<u>这个公式有歧义：这里明显是一个梯度下降算法，期望损失函数值变得更小，所以这里 $g_t$ 表示的是损失函数的梯度，而不是 $2$ 中梯度——表示的是目标分类概率的梯度，这一点可以在程序的代码中验证。</u>）
 
 4. 仅知道 Top-K 的概率:
 
@@ -499,6 +501,79 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 #### Links
 
 - [Xiao C, Li B, Zhu J Y, et al. Generating adversarial examples with adversarial networks[J]. arXiv preprint arXiv:1801.02610, 2018.](https://arxiv.org/abs/1801.02610)
+
+
+
+
+
+## * Prior Convictions: Black-Box Adversarial Attacks with Bandits and Priors
+
+### Contribution
+
+1. 在 NES 的基础上，通过**减小查询空间（图像相邻点的梯度相似）**来减少 Query 的次数；
+2. 这篇文章本身再减少 Query 上面没什么亮点，但是它对于 **“梯度估计正确率与对抗样本成功率”** 和 **“先验梯度知识”** 的分析是比较有意思的地方；
+
+### Notes
+
+2. ⭐ 梯度估计正确率与对抗样本成功率的关系：
+
+   - 问题：在黑盒攻击的情况下，正确估计多少比率的梯度才能保障白盒算法（PGD）成功攻击目标模型？
+
+   - 实验结果：使用单步 PGD 生成对抗样本的情况下，只要有 **20%** 的梯度被正确赋值，就有 **60%** 的成功率；
+
+   <img src="pictures/image-20210108102002280.png" alt="image-20210108102002280" style="zoom: 43%;" />
+
+3. ⭐ 先验（prior）梯度知识：
+
+   (1) Time-dependent Priors：如下图 2 中所示，**连续两步之间的梯度之间存在高度的余弦相关性**（数据中，这个余弦相关性高达 0.9）；
+
+   <img src="pictures/image-20210108110703013.png" alt="image-20210108110703013" style="zoom: 43%;" />
+
+   (2) Data-dependent Priors：如上图 3 中所示，在图像中，**相近的像素点之间存在相似的梯度**；
+
+3. 算法：
+
+   (1) 框架：梯度估计 + 梯度更新；
+
+   <img src="pictures/image-20210110005122940.png" alt="image-20210110005122940" style="zoom:48%;" />
+
+   (2) 梯度估计：（这部分其实就和 NES 算法一样，不一样的地方在于这个算法每轮只产生一对样本）
+
+   <img src="pictures/image-20210108151855951.png" style="zoom:50%;" />
+
+   其中第 $6$ 行写的前后矛盾，以后半个式子为准；
+
+   (3) 梯度更新：
+
+   - 梯度上升（Gradient Ascent）法：（<u>离谱</u>）
+
+   <img src="pictures/image-20210110010242223.png" alt="image-20210110010242223" style="zoom: 16%;" />
+
+   - 指数梯度（Exponentiated Gradients）更新法：
+
+     <img src="pictures/image-20210110011024058.png" alt="image-20210110011024058" style="zoom: 43%;" />
+
+   (4) 图像识别，$l_2$ 范数约束下的实例：
+
+   <img src="pictures/image-20210110011303039.png" style="zoom:50%;" />
+
+5. 实验结果：
+
+   <img src="pictures/image-20210108011412368.png" alt="image-20210108011412368" style="zoom: 45%;" />
+
+### Links
+
+- 论文链接：[Ilyas A, Engstrom L, Madry A. Prior convictions: Black-box adversarial attacks with bandits and priors[J]. arXiv preprint arXiv:1807.07978, 2018.](https://arxiv.org/abs/1807.07978)
+- 论文代码：
+- 官方审稿意见：https://openreview.net/forum?id=BkMiWhR5K7
+
+> 吐槽一下：这篇文章就**离谱**！
+>
+> 创新性上面，我觉得就是在NES上面添加了一个局部降采样，没啥突出的地方（分析的地方确实是有意思的）。
+>
+> 公式上面，你看这个公式里面，$g_t$ 有个啥用啊？**离谱**！再看这个公式的错误，那个第 **6** 行？**离谱**！然后你看这个有目标攻击配合上loss梯度上升法（它的程序里面是对的）？**离谱**！关键是这个错误你再和 NES 文章的那个错误（有目标攻击配合上目标概率梯度下降法）对比一下，就完全是同样的错误啊？**离谱**（我看了半天没看懂，回 NES 发现是同样的错误，就在想不会是同一个作者吧，结果一看真的是同一个作者）！审稿意见一致好评通过？**离谱**！
+>
+> 以上就是一时生气，因为这几个问题，我把两篇文章的源码都去看了一遍，感觉很浪费读者的时间。
 
 
 
