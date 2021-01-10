@@ -15,7 +15,6 @@
 5. H. Hosseini, S. Kannan, B. Zhang, and R. Poovendran, “Deceiving google’s perspective api built for detecting toxic comments,” arXiv preprint arXiv:1702.08138, 2017.
 6. Z. Gong, W. Wang, B. Li, D. Song, and W.-S. Ku, “Adversarial texts with gradient methods,” arXiv preprint arXiv:1801.07175, 2018.
 7. Y. Zhang and B. Wallace, “A sensitivity analysis of (and practitioners guide to) convolutional neural networks for sentence classification,” in IJCNLP, vol. 1, 2017, pp. 253–263.
-8. I. J. Goodfellow, J. Shlens, and C. Szegedy, “Explaining and harnessing adversarial examples,” in ICLR, 2015, pp. 1–11.
 9. Privacy Risks of General-Purpose Language Models
 10. Analyzing Information Leakage of Updates to Natural Language Models
 11. information leakage in embedding models
@@ -26,9 +25,69 @@
 
 
 
-## Black-box Generation of Adversarial Text Sequences to Evade Deep Learning Classifiers
+## * Black-box Generation of Adversarial Text Sequences to Evade Deep Learning Classifiers
+
+### Contribution
+
+1. 文章有意思的地方是提出了一个**打分函数**，对单词进行重要性排序；
 
 ### Notes
+
+1. 提出了一种黑盒的无目标对抗攻击算法；
+
+2. 生成对抗样本过程中，文本和图像的区别：
+
+   - 文本的输入是符号；
+   - 无法衡量两个文本之间的差距；
+
+3. DeepWordBug 算法：
+
+   (1) 思想：找关键词进行修改，使得分类出错；
+
+   (2) ⭐ 打分函数（Token Scoring Function）：
+
+   - 例：
+
+     <img src="pictures/image-20210110161000743.png" alt="image-20210110161000743" style="zoom:23%;" />
+
+   - Replace-1 Score（R1S）：把一个词替换成 “Unknown”；
+
+     <img src="pictures/image-20210110155004823.png" alt="image-20210110155004823" style="zoom:15%;" />
+
+   - Temporal Head Score（THS）：针对循环神经网络，序列对输出结果的影响是顺序的；（<u>这个打分函数听起来似乎不是很直观</u>）
+     $$
+     \text{THS}(x_i)=F(x_1,x_2,\dots,x_{i-1},x_i)-F(x_1,x_2,\dots,x_{i-1})
+     $$
+
+   - Temporal Tail Score（TTS）：和上一个相反；
+
+     <img src="pictures/image-20210110160526332.png" alt="image-20210110160526332" style="zoom:20%;" />
+
+   - Combined Score（CS）：
+
+     <img src="pictures/image-20210110160652537.png" alt="image-20210110160652537" style="zoom:12%;" />
+
+   (3) 修改方法：增加、删除、替换、交换；并且使用 Levenshtein Edit Distance 来度量修改的大小；
+
+   <img src="pictures/image-20210110162142419.png" alt="image-20210110162142419" style="zoom:28%;" />
+
+   (4) 伪代码：
+
+   <img src="pictures/image-20210110162558309.png" alt="image-20210110162558309" style="zoom:33%;" />
+   
+4. 实验：
+
+   (1) 数据集：
+
+   <img src="pictures/image-20210110163502508.png" alt="image-20210110163502508" style="zoom: 33%;" />
+
+   (2) 实验结果：<u>可以看到，这种攻击对于 Char-CNN 模型的攻击效果是比较差的，原因可能在于 Char-CNN 对 sub-word 序列进行建模</u>；
+
+   ![image-20210110163738687](pictures/image-20210110163738687.png)
+
+   (3) 迁移性：
+
+   <img src="pictures/image-20210110164010454.png" alt="image-20210110164010454" style="zoom:39%;" />
 
 ### Links
 
@@ -53,7 +112,7 @@
 
 2. 作者分析了已有的对抗攻击的一些缺点，也是这篇文章要解决的几个点：**计算复杂；白盒限制；人工干预；缺乏检验**；先看生成的对抗样本是什么样子的：
 
-   <img src="pictures/image-20201210131219208.png" alt="image-20201210131219208" style="zoom:33%;" />
+   <img src="pictures/image-20201210131219208.png" alt="image-20201210131219208" style="zoom:40%;" />
 
 3. **白盒攻击**：
 

@@ -557,6 +557,12 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
    <img src="pictures/image-20210110011303039.png" style="zoom:50%;" />
 
+5. 使用的参数：
+
+   <img src="pictures/image-20210110145348835.png" alt="image-20210110145348835" style="zoom:40%;" />
+   
+   为什么 $l_\infty$ 情况下的学习率会这么大？
+   
 5. 实验结果：
 
    <img src="pictures/image-20210108011412368.png" alt="image-20210108011412368" style="zoom: 45%;" />
