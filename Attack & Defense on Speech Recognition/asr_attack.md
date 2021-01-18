@@ -368,7 +368,7 @@
 
 ### Contribution
 
-1. 针对关键词识别模型进行黑盒攻击；
+1. 使用遗传算法，针对关键词识别模型进行黑盒攻击；
 
 ### Notes
 
@@ -530,7 +530,7 @@
 
 ### Contribution
 
-1. 黑盒、有目标的攻击 DeepSpeech 的对抗攻击算法；
+1. 黑盒（**但依赖于模型输出概率**）、有目标的攻击 DeepSpeech 的对抗攻击算法；
 2. 结合遗传算法和梯度下降算法 (**在语音上没人这么来做过，但是其实在图像识别上面这种黑盒攻击不是新鲜事了，所以在算法上面没有创新型，而且直接应用到语义领域，出现了 query 次数巨大的问题**)；
 3. 思路是值得借鉴的，黑盒攻击一定有比白盒攻击更加 interesting 的问题，但是不能照搬图像领域的方法；
 
@@ -573,7 +573,7 @@
 
 ### Contribution
 
-1. 引入脉冲响应；
+1. 引入**脉冲响应**来提高物理攻击的成功率；
 2. 实现了较高的物理攻击成功率，并且用了两组播放和接收设备；
 3. 指令过短，实验应该增加更多的物理环境；
 
@@ -645,7 +645,7 @@
 
 ### Contribution
 
-1. 设想在黑盒攻击的过程中, 引入两个评价指标, 以**解决 声学相似性 和 文本相似性 这两个 trade off 的问题**;
+1. 设想在黑盒攻击的过程中, 引入两个评价指标, 以 **解决 声学相似性 和 文本相似性 这两个 trade off 的问题**;
 
 ### Notes
 
@@ -821,7 +821,8 @@
 ### Links
 
 - 论文链接:  [Abdullah, Hadi, et al. "Practical hidden voice attacks against speech and speaker recognition systems." *NDSS* (2019).](https://arxiv.org/abs/1904.05734)
-- 论文主页: [pratical hidden voice](https://sites.google.com/view/practicalhiddenvoice)
+- 论文主页：[pratical hidden voice](https://sites.google.com/view/practicalhiddenvoice)
+- 论文代码：https://github.com/hamzayacoob/VPSesAttacks
 
 
 
@@ -984,6 +985,20 @@
 
 
 
+## Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Zhang N, Mi X, Feng X, et al. Dangerous skills: Understanding and mitigating security risks of voice-controlled third-party functions on virtual personal assistant systems[C]//2019 IEEE Symposium on Security and Privacy (SP). IEEE, 2019: 1381-1396.](https://ieeexplore.ieee.org/document/8835332)
+
+
+
+
+
 ## SkillExplorer: Understanding the Behavior of Skills in Large Scale
 
 ### Contribution
@@ -996,7 +1011,7 @@
 
 ### Links
 
-- 论文链接: [Guo Z, Lin Z, Li P, et al. SkillExplorer: Understanding the Behavior of Skills in Large Scale[C]//29th {USENIX} Security Symposium (USENIX Security 20). 2020: 2649-2666.](https://www.usenix.org/conference/usenixsecurity20/presentation/guo)
+- 论文链接：[Guo Z, Lin Z, Li P, et al. SkillExplorer: Understanding the Behavior of Skills in Large Scale[C]//29th {USENIX} Security Symposium (USENIX Security 20). 2020: 2649-2666.](https://www.usenix.org/conference/usenixsecurity20/presentation/guo)
 
 
 
