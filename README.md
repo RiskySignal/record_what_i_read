@@ -1,10 +1,10 @@
 # AI Model Security Reading Notes
 
-## Introduction
-
 <div align="center"><img src="pictures/840ad2d34eef686053fecac7eb743e1.jpg" height="200"/></div>
 
 <br/>
+
+## Introduction
 
 学习和研究语音识别的对抗攻击已有一段时间，总是会发现自己没有一条连贯的思路，有时甚至会怀疑自己工作的重要性和成果。因此趁着细品 SoK 之余，总结模型安全性相关的工作。
 
@@ -14,9 +14,7 @@ Okay ! Now ! Ceres~ Go~ Go~ Go~
 
 <br/>
 
-> 文档使用 `Typora` 编辑，无法保证在 `Github` 上正常显示，建议 `clone` 后在编辑器中阅读最佳，或者阅读 `pdf` 文件夹下的 PDF 文件；
->
-> 项目中含有一些 PPT 文件，一些是我做论文分享时制作的，一些是我拜读论文时制作的，本想以 PPT 的形式分享自己对论文的见解，但最终还是觉得过于花费时间，改用 Markdown 的形式；
+> 文档使用 `Typora` 编辑，无法保证在 `Github` 上完全正常显示，建议 `clone` 后在编辑器中阅读最佳，或者阅读 `pdf` 文件夹下的 PDF 文件；
 >
 > 标题前带有 `*` 的文章可以简略阅读；
 >
