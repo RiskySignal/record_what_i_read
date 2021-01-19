@@ -141,33 +141,60 @@ $$
 
 
 
-## Listen, Attend and Spell
+## Deep speech: Scaling up end-to-end speech recognition
 
 ### Notes
 
-1. 模型架构：分成两个模块，一个是 Listen Encoder 模块，从语音时序序列中提取出高维特征，采用 pBLSTM (pyramid BLSTM) 的架构；另一个是 Attend and Spell 模块，从语音高维特征中输出单词，采用 Attention + LSTM 架构。架构图如下：
+### 代码阅读
+
+### Links
+
+- 论文链接：[Hannun A, Case C, Casper J, et al. Deep speech: Scaling up end-to-end speech recognition[J]. arXiv preprint arXiv:1412.5567, 2014.](https://arxiv.org/abs/1412.5567)
+- 
+
+
+
+
+
+## Listen, Attend and Spell
+
+### Contribution
+
+1. 提出了一种**新的端到端**的语音识别模型；
+
+### Notes
+
+1. **模型架构**：分成两个模块，一个是 Listen Encoder 模块，从语音时序序列中提取出高维特征，采用 pBLSTM (pyramid BLSTM) 的架构；另一个是 Attend and Spell 模块，从语音高维特征中输出单词，采用 Attention + LSTM 架构。架构图如下：（<u>直接从这个图看的话，感觉模型是比较简洁的，但是真的从代码层面再来画一个细粒度的架构图，其实复杂得多。</u>）
 
    <img src="./pictures/image-20201130105452791.png" alt="image-20201130105452791" style="zoom: 70%;" />
 
-2. Listen Encoder 模块，使用 pBLSTM 的架构，每层在时间维度上减少一倍，带来的优点有两个：
+2. **Listen Encoder 模块**，使用 pBLSTM 的架构，每层在时间维度上减少一倍，带来的优点有两个：
 
-   (1) 减少模型的复杂性；
+   (1) 减少模型的复杂性（<u>一定程度上是比较合理的，因为语音的前后帧之间有非常多的冗余信息</u>）；
 
    (2) 加快模型的拟合速度（作者发现直接用 BLSTM 的话，用一个月的时间训练都没有办法得到好的结果）；
 
-   形式化的公式为：
+   形式化的公式为：（和代码结合来看：<u>关注公式 $[h_{2i}^{j-1}, h_{2i+1}^{j-1}]$ 部分，在程序的实现中，首先通过 设置 LSTM的特征维度 将**特征逐层降维**，然后通过合并前后帧的特征 对**时间降维**（而特征维度则升高）</u>）
 
    <img src="pictures/image-20201130113050326.png" alt="image-20201130113050326" style="zoom: 24%;" />
 
-3. Attend and Spell 模块，该模块采用 2 层 LSTM 单元来记忆模型当前的状态 s (由模型上一次的状态、输出字符和上下文信息转化而来)，Attention 单元根据当前的状态 s 从特征 h 中分离出“当前模型关心的”上下文信息 c，最后 MLP 单元根据模型的状态 s 和上下文信息 c 输出最可能的字符 y。形式化的公式如下：
+3. **Attend and Spell 模块**，该模块采用 2 层 LSTM 单元来记忆、更新模型的状态 $s$ (**模型的状态包括 LSTM 的状态和 Attention 上下文状态**)：
 
    <img src="pictures/image-20201130203431907.png" alt="image-20201130203431907" style="zoom: 31%;" />
 
-   其中 Attention 单元在模型中的实现：将模型状态 s 和特征 h 分别经过两个不同的 MLP 模型，计算出一个标量能量 (Scalar Energy，相当于一个相关性系数) e，然后用 softmax 处理一下这个概率后，和原来的特征 h 加权生成上下文信息 c。形式化的公式如下：
+   (1) Attention 单元：根据当前的状态 $s_i$ （**<u>在代码中，$s_i$ 指的是第二层 LSTM 单元的输出</u>**）从语音特征 $h$ 中分离出“当前模型关心的”上下文信息 $c_{i}$；
+
+   (2) LSTM 单元：根据前一时刻的状态 $s_{i-1}$ （<u>**在代码中，这个 $s_{i-1}$ 指的是第二层 LSTM 单元的状态**</u>）、前一时刻输出的字符 $y_{i-1}$ 和前一时刻的上下文信息 $c_{i-1}$ 来更新产生当前时刻的状态 $s_i$；
+
+   (3) MLP 单元：根据当前状态 $s_i$ 和上下文信息 $c_i$ 计算得到最可能的字符 $y_i$ ;
+
+   
+
+   另外， **Attention 单元在模型中的具体实现**：将模型状态 $s_{i}$ 和语音特征 $h$ 分别经过两个不同的 MLP 模型，计算出一个标量能量 (点积) $e$ ，经过 softmax 层归一化后作为权重向量，和原来的特征 $h$ 加权生成上下文信息 $c_i$。形式化的公式如下：
 
    <img src="pictures/image-20201130211024317.png" alt="image-20201130211024317" style="zoom: 38%;" />
 
-4. Learning. 模型的目标是，在给定 **全部** 语音信号和 **上文** 解码结果的情况下，模型输出正确字符的概率最大。形式化的公式如下：
+4. **Learning**. 模型的目标是，在给定 **全部** 语音信号和 **上文** 解码结果的情况下，模型输出正确字符的概率最大。形式化的公式如下：
 
    <img src="pictures/image-20201130214339602.png" alt="image-20201130214339602" style="zoom:29%;" />
 
@@ -177,7 +204,7 @@ $$
 
    另外，作者发现预训练 (主要是预训练 Listen Encoder 部分) 对 LAS 模型没有作用。
 
-5. Decoding & Rescoring. 解码的时候使用 Beam-Search 算法，目标是希望得到概率最大的字符串。形式化公式如下：
+5. **Decoding & Rescoring**. 解码的时候使用 Beam-Search 算法，目标是希望得到概率最大的字符串。形式化公式如下：
 
    <img src="pictures/image-20201130234826758.png" alt="image-20201130234826758" style="zoom: 18%;" />
 
@@ -209,11 +236,136 @@ $$
 2. Attention 机制需要消耗大量的计算量；
 3. 输入长度对于模型的影响较大；
 
+### 代码理解
+
+#### 	Tensorflow 2 （Keras）实现
+
+> 这个库只实现了 LAS 模型部分，没有完整的预处理等过程，故先通过这个库来简单学习下 LAS 模型原理以及 Tensorflow 的使用，期待一下库作者的更新；
+
+(1) 整体框架：
+
+```python
+def LAS(dim, f_1, no_tokens): # dim-神经网络内特征维度，f_1-输入特征维度，no_tokens-分类维度
+  input_1 = tf.keras.Input(shape=(None, f_1))  # shape: (..., None, f_1)
+  input_2 = tf.keras.Input(shape=(None, no_tokens))  # shape: (..., None, no_tokens)
+  
+  #Listen; Lower resoultion by 8x
+  x = pBLSTM( dim//2 )(input_1) # (..., audio_len//2, dim*2)
+  x = pBLSTM( dim//2 )(x) # (..., audio_len//4, dim*2)
+  x = pBLSTM( dim//4 )(x) # (..., audio_len//8, dim)
+  
+  #Attend
+  x = tf.keras.layers.RNN(att_rnn(dim), return_sequences=True)(input_2, constants=x) # (..., seq_len, dim*2)
+  
+  #Spell
+  x = tf.keras.layers.Dense(dim, activation="relu")(x) # (..., seq_len, dim)
+  x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, no_tokens)
+
+  model = tf.keras.Model(inputs=[input_1, input_2], outputs=x)
+  return model
+```
+
+(2) Listen 模块：使用 3 层 `pBLSTM` 实现，其中需要注意的是 `tf.keras.layers.Bidirectional` 的使用（<u>我一开始判断错了输出的维度</u>）
+
+```python
+class pBLSTM(tf.keras.layers.Layer):
+  def __init__(self, dim):
+    super(pBLSTM, self).__init__()
+    
+    self.dim        = dim
+    self.LSTM       = tf.keras.layers.LSTM(self.dim, return_sequences=True)
+    self.bidi_LSTM  = tf.keras.layers.Bidirectional(self.LSTM)
+    
+  @tf.function
+  def call(self, inputs):
+    y = self.bidi_LSTM(inputs) # (..., seq_len, dim*2)
+    
+    if tf.shape(inputs)[1] % 2 == 1:
+      y = tf.keras.layers.ZeroPadding1D(padding=(0, 1))(y)
+
+    y = tf.keras.layers.Reshape(target_shape=(-1, int(self.dim*4)))(y) # (..., seq_len//2, dim*4)
+    return y
+```
+
+(3) Attend 模块：
+
+- 如果对 LSTM 不太熟悉的话，结合 LSTM 的结构图一起来看代码会轻松一点：
+
+<img src="pictures/LSTM3-chain.png" alt="A LSTM neural network." style="zoom:30%;" />
+
+- 双层 LSTM 代码如下：使用 2 层 LSTM 模型来存储模型的状态；
+
+```python
+class att_rnn( tf.keras.layers.Layer):
+  def __init__(self, units,):
+    super(att_rnn, self).__init__()
+    self.units      = units
+    self.state_size = [self.units, self.units]
+    
+    self.attention_context  = attention(self.units)
+    self.rnn                = tf.keras.layers.LSTMCell(self.units)  # LSTM 1，用来记忆模型的状态
+    self.rnn2               = tf.keras.layers.LSTMCell(self.units)  # LSTM 2，用来记忆模型的状态
+    
+  def call(self, inputs, states, constants):
+    h       = tf.squeeze(constants, axis=0)  # 删除为1的维度，shape: (..., seq_len, F)
+
+    s       = self.rnn(inputs=inputs, states=states) # [(..., F), [(..., F), (..., F)]]
+    s       = self.rnn2(inputs=s[0], states=s[1])[1] # [(..., F), (..., F)]
+
+    c       = self.attention_context([s[0], h]) # (..., F)
+    out     = tf.keras.layers.concatenate([s[0], c], axis=-1) # (..., F*2)
+    
+    return out, [c, s[1]]
+```
+
+- Attention 代码如下：全连接层（变换维度） -> 向量点积（计算权重） -> softmax（权重归一化） -> 得到重要的上下文信息；
+
+```python
+class attention(tf.keras.layers.Layer):  # Attention 类，用来计算上下文的权重
+  def __init__(self, dim):
+    super(attention, self).__init__()
+    
+    self.dim      = dim
+    self.dense_s  = tf.keras.layers.Dense(self.dim)
+    self.dense_h  = tf.keras.layers.Dense(self.dim)
+    
+  def call(self, inputs):
+    # Split inputs into attentions vectors and inputs from the LSTM output
+    s     = inputs[0] # (..., depth_s)
+    h     = inputs[1] # (..., seq_len, depth_h)
+    
+    # Linear FC
+    s_fi   = self.dense_s(s) # (..., F)
+    h_psi  = self.dense_h(h) # (..., seq_len, F)
+    
+    # Linear blendning < φ(s_i), ψ(h_u) >
+    # Forced seq_len of 1 since s should always be a single vector per batch
+    e = tf.matmul(s_fi, h_psi, transpose_b=True) # (..., 1, seq_len)
+    
+    # Softmax vector
+    alpha = tf.nn.softmax(e) # (..., 1, seq_len)
+
+    # Context vector
+    c = tf.matmul(alpha, h) # (..., 1, depth_h)
+    c = tf.squeeze(c, 1) # (..., depth_h)
+    
+    return c
+```
+
+(4) Spell 模块：两个全连接层，输出最后的概率；
+
+```python
+x = tf.keras.layers.Dense(dim, activation="relu")(x) # (..., seq_len, dim)
+x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, no_tokens)
+```
+
 ### Links
 
 - 论文链接：[Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)
 - LAS 模型缺点参考链接：[LAS 语音识别框架发展简述](https://blog.csdn.net/weixin_39529413/article/details/103570831)
+- Tensorflow 2 （Keras）实现：[Listen, attend and spell](https://github.com/hgstudent/las)
 - Pytorch 实现：[End-to-end-ASR-Pytorch](https://github.com/Alexander-H-Liu/End-to-end-ASR-Pytorch) ( <u>**暂未阅读代码**</u> )
+- LSTM 详解：[Understanding LSTM Networks](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
 
 
 
