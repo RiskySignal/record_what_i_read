@@ -984,11 +984,11 @@
 
 
 
-## Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
+## * Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
 
 ### Contribution
 
-### Notes
+1. 第一篇关注 Skill 安全性的文章，并且发现了两种攻击方法：相似发音攻击法（用相似的发音来启动恶意的 Skill）和模仿平台语音（模仿平台的说话规则，从而让用户以为是平台请求认证，而非 Skill 本身请求的认证）法；
 
 ### Links
 
@@ -998,7 +998,7 @@
 
 
 
-## Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms
+## * Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms
 
 ### Contribution
 
@@ -1014,7 +1014,7 @@
 
 
 
-## SkillExplorer: Understanding the Behavior of Skills in Large Scale
+## * SkillExplorer: Understanding the Behavior of Skills in Large Scale
 
 ### Contribution
 
