@@ -21,7 +21,6 @@
 13. Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
 14. DeepSec: A Uniform Platform for Security Analysis of Deep Learning Models
 15. Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
-17. Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms
 18. When the Differences in Frequency Domain are Compensated: Understanding and Defeating Modulated Replay Attacks on Automatic Speech Recognition
 18. PatternListener: Cracking Android Pattern Lock Using Acoustic Signals
 19. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
@@ -994,6 +993,22 @@
 ### Links
 
 - 论文链接：[Zhang N, Mi X, Feng X, et al. Dangerous skills: Understanding and mitigating security risks of voice-controlled third-party functions on virtual personal assistant systems[C]//2019 IEEE Symposium on Security and Privacy (SP). IEEE, 2019: 1381-1396.](https://ieeexplore.ieee.org/document/8835332)
+
+
+
+
+
+## Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms
+
+### Contribution
+
+1. 文章的亮点在于发现了 Skill 认证平台存在严重的不可信（Trustworthiness）问题，没有能够充分检查第三方技能开发人员提交的 Skill，使得用户的隐私等受到威胁；
+
+### Links
+
+- 论文链接：[Cheng L, Wilson C, Liao S, et al. Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms[C]//Proceedings of the 2020 ACM SIGSAC Conference on Computer and Communications Security. 2020: 1699-1716.](https://dl.acm.org/doi/10.1145/3372297.3423339)
+
+- 论文主页：https://vpa-sec-lab.github.io/index.html
 
 
 
