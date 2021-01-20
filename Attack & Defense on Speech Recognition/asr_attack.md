@@ -9,26 +9,27 @@
 ## Todo List
 
 2. Biggio, B., Corona, I., Maiorca, D., Nelson, B., ˇSrndi´c, N., Laskov, P., Giacinto, G., and Roli, F. Evasion attacks against machine learning at test time. In Joint European conference on machine learning and knowledge discovery in databases, pp. 387–402. Springer, 2013.
-6. A. Nguyen, J. Yosinski, and J. Clune, “Deep neural networks are easily fooled: High confidence predictions for unrecognizable images,” in Conference on Computer Vision and Pattern Recognition. IEEE, Jun. 2015, pp. 427–436.
-7. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
-8. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
-10. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
-8. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings of the European Symposium on Research in Computer Security. Springer, 599–621.
+3. A. Nguyen, J. Yosinski, and J. Clune, “Deep neural networks are easily fooled: High confidence predictions for unrecognizable images,” in Conference on Computer Vision and Pattern Recognition. IEEE, Jun. 2015, pp. 427–436.
+4. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
+5. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
+6. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
+7. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings of the European Symposium on Research in Computer Security. Springer, 599–621.
 8. Mel-Frequency Spectral Coefficients (MFSC)
 9. Linear Predictive Coding
 10. Perceptual Linear Prediction (PLP)
 11. Wang, Qing, Pengcheng Guo, and Lei Xie. "Inaudible Adversarial Perturbations for Targeted Attack in Speaker Recognition." *arXiv preprint arXiv:2005.10637* (2020).
-13. Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
-14. DeepSec: A Uniform Platform for Security Analysis of Deep Learning Models
-15. Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
-18. When the Differences in Frequency Domain are Compensated: Understanding and Defeating Modulated Replay Attacks on Automatic Speech Recognition
-18. PatternListener: Cracking Android Pattern Lock Using Acoustic Signals
-19. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
-20. F. Kreuk, Y. Adi, M. Cisse, and J. Keshet, “Fooling end-to-end speaker verification with adversarial examples,” in ICASSP, 2018.
-21. 更新 Overview
-21. Tao Chen, Longfei Shangguan, Zhenjiang Li, and Kyle Jamieson. 2020. Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems. In Proceedings ofthe Network and Distributed System Security Symposium (NDSS)
-22. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
-23. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
+12. Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
+13. DeepSec: A Uniform Platform for Security Analysis of Deep Learning Models
+14. Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
+15. When the Differences in Frequency Domain are Compensated: Understanding and Defeating Modulated Replay Attacks on Automatic Speech Recognition
+16. PatternListener: Cracking Android Pattern Lock Using Acoustic Signals
+17. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
+18. F. Kreuk, Y. Adi, M. Cisse, and J. Keshet, “Fooling end-to-end speaker verification with adversarial examples,” in ICASSP, 2018.
+19. 更新 Overview
+20. Tao Chen, Longfei Shangguan, Zhenjiang Li, and Kyle Jamieson. 2020. Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems. In Proceedings ofthe Network and Distributed System Security Symposium (NDSS)
+21. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
+22. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
+23. Motion Sensor-based Privacy Attack on Smartphones.
 
 
 
@@ -36,35 +37,37 @@
 
 ## Overview
 
-1. (结合场景的)语音识别过程
+1. （结合场景的）语音识别过程
 
-   (1) API 访问: 语音通过 API 传给语音识别模型, 得到识别文本; ( **风险等级低** )
+   (1) API 访问：语音通过 API 传给语音识别模型, 得到识别文本; ( **风险等级低** )
 
    <img src="pictures/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%ABAPI.svg" alt="语音识别API (1)" style="zoom:80%;" />
 
-   (2) 手机语音助手/智能音箱: 声音经过手机麦克风/音箱麦克风阵列录制, 经过降噪处理, 通过 API 传给语音识别模型, 得到识别结果, 执行相应的指令, 或触发开放的第三方事件 (Skill);
+   (2) 手机语音助手/智能音箱：声音经过手机麦克风/音箱麦克风阵列录制, 经过降噪处理, 通过 API 传给语音识别模型, 得到识别结果, 执行相应的指令, 或触发开放的第三方应用 （Skill）；
 
    <img src="pictures/%E5%BD%95%E5%88%B6%E5%90%8E%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB.svg" alt="录制后语音识别" style="zoom:80%;" />
 
-2. 针对 "麦克风录制" ③ 的攻击: 
+   接下来从语音识别的各个过程系统地分析可能存在的一些安全性问题，这些问题中有些可能和”对抗样本“的关系并不大，但也是智能音箱安全性的重要一环。
 
-   (1) 声压变化: 麦克风接收空气的声压变化, 将声音转换成数字信号, 现有工作攻击这个采集过程, 通过 激光 进行攻击;
+2. 针对 "**麦克风录制**" ③ 的攻击：
 
-   (2) 振动: 虽然麦克风的采集原理如上, 但它也对振动敏感, 现有工作通过 振动 来攻击麦克风;
+   (1) 声压变化：**麦克风采集空气的声压变化，将声音转换成数字信号**。[【文章】](#Laser-Based Audio Injection on Voice-Controllable Systems)通过 **激光** 攻击麦克风的采集过程；
+
+   (2) 振动：虽然理论上麦克风采集的时空气的声压变化，但实际上**它对于振动也是敏感的**。[【文章】](#Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations)通过 **振动** 来攻击麦克风的采集过程;
 
    (3) 调制/解调: 麦克风存在非线性的特点, 采集过程中会将高频信号中携带的低频信号给解调出来, 现有工作通过 高频信号调制解调的方法 来进行攻击, 后有工作在它的基础上增强了攻击的鲁棒性;
 
-3. 针对 "降噪过程" ④ 的攻击:
+3. 针对 "**降噪过程**" ④ 的攻击:
 
    暂时没有工作依赖降噪对语音识别进行攻击;
 
-4. 针对 "特征提取" ① 的攻击:
+4. 针对 "**特征提取**" ① 的攻击:
 
-   常用的语音特征有 Mel-Frequency Spectral Coefficients (MFSC),  Linear Predictive Coding (LPC), Perceptual Linear Prediction (PLP), MFCC 等, 但是在对抗领域攻击的大多都是 MFCC 特征.
+   常用的语音特征有 Mel-Frequency Spectral Coefficients (MFSC),  Linear Predictive Coding (LPC), Perceptual Linear Prediction (PLP), MFCC 等, 但是在对抗攻击领域的大多都是用 **MFCC 特征**。
 
    冗余的信息: MFCC 特征常见的可能使用 13维 的MFCC或更多, 另外为了提取前后帧之间的特征, 也会在时间维度上扩展 MFCC, 对其求导. 使用的特征维度越多, 那么里面可能含有的冗余特征可能就越多, 深度神经网络可能通过少数的几个特征便识别出了文本. 现有的工作通过删除这些冗余的特征, 模糊化正常的语音 来进行攻击, 后有工作对其进行改进, 利用 MFCC计算过程是一个多对一的关系 进行攻击;
 
-5. 针对 "语音识别" ② 的攻击: ( **多数的工作都聚焦在这里** )
+5. 针对 "**语音识别**" ② 的攻击: ( **多数的工作都聚焦在这里** )
 
    (1) 分类:
 
@@ -88,7 +91,14 @@
 
    ​	黑盒攻击-直接攻击实现的原理是直接 query 目标 API, 然后调整自己的对抗样本. 这方面的工作在图像领域比较多, 但是在语音领域并不多, 关键原因在于语音上采样点过于丰富. 为了生成一个对抗样本, 攻击者可能需要大量访问 API. 现有的黑盒攻击, 都局限在使用遗传算法.
 
-6. 针对 "触发 App Skill"  的攻击: ( <u>这方面可能不算实际意义上的对抗攻击, 但它是智能音箱和手机助手上实际面临的问题</u> )
+6. 针对 "**Skill**"  ⑤ 的攻击：
+
+   - 概念：Skill 指的是，由第三方应用开发者开发的，集成到智能语音系统的，可以通过特定指令唤醒并提供某种功能的一种”智能音箱“的云端小程序。常见的 Skill 平台由 [Amazon Skills](https://www.amazon.com/alexa-skills/b?ie=UTF8&node=13727921011) 和 [Google Skillshop](https://skillshop.withgoogle.com/) 。
+   - 安全问题 1：Skill 的开发者应该遵守一系列的准则，但是 **Skill 的审核平台却并不怎么健壮**；[【文章】](#* Dangerous Skills Got Certified: Measuring the Trustworthiness of Skill Certification in Voice Personal Assistant Platforms)
+   - 安全问题 2：Skill 的打开方式普遍为通过语音唤起，这就存在 **谐音词错误唤醒** 的可能性；[【文章】](#* Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems)
+   - 安全问题 3：Skill 的回复方式（内容）是由开发者自己定义的，这就存在 **开发者模仿智能音箱的回复，从而获取用户隐私信息** 的可能性；[【文章】](#* Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems)
+   - 安全问题 4：Skill 的回复方式中带有的特殊字符可以不发音，这就 **可能导致用户误以为 Skill 已经结束，从而泄露个人营私**；[【文章】](#* SkillExplorer: Understanding the Behavior of Skills in Large Scale)
+   - 总结：Skill 中存在的问题，最初始的问题还是因为平台对第三方应用的审核、监管不力，导致恶意的 Skill 可以轻松绕过这些检查机制，使得用户**隐私安全**受到威胁；
 
 7. 提高物理鲁棒性的方法:
 
@@ -306,6 +316,24 @@
 - 论文链接：[Carlini, Nicholas, et al. "Hidden voice commands." *25th {USENIX} Security Symposium (USENIX Security 16)*. 2016.](https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/carlini)
 - 论文主页：[Hidden Voice Commands](https://www.hiddenvoicecommands.com/home)
 - 👍 背景噪声数据集： [Crowd Sounds — Free Sounds at SoundBible.](http://soundbible.com/tagscrowd.html)
+
+
+
+
+
+## Commandersong: A systematic approach for practical adversarial voice recognition
+
+### Contribution
+
+
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Yuan X, Chen Y, Zhao Y, et al. Commandersong: A systematic approach for practical adversarial voice recognition[C]//27th {USENIX} Security Symposium ({USENIX} Security 18). 2018: 49-64.]()
 
 
 
@@ -827,6 +855,50 @@
 
 
 
+## Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Wang C, Anand S A, Liu J, et al. Defeating hidden audio channel attacks on voice assistants via audio-induced surface vibrations[C]//Proceedings of the 35th Annual Computer Security Applications Conference. 2019: 42-56.](https://dl.acm.org/doi/10.1145/3359789.3359830)
+
+
+
+
+
+## Devil’s whisper: A general approach for physical adversarial attacks against commercial black-box speech recognition devices
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Chen Y, Yuan X, Zhang J, et al. Devil’s whisper: A general approach for physical adversarial attacks against commercial black-box speech recognition devices[C]//29th USENIX Security Symposium (USENIX Security 20). 2020.](https://www.usenix.org/conference/usenixsecurity20/presentation/chen-yuxuan)
+- Github 链接：[RiskySignal / Devil-Whisper-Attack](https://github.com/RiskySignal/Devil-Whisper-Attack)
+
+
+
+
+
+## Laser-Based Audio Injection on Voice-Controllable Systems
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Sugawara T, Cyr B, Rampazzi S, et al. Light commands: laser-based audio injection attacks on voice-controllable systems[C]//29th {USENIX} Security Symposium ({USENIX} Security 20). 2020: 2631-2648.](https://arxiv.org/pdf/2006.11946.pdf)
+- 论文主页：[Light Commands](https://lightcommands.com/#:~:text=Voice%20assistants%20inherently%20rely%20on,%2C%20Portal%2C%20or%20Google%20Assistant.)
+
+
+
+
+
 ## AdvPulse: Universal, Synchronization-free, and Targeted Audio Adversarial Attacks via Subsecond Perturbations
 
 ### Contribution
@@ -1113,5 +1185,5 @@
 
 ### Links
 
-- 论文链接
+- 论文链接：
 
