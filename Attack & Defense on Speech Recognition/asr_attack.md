@@ -4,6 +4,26 @@
 
 [TOC]
 
+## Check List
+
+### USENIX Security
+
+- 2020 
+
+### NDSS: Network and Distributed System Security Symposium
+
+- 2020
+
+### S&P: IEEE Symposium on Security and Privacy
+
+- 2020
+
+### CCS：ACM Conference on Computer and Communications
+
+- 2020
+
+
+
 
 
 ## Todo List
@@ -26,10 +46,9 @@
 17. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
 18. F. Kreuk, Y. Adi, M. Cisse, and J. Keshet, “Fooling end-to-end speaker verification with adversarial examples,” in ICASSP, 2018.
 19. 更新 Overview
-20. Tao Chen, Longfei Shangguan, Zhenjiang Li, and Kyle Jamieson. 2020. Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems. In Proceedings ofthe Network and Distributed System Security Symposium (NDSS)
-21. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
-22. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
-23. Motion Sensor-based Privacy Attack on Smartphones.
+20. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
+21. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
+22. Motion Sensor-based Privacy Attack on Smartphones.
 
 
 
@@ -1099,6 +1118,49 @@
 ### Links
 
 - 论文链接：[Guo Z, Lin Z, Li P, et al. SkillExplorer: Understanding the Behavior of Skills in Large Scale[C]//29th {USENIX} Security Symposium (USENIX Security 20). 2020: 2649-2666.](https://www.usenix.org/conference/usenixsecurity20/presentation/guo)
+
+
+
+
+
+## Metamorph: Injecting Inaudible Commands into Over-the-air Voice Controlled Systems
+
+### Contribution
+
+### Notes
+
+1. 提出了一种**白盒**、**物理**下的对抗攻击算法，攻击 **DeepSpeech** 平台；
+
+2. 为了研究物理环境对样本鲁棒性的影响，作者认为应该从三个方面入手：
+
+   (1) **设备的影响（Device Distortion）**：不同的设备（发声端的扬声器和接收端的麦克风）的频率响应曲线不一样，这可能会导致对抗样本失效；作者研究了不同的麦克风的频率响应曲线，结果如下
+
+   <img src="pictures/image-20210122192641381.png" alt="image-20210122192641381" style="zoom: 28%;" />
+
+   可以看到<u>不同的设备的麦克风频率响应曲线都不太一样，并且都存在两个比较明显的下陷区域</u>；
+
+   (2) **传声信道的影响（Channel Effect）**：（直译过来）传声信道对发射信号的影响主要来自 **衰减（Attenuation）** 和 **多路径（Multi-path）** 这两个方面；作者选择一组扬声器-麦克风设备，在三个（办公室、走廊和）不同的环境下测试了信道对音频的影响，发现**信道对短距离的攻击影响不大，但是对于长距离的攻击影响较为严重**；
+
+   实验环境图如下所示：
+
+   <img src="pictures/image-20210122194939094.png" alt="image-20210122194939094" style="zoom:26%;" />
+
+   实验结果图如下所示：（<u>在第一次播放扫频曲线后，在不定间隔后出现了回声/反射曲线</u>）
+
+   <img src="pictures/image-20210122195254925.png" alt="image-20210122195254925" style="zoom:33%;" />
+
+   (3) **环境噪声（Ambient Noise）**：作者测试了三种环境噪声（人说话声、背景音乐声和引擎声）对 对抗样本在数字信道上的影响，发现当信噪比在 $22$ 以上时，对抗样本基本都能成功，除了环境噪声为人说话声的情况。作者分析其中的原因是人说话声在相同信噪比的情况下引入的噪声能量更强；另外，**作者认为攻击者可以选择在任意的时间来播放对抗样本，因此并不需要考虑环境噪声的问题**（<u>这一点我不是特别同意，如果是基于这样的设定，我们根本不需要对抗样本，利用重放攻击就可以很好地做到攻击。因此我觉得攻击者还是需要考虑一定的环境噪声影响的</u>）。
+
+   <img src="pictures/image-20210122205913894.png" alt="image-20210122205913894" style="zoom: 25%;" />
+
+   
+
+### Links
+
+- 论文链接：[Chen T, Shangguan L, Li Z, et al. Metamorph: Injecting inaudible commands into over-the-air voice controlled systems[C]//Proceedings of NDSS. 2020.](https://www.ndss-symposium.org/ndss-paper/metamorph-injecting-inaudible-commands-into-over-the-air-voice-controlled-systems/)
+- 频响曲线数据集：
+  - AIR Database：[A binaural room impulse response database for the evaluation of dereverberation algorithms](http://guillaume.perrin74.free.fr/ChalmersMT2012/Resources/__Databases/Aachen%20Impulse%20Response%20Database/jeub09a.pdf) [下载源]()
+  - 
 
 
 

@@ -359,6 +359,10 @@ x = tf.keras.layers.Dense(dim, activation="relu")(x) # (..., seq_len, dim)
 x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, no_tokens)
 ```
 
+#### Pytorch 实现
+
+
+
 ### Links
 
 - 论文链接：[Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)
