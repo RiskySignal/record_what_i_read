@@ -134,9 +134,50 @@ $$
 
 ### Links
 
-- 参考链接：[优化算法Optimizer比较和总结](https://zhuanlan.zhihu.com/p/55150256)
+- 参考链接：[优化算法 Optimizer 比较和总结](https://zhuanlan.zhihu.com/p/55150256)
 - Adam 论文链接：[Kingma D P, Ba J. Adam: A method for stochastic optimization[J]. arXiv preprint arXiv:1412.6980, 2014.](https://arxiv.org/abs/1412.6980)
 
+
+
+
+
+## 交叉熵、相对熵、JS 散度
+
+### 熵
+
+熵（信息熵）指的是信息量的期望；
+$$
+H(X) = -\sum_{i=1}^n p(x_i) \log (p(x_i))
+$$
+
+### 相对熵（KL 散度）
+
+相对熵（KL 散度）用来衡量两个分布的差异；
+$$
+D_{KL}(p||q) = \sum_{i=1}^n p(x_i) \ log \left(\frac{p(x_i)}{q(x_i)} \right)
+$$
+相对熵是非对称的，使用时 $p(x)$ 用来表示样本的真实分布，而 $q(x)$ 用来表示模型所预测的分布；
+
+### 交叉熵
+
+交叉熵可以通过相对熵变化而来，在机器学习中通常直接用交叉熵作为损失函数；
+$$
+H(p,q) = -\sum_{i=1}^n p(x_i)\log(q(x_i))
+$$
+
+### JS 散度
+
+JS 散度用来衡量两个分布的相似度，是基于相对熵的变体，解决了相对熵的非对称问题；
+$$
+JS(P_1||P_2) = \frac{1}{2} KL(P_1||\frac{P_1 + P_2}{2}) + \frac{1}{2} KL(P_2||\frac{P_1+P_2}{2})
+$$
+
+### Wasserstein 距离
+
+Wasserstein 距离用来度量两个概率分布之间的距离，解决了当两个分布 $P$, $Q$ 相差很远时，KL 散度和 JS 散度梯度消失的问题；
+$$
+W(P_1, P_2) = \inf_{\gamma \sim \Pi(P_1, P_2)} \mathbb{E}_{(x,y)\sim\gamma}[\lVert x-y \rVert]
+$$
 
 
 
