@@ -1127,6 +1127,12 @@
 
 ### Contribution
 
+1. 提出了一种**非常有效的物理下的白盒攻击方法**；
+2. 研究了同一个扬声器设备配合不同的麦克风设备时的频率响应曲线，让我们更进一步地理解了“为什么对抗样本在物理中不太容易成功”；
+3. 使用了非常有意思的对抗样本增强方法——域鉴别器；
+4. 使用了非常有意思的对抗样本隐藏方法——扰动遮罩；
+5. 实验部分充足，充分地考虑了各方面因素对样本鲁棒性的影响，值得借鉴；
+
 ### Notes
 
 1. 提出了一种**白盒**、**物理**下的对抗攻击算法，攻击 **DeepSpeech** 平台；
@@ -1177,9 +1183,9 @@
 
         <img src="pictures/image-20210124125406852.png" alt="image-20210124125406852" style="zoom: 12%;" />
 
-        即，希望在生成对抗样本的过程中，既保留样本的对抗特性，又能够去除信道相关的特性；（<u>这为什么能够让对抗样本变得更加鲁棒？</u>）
+        即，希望在生成对抗样本的过程中，既保留样本的对抗特性，又能够去除信道相关的特性；（<u>有意思！这为什么能够让对抗样本变得更加鲁棒？</u>）
 
-    -   **缓解过拟合（Improving loss to alleviate over-fitting）**：作者将“在 API 上 Confidence 高，但是在物理攻击下的 Confidence 却十分低”的现象称为过拟合问题。因此作者通过添加随机扰动的方式，来缓解这种过拟合问题：
+    -   **缓解过拟合（Improving loss to alleviate over-fitting）**：作者将“在 API 上 Confidence 高，但是在物理攻击下的 Confidence 却十分低”的现象称为过拟合问题。因此作者通过添加随机扰动的方式，来缓解这种过拟合问题：（<u>其他文章中已经用到了这个思想，但是作者还算比较新颖地把这个称作过拟合问题</u>）
 
         <img src="pictures/image-20210124130731388.png" alt="image-20210124130731388" style="zoom:17%;" />
 
@@ -1191,7 +1197,7 @@
 
     (3) **提高音频质量（Improving Audio Quality）**:
 
-    -   **声音涂鸦（Acoustic Graffiti**）：让生成的对抗扰动更加得像一种自然的扰动，从而增强样本的隐藏性；修改后的损失函数如下
+    -   **声音涂鸦（Acoustic Graffiti**）：让生成的对抗扰动更加得像一种自然的扰动，从而增强样本的隐藏性；修改后的损失函数如下（<u>直观上来看，我并不觉得这个可以提高音频质量且保证样本的成功率</u>）
 
         <img src="pictures/image-20210124152043024.png" alt="image-20210124152043024" style="zoom:21%;" />
 
@@ -1241,9 +1247,9 @@
 
     (3) 方法简称：
 
-    -   Meta-Init：Metamorph - Generating Initial Examples；
-    -   Meta-Enha：Metamorph - Enhancing Adversarial Examples；
-    -   Meta-Qual：Metamorph - Improving Audio Quality；
+    -   Meta-Init 方法：Metamorph - Generating Initial Examples；
+    -   Meta-Enha 方法：Metamorph - Enhancing Adversarial Examples；
+    -   Meta-Qual 方法：Metamorph - Improving Audio Quality；
 
     (3) 默认参数：
     $$
@@ -1264,9 +1270,35 @@
 
         <img src="pictures/image-20210124172611789.png" alt="image-20210124172611789" style="zoom:28%;" />
 
-    -   User Perceptibility：
+    - User Perceptibility：
 
+      大多数的测试者发现了对抗样本和原始音频之间的区别，但是很少有人能够识别出其中的字符发生了改变。另外大多数的测试者认为噪声的来源是设备的音质问题；
     
+      ![image-20210124204736864](C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210124204736864.png)
+    
+      其中，$A$ - 设备音质问题；$B$ - 音频音质问题；$C$ - 两个音频进行了混合；
+    
+    (6) 👍 更多实验：
+    
+    - 单位长度音频中嵌入单词数量的影响（Effect of Transcript Length）：根据这个实验结果，作者在前面生成对抗样本的时候，使用的 FUR（Frame Utilize Rate）均为 $0.2$，这个值不仅要保证对抗样本的成功率，同时也要保证添加的扰动大小尽可能得小；
+    
+      <img src="pictures/image-20210124205601212.png" alt="image-20210124205601212" style="zoom: 33%;" />
+    
+    - 接收设备对样本成功率的影响（Effect of Device Frequency Selectivity）：iPhone 和 Samsung 上面的效果更好；
+    
+      <img src="pictures/image-20210124210516248.png" alt="image-20210124210516248" style="zoom:30%;" />
+    
+    - 背景噪声大小对成功率的影响（Effect of Ambient Noise）:
+    
+      <img src="pictures/image-20210124210714996.png" alt="image-20210124210714996" style="zoom: 33%;" />
+    
+    - 扬声器声音大小对成功率的影响（Effect of Speaker Volume）：可以看到，声音大小对于对抗样本的成功率来说确实非常关键，当扬声器的功率在 $45dB$ 时，样本的成功率很低；
+    
+      <img src="pictures/image-20210124211056905.png" alt="image-20210124211056905" style="zoom: 33%;" />
+    
+    - 设备移动速度对成功率的影响（Effect of Victim Device Movement）：（<u>这个实验也做了，简直惨无人道，作者的实验实在是太齐全了！</u>）
+    
+      <img src="pictures/image-20210124211317612.png" alt="image-20210124211317612" style="zoom: 33%;" />
 
 ### Links
 
