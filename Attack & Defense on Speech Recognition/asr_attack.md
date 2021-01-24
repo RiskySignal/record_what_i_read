@@ -1153,14 +1153,129 @@
 
    <img src="pictures/image-20210122205913894.png" alt="image-20210122205913894" style="zoom: 25%;" />
 
-   
+3. ⭐ 方法
+
+    (1) **生成初始对抗样本（Generating Initial Examples）**
+
+    -   收集信道脉冲响应（Channel Impulse Response）：作者使用已经公开的四个 CIR 数据集——AIR，MARDY，REVERB 和 RWCP；
+
+    -   生成对抗样本：生成过程如下图上半部分所示
+
+        <img src="pictures/image-20210124105446796.png" alt="image-20210124105446796" style="zoom:33%;" />
+
+        公式如下：使用 CTC 损失函数，其中 $H_i$ 为信道脉冲响应，$M$ 指信道脉冲响应的数量；
+
+        <img src="pictures/image-20210124105704159.png" alt="image-20210124105704159" style="zoom:25%;" />
+
+    -   结果：**可以在 $1m$ 内实现很好的攻击效果，但是远距离攻击并不理想**；
+
+        <img src="pictures/image-20210124111647238.png" alt="image-20210124111647238" style="zoom: 25%;" />
+
+    (2) **强化对抗样本（Enhancing Adversarial Examples）**：作者认为，在远距离情况下的攻击比较差是因为在生成对抗样本的过程中，添加了过多与特定信道相关的扰动。所以，作者希望将这种和特定的信道特征相关的扰动（距离、房间、设备）能够被去除，从而使对抗样本变得更加鲁棒；
+
+    -   **域鉴别器（Domain Discriminator）**：结构如上图 9 中的下半部分，添加域鉴别器后，生成对抗样本的损失函数的公式变化如下
+
+        <img src="pictures/image-20210124125406852.png" alt="image-20210124125406852" style="zoom: 12%;" />
+
+        即，希望在生成对抗样本的过程中，既保留样本的对抗特性，又能够去除信道相关的特性；（<u>这为什么能够让对抗样本变得更加鲁棒？</u>）
+
+    -   **缓解过拟合（Improving loss to alleviate over-fitting）**：作者将“在 API 上 Confidence 高，但是在物理攻击下的 Confidence 却十分低”的现象称为过拟合问题。因此作者通过添加随机扰动的方式，来缓解这种过拟合问题：
+
+        <img src="pictures/image-20210124130731388.png" alt="image-20210124130731388" style="zoom:17%;" />
+
+        其中 $N$ 为随机噪声的个数， $JSD(\cdot)$ 指 `JS散度（Jensen-Shannon Divergence）` ，值越小表示两个分布越接近；
+
+        改进后的损失函数公式如下：
+
+        <img src="pictures/image-20210124131919454.png" alt="image-20210124131919454" style="zoom:16%;" />
+
+    (3) **提高音频质量（Improving Audio Quality）**:
+
+    -   **声音涂鸦（Acoustic Graffiti**）：让生成的对抗扰动更加得像一种自然的扰动，从而增强样本的隐藏性；修改后的损失函数如下
+
+        <img src="pictures/image-20210124152043024.png" alt="image-20210124152043024" style="zoom:21%;" />
+
+        其中 $\hat{N}$ 为自然扰动，$dist(\cdot,\cdot)$ 为 $MFCC$ 距离；
+
+    -   **减少扰动范围（Reducing Perturbation's Coverage）**：为了让生成算法生成的对抗扰动更小，作者额外添加了一个 $L_2$ 范数项（<u>添加的这个 $L_2$ 范数和 $dB_I(\delta)$ 有什么区别？</u>）
+        $$
+        \arg\min_\delta \alpha \cdot dB_I(\delta) + L_{ctc} + \gamma \cdot L_{of} - \beta \cdot L_d + \eta \cdot dist(\delta, \tilde{N}) + \mu \cdot L_2
+        $$
+        生成对抗样本以后，作者使用 **扰动范围遮罩（Perturbation's Coverage）**$C={C_f}$，将小于某个阈值 $s$ 的扰动都进行遮罩
+        $$
+        C_f = 
+        \begin{cases}
+        1, & if \; s < \delta_f \\
+        0, & otherwise
+        \end{cases}\\
+        \tilde{\delta} = C_f \cdot \delta
+        $$
+        样例图如下：
+
+        <img src="pictures/image-20210124155542656.png" alt="image-20210124155542656" style="zoom: 25%;" />
+
+4. 实验
+
+    (1) 实验设定：
+
+    -   使用 $370$ 个信道回声响应，并将其分类成 $21$ 中不同的信道环境；
+
+    -   使用 $2\ *\ Nvidia\ GTX\ 1080Ti$ 配置，生成一个 $6s$  的对抗样本所需的时长大约为 $5 \sim 7$ 小时；（<u>花费的时间还是很久的</u>）
+
+    -   使用 $1$ 个扬声器，$4$ 个麦克风设备（Google Nexus 5X，Samsung Galaxy S7，HTC A9W 和 iPhone 8），在 $29$ 个不同的位置进行测试；
+
+        <img src="pictures/image-20210124160911723.png" alt="image-20210124160911723" style="zoom: 38%;" />
+
+    -   每个样本播放 $100$ 次；
+
+    (2) 实验指标：
+
+    -   字成功率（Character Success Rate - CSR）；
+
+    -   攻击成功率（Transcript Success Rate - TSR）；
+
+    -   频谱扰动大小（Mel Cepstral Distortion - MCD）：$mc^t$ 为对抗样本的 $MFCC$ ，$mc^e$ 为原始音频的 $MFCC$ ；
+        $$
+        MCD = \frac{10}{ln(10)}\cdot\sqrt{2\cdot\sum_{i=1}^{24}(mc_i^t-mc_i^e)^2}
+        $$
+
+    (3) 方法简称：
+
+    -   Meta-Init：Metamorph - Generating Initial Examples；
+    -   Meta-Enha：Metamorph - Enhancing Adversarial Examples；
+    -   Meta-Qual：Metamorph - Improving Audio Quality；
+
+    (3) 默认参数：
+    $$
+    \arg\min_\delta \alpha \cdot dB_I(\delta) + L_{ctc} + \gamma \cdot L_{of} - \beta \cdot L_d + \eta \cdot dist(\delta, \tilde{N}) + \mu \cdot L_2 \\
+    where \;\; \beta, \gamma, \eta,\mu=0.05,500,1e-4,1e-12
+    $$
+    (5) 实验结果：
+
+    -   LOS (Line-of-Sight) Attack：
+
+        <img src="pictures/image-20210124165846894.png" alt="image-20210124165846894" style="zoom: 33%;" />
+
+    -   NLOS (None-Line-of-Sight) Attack：
+
+        ![image-20210124170202757](pictures/image-20210124170202757.png)
+
+    -   Audio Quality：其中 REF 为 [Carlini](#Audio Adversarial Examples: Targeted Attacks on Speech-to-Text) 的工作
+
+        <img src="pictures/image-20210124172611789.png" alt="image-20210124172611789" style="zoom:28%;" />
+
+    -   User Perceptibility：
+
+    
 
 ### Links
 
 - 论文链接：[Chen T, Shangguan L, Li Z, et al. Metamorph: Injecting inaudible commands into over-the-air voice controlled systems[C]//Proceedings of NDSS. 2020.](https://www.ndss-symposium.org/ndss-paper/metamorph-injecting-inaudible-commands-into-over-the-air-voice-controlled-systems/)
 - 频响曲线数据集：
-  - AIR Database：[A binaural room impulse response database for the evaluation of dereverberation algorithms](http://guillaume.perrin74.free.fr/ChalmersMT2012/Resources/__Databases/Aachen%20Impulse%20Response%20Database/jeub09a.pdf) [下载源]()
-  - 
+  - AIR Dataset：[A binaural room impulse response database for the evaluation of dereverberation algorithms](http://guillaume.perrin74.free.fr/ChalmersMT2012/Resources/__Databases/Aachen%20Impulse%20Response%20Database/jeub09a.pdf) [下载源]()
+  - MARDY Dataset：[Evaluation of speech dereverberation algorithms using the mardy database](https://www.researchgate.net/publication/254406685_Evaluation_of_speech_dereverberation_algorithms_using_the_MARDY_database)  [下载源](http://www.commsp.ee.ic.ac.uk/~sap/uploads/data/MARDY.rar)
+  - REVERB Dataset：[The reverb challenge: A common evaluation framework for dereverberation and recognition of reverberant speech](https://ieeexplore.ieee.org/document/6701894) [下载源](https://www.openslr.org/28/)
+  - RWCP Dataset：[Acoustical sound database in real environments for sound scene understanding and hands-free speech recognition](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.463.357&rep=rep1&type=pdf) [下载源](https://www.openslr.org/28/)
 
 
 
