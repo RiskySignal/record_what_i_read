@@ -1,5 +1,7 @@
 # Model Robustness
 
+> 由于我学习模型鲁棒性时，从一开始就是学习的 SOK，因此，该模块的大部分内容均会在 SOK 那篇文章中进行展开，其他文章的阅读仅是作为一个扩展。
+
 
 
 [TOC]
@@ -12,6 +14,43 @@
 2. Sven Gowal, Krishnamurthy Dvijotham, Robert Stanforth, Rudy Bunel, Chongli Qin, Jonathan Uesato, Timothy Mann, and Pushmeet Kohli. On the effectiveness of interval bound propagation for training verifiably robust models. arXiv preprint arXiv:1810.12715, 2018.
 
 3. 解决 Certified Defenses For Adversarial Patches 中的问题；
+
+
+
+
+
+## Overview
+
+开始 ”模型鲁棒性“ 这个板块之前，问几个问题：
+
+1. 我们的预期是什么？
+2. 已有的工作模式？
+3. 如何来评估一个工作的好坏？
+4. 里面的困难有哪些？
+
+
+
+
+
+## Formal Verification of Piece-Wise Linear Feed-Forward Neural Networks
+
+### Contribution
+
+### Notes
+
+#### Linear Approximation
+
+考虑前馈神经网络中的 $ReLU$ 单元和 $MaxPool$ 单元具有非线性，所以期望用线性约束来替换掉这两个单元。
+
+##### $ReLU$
+
+
+
+### Links
+
+- 论文链接：[Ehlers R. Formal verification of piece-wise linear feed-forward neural networks[C]//International Symposium on Automated Technology for Verification and Analysis. Springer, Cham, 2017: 269-286.](https://arxiv.org/abs/1705.01320)
+
+
 
 
 
@@ -148,3 +187,263 @@
 - $p-norm$ 详解：[知乎 / 0范数, 1 范数, 2范数有什么区别?](https://www.zhihu.com/question/20473040)
 - U-Net 网络详解：[图像语义分割入门+FCN/U-Net网络解析](https://zhuanlan.zhihu.com/p/31428783)
 
+
+
+
+
+## SoK: Certified Robustness for Deep Neural Networks
+
+### Contribution
+
+
+
+### Notes
+
+#### Notations and Preliminaries
+
+##### Adversarial Perturbation
+
+定义在输入 $x_0$ 处的扰动边界：
+$$
+B_{p,\epsilon}(x_0):=\{ x: \lVert x-x_0 \rVert_p \le \epsilon \}
+$$
+
+##### Optimization Problem
+
+模型鲁棒性的证明问题，可以转化为最优化问题：
+$$
+\mathcal{M}(y_0, y_t) = \min_x f_\theta(x)_{y_0} - f_\theta(x)_{y_t} \;\;\;\;\;s.t. x\in B_{p,\epsilon}(x_0) \\
+\text{Goal : To Prove } \;\; \forall y_t, \mathcal{M}(y_0, y_t) \ge 0
+$$
+即，我们希望在 对抗扰动 的最坏情况下，模型还能将样本分类为正确的标签。
+
+##### Input & Ouput
+
+文章中我们讨论神经元的输入输出时，我们**将单层神经网路的线性计算和激活函数拆开讨论**。因为线性计算本身具有线性性质，易于推导其输出值；而激活函数则大多都是非线性的，故不易推导其输出值；
+
+##### Linear Programming
+
+线性规划问题，在一系列线性约束下，求线性目标函数的最值：
+$$
+\min_x c^Tx \;\;\;\;s.t.
+\begin{cases}
+Ax \le b  \\
+x \ge 0
+\end{cases}
+$$
+可以看到，**线性规划问题和鲁棒性证明问题之间是非常像的**。举例如下问题即为一个线性规划问题：
+
+<img src="images/image-20210127092758736.png" alt="image-20210127092758736" style="zoom: 80%;" />
+
+那么如何来求解线性规划问题？大致的做法是首先找到一个初始点（这个点是边界的某个角），然后让其在边界上滑动。具体参考：
+
+- 参考链接一：https://www.jianshu.com/p/a0fc8a57f452
+- 参考链接二：https://brilliant.org/wiki/linear-programming
+
+##### Stable & Unstable $ReLU$
+
+对于一个 $ReLU$ 单元，其输入为 $\hat{x}$ ：
+
+- 若 $\hat{x}$ 始终为正或始终为负，则我们称这个 $ReLU$ 是 `Stable`；
+- 反之，若 $\hat{x}$ 的值域在 $0$ 的两侧，则我们称这个 $ReLU$ 是 `Unstable`；
+
+
+
+#### Deterministic Approaches
+
+> 论述顺序和原文会有很大的区别，原文是为了更好地去分类这些方法，而我追求的是方法上面的连贯性。
+
+确定性证明方法，直接确定 `模型在输入点处是鲁棒的` 这个命题，形式化为： $\mathcal{A}(f_\theta, x_0, y_0, \epsilon)=False$ 。
+
+##### Branch & Bound
+
+> 这个讲解过程遵循 “提出问题-解决问题”的思路，过程中会有一些疑惑，比如说 最大值/最小值 怎么去求解？计算的前后关系是怎样的？所以现在这边说明一下，可以先不要计较这些问题，而关注每个小节的重点问题，如：
+>
+> - 第一小节，你应该关注如何将问题转化为一个线性规划问题；
+> - 第二小节，你应该先关注如何对神经元值域进行放缩，再关注如何在前后层神经元之间进行值域的传递；
+> - 第三小节，你应该关注为什么我们又将这个问题返回到了原始的线性规划问题，整个方法这样做有什么意义；
+>
+> 最后我根据给老师讲解的时候收集到的反馈，在 PPT 之外补充了 “第四小节-计算过程”，来厘清这个方法具体是如何进行计算的；
+
+1. **Linear Programming**
+
+   首先考虑将鲁棒性证明问题转化为一个线性规划问题。
+
+   (1) 输入约束 - 不等式约束：
+
+   <img src="images/image-20210127093747264.png" alt="image-20210127093747264" style="zoom: 80%;" />
+
+   (2) 线性计算 - 等式约束：
+
+   <img src="images/image-20210127093952409.png" alt="image-20210127093952409" style="zoom:80%;" />
+
+   (3) 激活函数 - 不等式 + 等式约束：
+
+   <img src="images/image-20210127094214118.png" alt="image-20210127094214118" style="zoom:80%;" />
+
+   (4) 线性规划问题：
+
+   ​	现在假设 $x_{1,0}$ 神经元是一个 $ReLU$ 单元，那么我们**根据该神经元输入值的大小进行分类讨论**：
+   $$
+   \begin{array}{l}
+   	\min_{\boldsymbol{x}}f_{\theta}\left( \boldsymbol{x} \right) _{y_0}-f_{\theta}\left( \boldsymbol{x} \right) _{y_t}\\
+   	\left\{ \begin{array}{l}
+   	\text{constraint}\;\;1\\
+   	\text{constraint}\;\;2\\
+   	\hat{x}_{1,0}\le 0\\
+   	x_{1,0}=0\\
+   	\cdots \cdots\\
+   \end{array} \right.\\
+   \end{array}
+   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;
+   \begin{array}{l}
+   	\min_{\boldsymbol{x}}f_{\theta}\left( \boldsymbol{x} \right) _{y_0}-f_{\theta}\left( \boldsymbol{x} \right) _{y_t}\\
+   	\left\{ \begin{array}{l}
+   	\text{constraint}\;\;1\\
+   	\text{constraint}\;\;2\\
+   	\hat{x}_{1,0}\ge 0\\
+   	x_{1,0}=\hat{x}_{1,0}\\
+   	\cdots \cdots\\
+   \end{array} \right.\\
+   \end{array}
+   $$
+   ​	那么如果神经网络中有 $n$ 个 $ReLU$ 神经元，我们就需要有 $2^n$ 个线性规划问题需要求解，**计算复杂度十分高**，故**我们要提出一种方法来解决计算复杂性问题**。
+
+2. **Linear Relaxation**
+
+   线性放缩，在其他文章中也称为线性逼近，即**用线性边界来拟合神经网络中的非线性单元的边界**。
+
+   (1) $ReLu$ 单元
+
+   ​	原文中，称线性放缩后的 $ReLU$ 单元为 $ReLU\ Polytope$ 。
+
+   ​	对于 $ReLU$ 单元，其本身是非线性的，是一个分段线性函数（分为大于 $0$，和小于 $0$ 两端）：
+
+   <img src="images/image-20210127090057247.png" alt="image-20210127090057247" style="zoom:80%;" />
+
+   ​	现在假设我们知道 $ReLU$ **输入**的最小值 $l_{i,j}$ 和最大值 $u_{i,j}$，并且最小值小于 $0$ 而最大值大于 $0$：
+   $$
+   l_{i,j}\le \min_{x\in B_{p,\epsilon}\left( x_0 \right)}\hat{x}_{i,j}\le \max_{x\in B_{p,\epsilon}\left( x_0 \right)}\hat{x}_{i,j}\le u_{i,j} \\
+   l_{i,j} < 0 < u_{i,j}
+   $$
+   ​	那么我们就可以用三个线性约束来确定$ReLU$ **输出**的值域：
+   $$
+   x_{i,j}\ge 0 \\
+   \,x_{i,j}\ge \hat{x}_{i,j} \\ 
+   \,x_{i,j}\le \frac{u_{i,j}}{u_{i,j}-l_{i,j}}\left( \hat{x}_{i,j}-l_{i,j} \right)
+   $$
+   ​	现在我们可以将上面 $2^n$ 个线性规划问题，转换成 $1$ 个线性规划问题：
+   $$
+   \begin{array}{l}
+   	\min_{\boldsymbol{x}}f_{\theta}\left( \boldsymbol{x} \right) _{y_0}-f_{\theta}\left( \boldsymbol{x} \right) _{y_t}\\
+   	\left\{ \begin{array}{l}
+   	\text{constraint}\;\;1\\
+   	\text{constraint}\;\;2\\
+   	x_{1,0}\ge 0\\
+   	x_{1,0}\ge \hat{x}_{1,0}\\
+   	x_{1,0}\le \frac{u_{i,j}}{u_{i,j}-l_{i,j}}\left( \hat{x}_{i,j}-l_{i,j} \right)\\
+   	\cdots \cdots\\
+   \end{array} \right.\\
+   \end{array}
+   $$
+   (2) $MaxPool$ 单元
+
+   ​	对于 $MaxPool$ 单元，由于它是比较多个值之间的最大值，故形式上会显得更复杂，且不太容易理解。为了更好地解释，定义 $d$ 是$MaxPool$ 单元的输出，而 $c_k \ \ (k\in \{1,\dots,k\})$ 是 $MaxPool$ 的 $k$ 个输入。
+
+   ​	首先，我们可以简单地列出如下线性约束：
+   $$
+   \bigwedge_{i \in \{1,\dots,k \}} (d\ge c_i) \\
+   \max_{i\in\{1,...,k\}} c_i \ge d
+   $$
+   ​	但是，在线性规划问题中，并没有 $\max$ 这个约束，所以需要做一些转换，下面直接给出 [文章](#Formal Verification of Piece-Wise Linear Feed-Forward Neural Networks) 中的式子，然后给出解释：
+   $$
+   \left[ \bigwedge_{i \in \{1,\dots,k\}} (d \ge c_i)\right] \;\;\; \wedge \;\;\; \left[c_1 + \dots + c_k \ge d+ (\sum_{i \in \{1,\dots,k\}}l_i)-\max_{i \in \{1,\dots,k\}}l_i \right]
+   $$
+   ​	左边的式子是显然可得的，我们需要思考一下右边这个式子，假设 $l_n=\max_{i \in \{1,\dots,k\}}l_i$ ，我们可以将右边的不等式写成如下形式：
+   $$
+   (c_1-l_1) + \dots + \cancel{(c_n-l_n)} + \dots + (c_k-l_k) + c_n \ge d
+   $$
+
+   - 如果恰好 $c_n=\max_{i\in \{1,\dots,k\}}l_i$ ；由于 $(c_i-l_i)\ge 0$，所以上式成立；
+
+   - 如果 $c_j = \max_{i\in \{1,\dots,k\}}l_i$ 并且 $j\ne n$ ；则我们知道 $c_j \ge c_n \ge l_n \ge l_j$，所以我们可以得到如下式子：
+     $$
+     (c_j-l_j)+c_n = (c_j-\color{red}c_n+c_n-l_n+l_n\color{black}-l_j) + c_n = (c_n-l_n) + (l_n-l_j) + c_j
+     $$
+     那么我们可以改写一下上面的式子：
+     $$
+     (c_1-l_1) + \dots + \cancel{(c_j-l_j)} + \dots+\color{red}(c_n-l_n) \color{black}+ \dots + (c_k-l_k) + (l_n-l_j) + c_j \ge d
+     $$
+     由于我们已知 $l_n\ge l_j$ ，所以上式成立；
+
+   ​	现在我们可以将上面的 $2^n$ 个线性规划问题，转换成 $1$ 个线性规划问题：（这里不再对公式的小标作更严谨的讨论）
+   $$
+   \begin{array}{l}
+   	\min_{\boldsymbol{x}}f_{\theta}\left( \boldsymbol{x} \right) _{y_0}-f_{\theta}\left( \boldsymbol{x} \right) _{y_t}\\
+   	\left\{ \begin{array}{l}
+   	\text{constraint}\;\;1\\
+   	\text{constraint}\;\;2\\
+   	d \ge c_i \\
+   	c_1 + \dots + c_k \ge d+ (\sum_{i \in \{1,\dots,k\}}l_i)-\max_{i \in \{1,\dots,k\}}l_i\\
+   	\cdots \cdots\\
+   \end{array} \right.\\
+   \end{array}
+   $$
+   (3) 神经元输入的取值区间
+
+   ​	确定输出的取值范围之前，我们仍不知道输入的范围 $[l_{i,j},\;u_{i,j}]$，这里可以通**过放缩的方式通根据区间范围来求输入的范围**：	
+
+   <img src="images/image-20210127142547145.png" alt="image-20210127142547145" style="zoom:80%;" />
+
+   ​	举例来说，我们可以用上述方法来求下图中的 $x_3, x_4$：
+
+   ​								<img src="images/image-20210127142718877.png" alt="image-20210127142718877" style="zoom: 80%;" />	<img src="images/image-20210127142735657.png" alt="image-20210127142735657" style="zoom: 80%;" />	<img src="images/image-20210127142757550.png" alt="image-20210127142757550" style="zoom:80%;" />
+
+   ​	可以看到，这里实际上是**忽略了输入之间存在的线性关系**。
+
+3. **Divide & Conquer**
+
+   (1) Un-Complete：至此，上述通过求解 $1$ 个线性规划问题的方法，是一种 Un-Complete （不完备）方法。假设我们求得 $\mathcal{M} = \min_x f_\theta(x)_{y_0} - f_\theta(x)_{y_t}$：
+
+   - 如果 $\mathcal{M} \ge 0$ ，那么我们可以直接给出结论：模型 $f_\theta$ 在输入 $x$ 的 $\epsilon$  扰动邻域内是鲁棒的；
+
+   - 如果 $\mathcal{M} < 0$，此时我们并**不能直接给出 “不鲁棒” 的结论**；
+
+     以放缩后的 $ReLU$ 单元为例：
+
+     <img src="images/image-20210127155249199.png" alt="image-20210127155249199" style="zoom: 67%;" />
+
+     图中，$\hat{l}$ 和 $\hat{u}$ 为输入的实际上下界，而 $l$ 和 $u$ 则为我们用区间范围估计得到的输入上下界。现在，当我们取 $\mathcal{M}<0$ 时，取值点并非在红色折现上（实际的 $ReLU$ 单元取值区间），而是在蓝色三角形区域（放缩后的 $ReLU \; Polytope$ 取值区间）。
+
+   (2) 替换网络中 $Unstable$ 的 $ReLu$
+
+   - 假设我们现有如下图所示的神经网络，蓝色表示正常线性神经元，红色为 $Unstable$ 的 $ReLU$ 单元，绿色为 $Stable$ 的 $ReLU$ 单元：
+
+     <img src="images/image-20210127161819525.png" alt="image-20210127161819525" style="zoom: 80%;" />
+
+   - 我们可以将其中的 $Stable$ 的 $ReLU$ 单元直接替换成正常的线性神经元：
+
+     <img src="images/image-20210127161929407.png" alt="image-20210127161929407" style="zoom:80%;" />
+
+   - 最后，我们可以根据 $Unstable$ 的 $ReLU$ 单元进行分类讨论，再将 $1$ 个线性规划问题，拆分成 $2$ 个线性规划问题：（<u>可以看到，到这里其实我们又回到了最原始的 $2^n$ 个线性规划问题的版本，但是注意，只有我们通过求解 $1$ 个线性规划问题无法得出模型鲁棒的结论时，才需要再进行这步计算</u>）
+
+     ![image-20210127162151322](images/image-20210127162151322.png)
+
+   (3) Complete：因为我们已经回到了原始的线性规划问题上来，故该方法是 Complete （完备）的；
+
+4. **计算流程**
+
+   
+
+   
+
+   
+
+#### Probabilistic Approaches
+
+概率性证明方法，证明 `模型在输入点处是鲁棒的概率大于阈值` 这个命题，形式化为：$\Pr[\mathcal{A}(f_\theta, x_0, y_0, \epsilon)] \ge 1-\alpha$ 。
+
+### Links
+
+- 论文链接：[Li L, Qi X, Xie T, et al. SoK: Certified Robustness for Deep Neural Networks[J]. arXiv preprint arXiv:2009.04131, 2020.](https://arxiv.org/abs/2009.04131)
+- 论文代码：[VeriGauge](https://github.com/AI-secure/VeriGauge)
