@@ -25,7 +25,7 @@
 ### Contribution
 
 1. 建模了对抗训练过程；
-2. 使用 PGD生成的对抗样本 来做对抗训练；
+2. 使用 PGD生成的对抗样本 来做**对抗训练**；
 
 ### Notes
 
@@ -52,7 +52,7 @@
 
 3. 实验发现：
 
-   (1) Loss 下降趋势和对抗样本算法迭代轮数的关系：无论是原始模型还是使用对抗训练得到的模型，两者使用 PGD算法 生成对抗样本时，随着迭代轮数的上升，样本的loss都会上升，且到最后趋于收敛；
+   (1) Loss 下降趋势和对抗样本算法迭代轮数的关系：无论是原始模型还是使用对抗训练得到的模型，两者使用 PGD算法 生成对抗样本时，随着迭代轮数的上升，样本的 loss 都会上升，且到最后趋于收敛；
 
    <img src="pictures/image-20210131225722450.png" alt="image-20210131225722450" style="zoom: 40%;" />
 
@@ -83,10 +83,54 @@
 
 # Unlabeled Data Improves Adversarial Robustness
 
+> 证明部分忽略不看
+
+### Contribution
+
+1. 利用无标签数据强化模型的鲁棒性；
+
 ### Notes
 
+1. 训练方法：
 
+   <img src="pictures/image-20210202073617084.png" alt="image-20210202073617084" style="zoom:50%;" />
+
+   - 首先使用有标签数据训练网络，这里使用 standard loss 为：
+
+     <img src="pictures/image-20210202073956120.png" alt="image-20210202073956120" style="zoom: 19%;" />
+
+   - 使用训练好的网络，标记无标签的数据；
+
+   - 使用有标签和“自标签”的数据继续训练网络，这里使用 robust loss 为：
+
+     <img src="pictures/image-20210202074235297.png" alt="image-20210202074235297" style="zoom: 31%;" />
+
+     这里又到了经典的如何拟合 $L_{reg}(\theta, x)$ 项（因为寻找邻域内的最大值太困难），作者提出了两种方法：
+
+     - **Adversarial Training**：使用 PGD 获取邻域最大值
+
+       <img src="pictures/image-20210202075550864.png" alt="image-20210202075550864" style="zoom: 21%;" />
+
+     - **Stability Training**：使用 高斯分布 采样邻域的值
+
+       <img src="pictures/image-20210202080012169.png" alt="image-20210202080012169" style="zoom:29%;" />
+
+       使用 Stability Training 的网络在测试的时候也做了改变，模型输出的是 高斯分布 采样邻域中的可能性最大的分类
+
+       <img src="pictures/image-20210202080219912.png" alt="image-20210202080219912" style="zoom:38%;" />
+
+2. 实验：
+
+   (1) 经验性防御（heuristic defense）：主要关注 $L_\infty$ 攻击
+
+   <img src="pictures/image-20210202081540739.png" alt="image-20210202081540739" style="zoom:45%;" />
+
+   (2) 证明性防御（certified defense）：同时关注 $L_\infty$ 和 $L_2$ 攻击
+
+   <img src="pictures/image-20210202082314261.png" alt="image-20210202082314261" style="zoom: 50%;" />
 
 ### Links
 
-- [Carmon Y, Raghunathan A, Schmidt L, et al. Unlabeled data improves adversarial robustness[J]. arXiv preprint arXiv:1905.13736, 2019.](https://arxiv.org/abs/1905.13736)
+- 论文链接：[Carmon Y, Raghunathan A, Schmidt L, et al. Unlabeled data improves adversarial robustness[J]. arXiv preprint arXiv:1905.13736, 2019.](https://arxiv.org/abs/1905.13736)
+
+- 论文代码：https://github.com/yaircarmon/semisup-adv
