@@ -85,7 +85,7 @@
 
 
 
-# Theoretically Principled Trade-off between Robustness and Accuracy
+## Theoretically Principled Trade-off between Robustness and Accuracy
 
 ### Contribution
 
@@ -186,7 +186,7 @@
 
 
 
-# Unlabeled Data Improves Adversarial Robustness
+## Unlabeled Data Improves Adversarial Robustness
 
 ### Contribution
 
@@ -258,7 +258,7 @@
 
 
 
-# Defense Against Adversarial Attacks Using Feature Scattering-based Adversarial Training
+## Defense Against Adversarial Attacks Using Feature Scattering-based Adversarial Training
 
 ### Contribution
 
