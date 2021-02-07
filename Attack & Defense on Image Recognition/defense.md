@@ -25,8 +25,9 @@
 
 ### Contribution
 
-1. 建模了对抗训练过程；
-2. 使用 PGD生成的对抗样本 来做**对抗训练**；
+1. Madry.
+2. 建模了对抗训练过程；
+3. 使用 PGD生成的对抗样本 来做**对抗训练**；
 
 ### Notes
 
@@ -88,8 +89,9 @@
 
 ### Contribution
 
-1. 从理论上证明了 成功率和鲁棒性 对于分类问题来说是一个权衡利弊的问题；（<u>虽然我并不太关注这个证明</u>）
-2. 在理论的基础上，提出了新的对抗训练的损失函数；
+1. Trades.
+2. 从理论上证明了 成功率和鲁棒性 对于分类问题来说是一个权衡利弊的问题；（<u>虽然我并不太关注这个证明</u>）
+3. 在理论的基础上，提出了新的对抗训练的损失函数；
 
 ### Notes
 
@@ -188,8 +190,9 @@
 
 ### Contribution
 
-1. 在 [TRADES](#Theoretically Principled Trade-off between Robustness and Accuracy) 的基础上修改了损失函数，添加了无标签数据；
-2. 文章给我的感觉是，就是利用更多数据来训练网络，不过这个数据可以是无标签的数据，这样的话就不需要进行大量的认为标注；
+1. RST.
+2. 在 [TRADES](#Theoretically Principled Trade-off between Robustness and Accuracy) 的基础上修改了损失函数，添加了无标签数据；
+3. 文章给我的感觉是，就是利用更多数据来训练网络，不过这个数据可以是无标签的数据，这样的话就不需要进行大量的认为标注；
 
 ### Notes
 
@@ -251,3 +254,77 @@
 
 - 论文代码：https://github.com/yaircarmon/semisup-adv
 
+
+
+
+
+# Defense Against Adversarial Attacks Using Feature Scattering-based Adversarial Training
+
+### Contribution
+
+1. 使用  Wasserstein Distance 来生成对抗样本；
+
+### Notes
+
+1. Background：
+
+   (1) Adversarial Training，可以被形式化为 $min-max$ 问题：
+
+   <img src="pictures/image-20210204222303690.png" alt="image-20210204222303690" style="zoom: 12%;" />
+
+   ​	其中内层最大值经常用对抗样本生成来近似，如使用单步的 $FGSM$ 算法，或者是多步的 $PGD$ 算法（算法第一次迭代时首先会添加上一个随机噪声，然后再迭代生成对抗样本），$PGD$ 算法公式如下：
+
+   <img src="pictures/image-20210204222702970.png" alt="image-20210204222702970" style="zoom:20%;" />
+
+   (2) 对抗训练的问题：
+
+   - 标签泄露（Label Leaking）：生成的对抗扰动本身和目标类别是密切相关的，导致训练好的模型看到测试集的对抗扰动便知道目标分类，而与原始的图片无关；
+   - 梯度隐藏（Gradient Masking）：指的是训练后的模型学习到了尽可能生成一些无用的梯度（<u>这个和我想象中的“梯度隐藏”的概念不同，从作者的解释来看是模型学习到了这种生成无用梯度的能力，可能是我没有真正理解这个含义，因为我感觉即使是梯度隐藏也是可以起到防御对抗攻击的效果的</u>）；
+
+2. 最优运输理论（Optimal Transport Theory）
+
+   (1) 参考链接：
+
+   - [【数学】Wasserstein Distance](https://zhuanlan.zhihu.com/p/58506295)
+   - [机器学习工具（二）Notes of Optimal Transport](https://zhuanlan.zhihu.com/p/82424946)
+   - [令人拍案叫绝的Wasserstein GAN](https://zhuanlan.zhihu.com/p/25071913)
+
+   (2) Wasserstein Distance的优点：**Wasserstein距离相比KL散度、JS散度的优越性在于，即便两个分布没有重叠，Wasserstein距离仍然能够反映它们的远近**
+
+3. 训练方法：
+
+   <img src="pictures/image-20210207160456570.png" alt="image-20210207160456570" style="zoom: 43%;" />
+
+   <u>我的理解：</u>
+
+   - 简单的来看，作者提出的方法和已有的方法的不同之处在于使用了 Wasserstein Distance 作为生成对抗样本时的损失函数；
+   - 思考一下，变换了这个损失函数的作用有可能那么大么？从 Wasserstein Distance 自身的有点来看，它的优点主要是体现在两个分布没有重叠时，还能够有效地指导网络训练。所以从对抗样本的生成角度来看，Wasserstein Distance 对于较大扰动时的对抗样本生成是更加有效的，因为此时两个样本的解码概率分布可能已经差异十分大了，用 KL 散度并不能更好地指导生成对抗样本；**概括一下，能够指导生成更多样化的对抗样本，从而更好地进行对抗训练**；
+   - 再思考一下，这篇文章作者一直是从 feature 这个角度来说的，其实我一直不太明白作者这样说有什么意义，但是我们揣测一下的话，因为在利用 Wasserstein Distance 生成对抗样本的时候，其实是要利用到一整个batch的样本来调整扰动的，这也是这个方法和前面方法的不同之处；**概括一下，用到了batch来生成对抗样本**；
+
+   方法示意图：
+
+   <img src="pictures/image-20210207162115193.png" alt="image-20210207162115193" style="zoom: 43%;" />
+
+4. 实验：
+
+   (0) 实验参数：
+
+   - 数据集 & 基准方法：
+
+     <img src="pictures/image-20210207175245420.png" alt="image-20210207175245420" style="zoom:49%;" />
+
+   - 测试参数：
+
+     <img src="pictures/image-20210207175032840.png" alt="image-20210207175032840" style="zoom:50%;" />
+
+   (1) 白盒攻击结果：
+
+   <img src="pictures/image-20210207175417561.png" alt="image-20210207175417561" style="zoom:50%;" />
+
+   <img src="pictures/image-20210207175438864.png" alt="image-20210207175438864" style="zoom:50%;" />
+
+
+### Links
+
+- 论文链接：[Zhang H, Wang J. Defense against adversarial attacks using feature scattering-based adversarial training[J]. arXiv preprint arXiv:1907.10764, 2019.](https://arxiv.org/abs/1907.10764?spm=5176.12281978.0.0.5f797a4dBpnylV&file=1907.10764)
+- 论文代码：https://github.com/Haichao-Zhang/FeatureScatter
