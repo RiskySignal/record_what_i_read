@@ -328,3 +328,19 @@
 
 - 论文链接：[Zhang H, Wang J. Defense against adversarial attacks using feature scattering-based adversarial training[J]. arXiv preprint arXiv:1907.10764, 2019.](https://arxiv.org/abs/1907.10764?spm=5176.12281978.0.0.5f797a4dBpnylV&file=1907.10764)
 - 论文代码：https://github.com/Haichao-Zhang/FeatureScatter
+
+
+
+
+
+## Using Pre-Training Can Improve Model Robustness and Uncertainty
+
+### Contribution
+
+1. 验证了预训练的作用：不仅可以提高模型收敛速率，而且可以提高模型的鲁棒性和不确定性；
+
+### Links
+
+- 论文链接：[Hendrycks D, Lee K, Mazeika M. Using pre-training can improve model robustness and uncertainty[C]//International Conference on Machine Learning. PMLR, 2019: 2712-2721.](https://arxiv.org/abs/1901.09960?spm=5176.12281978.0.0.5f793e46aHiE80&file=1901.09960)
+- 论文代码： 
+
