@@ -342,5 +342,34 @@
 ### Links
 
 - 论文链接：[Hendrycks D, Lee K, Mazeika M. Using pre-training can improve model robustness and uncertainty[C]//International Conference on Machine Learning. PMLR, 2019: 2712-2721.](https://arxiv.org/abs/1901.09960?spm=5176.12281978.0.0.5f793e46aHiE80&file=1901.09960)
-- 论文代码： 
+- 论文代码： https://github.com/hendrycks/pre-training
 
+
+
+
+
+## Boosting Adversarial Training with Hypersphere Embedding
+
+### Contribution
+
+1. 修改了loss函数，希望生成对抗样本的时候能够只学习角度的变换；
+
+### Notes
+
+1. 思想：作者希望在生成对抗样本的时候，尽可能地旋转样本的角度，而不是缩放大小；
+
+   <img src="pictures/image-20210212110243153.png" alt="image-20210212110243153" style="zoom: 50%;" />
+
+2. 方法：对参数和模型提取出来的特征，在最后一个softmax层之前做normalization，然后计算loss；
+
+   <img src="pictures/image-20210212110557246.png" alt="image-20210212110557246" style="zoom:50%;" />
+
+3. 实验：
+
+   <img src="pictures/image-20210212110722459.png" alt="image-20210212110722459" style="zoom: 67%;" />
+
+### Links
+
+- 论文链接：[Pang T, Yang X, Dong Y, et al. Boosting adversarial training with hypersphere embedding[J]. arXiv preprint arXiv:2002.08619, 2020.](https://arxiv.org/abs/2002.08619)
+
+- 论文代码：https://github.com/ShawnXYang/AT_HE
