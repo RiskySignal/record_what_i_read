@@ -364,6 +364,8 @@
 
    <img src="pictures/image-20210212110557246.png" alt="image-20210212110557246" style="zoom:50%;" />
 
+   该处的loss实现方法和 [CosFace](https://arxiv.org/abs/1801.09414) 相同。
+
 3. 实验：
 
    <img src="pictures/image-20210212110722459.png" alt="image-20210212110722459" style="zoom: 67%;" />
@@ -373,3 +375,47 @@
 - 论文链接：[Pang T, Yang X, Dong Y, et al. Boosting adversarial training with hypersphere embedding[J]. arXiv preprint arXiv:2002.08619, 2020.](https://arxiv.org/abs/2002.08619)
 
 - 论文代码：https://github.com/ShawnXYang/AT_HE
+
+
+
+
+
+## Overfitting in adversarially robust deep learning
+
+### Contribution
+
+1. 使用大量的实验来验证：对抗训练的模型需要设置一个 `early stop` ，并且这种模型过拟合的问题并不能通过现有的一些抑制过拟合的方法来解决；
+
+### Notes
+
+1. 实验 1：过拟合会对对抗训练的鲁棒性产生负面影响；
+
+   - 在 $l_\infty$ 对抗攻击下：
+
+   <img src="pictures/image-20210212195423596.png" alt="image-20210212195423596" style="zoom: 60%;" />
+
+   - 在 $l_2$ 和 $l_\infty$ 对抗攻击下的多个数据集中：
+
+   <img src="pictures/image-20210212195726133.png" alt="image-20210212195726133" style="zoom:48%;" />
+
+2. 实验 2：不同的学习率退化算法对过拟合现象的影响；（都会出现过拟合现象）
+
+   <img src="pictures/image-20210212200229043.png" alt="image-20210212200229043" style="zoom:50%;" />
+
+3. 实验 3：可以在实验中设置一个验证集来判断对抗训练是否已经过拟合；
+
+   <img src="pictures/image-20210212200852708.png" alt="image-20210212200852708" style="zoom:50%;" />
+
+4. 实验 4：不同的模型大小对过拟合的影响；（都会出现过拟合现象，但是复杂网络能够达到最优鲁棒性）
+
+   <img src="pictures/image-20210212201311036.png" alt="image-20210212201311036" style="zoom: 75%;" />
+
+5. 实验 5：现有的抑制过拟合的方法对过拟合的影响；（都会出现过拟合现象，并且除了 `Semi-Supervised` 方法，其他方法效果都和 `early stop` 相似）
+
+   <img src="pictures/image-20210212201718555.png" alt="image-20210212201718555" style="zoom:45%;" />
+
+### Links
+
+- 论文链接：[Rice L, Wong E, Kolter Z. Overfitting in adversarially robust deep learning[C]//International Conference on Machine Learning. PMLR, 2020: 8093-8104.](https://arxiv.org/abs/2002.11569?spm=5176.12281978.0.0.5f793e4672ozXT&file=2002.11569)
+- 论文代码：https://github.com/locuslab/robust_overfitting
+
