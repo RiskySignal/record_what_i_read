@@ -333,7 +333,7 @@
 
 
 
-## Using Pre-Training Can Improve Model Robustness and Uncertainty
+## * Using Pre-Training Can Improve Model Robustness and Uncertainty
 
 ### Contribution
 
@@ -380,7 +380,7 @@
 
 
 
-## Overfitting in adversarially robust deep learning
+## * Overfitting in adversarially robust deep learning
 
 ### Contribution
 
@@ -419,3 +419,17 @@
 - 论文链接：[Rice L, Wong E, Kolter Z. Overfitting in adversarially robust deep learning[C]//International Conference on Machine Learning. PMLR, 2020: 8093-8104.](https://arxiv.org/abs/2002.11569?spm=5176.12281978.0.0.5f793e4672ozXT&file=2002.11569)
 - 论文代码：https://github.com/locuslab/robust_overfitting
 
+
+
+
+
+## Rethinking Softmax Cross-Entropy Loss for Adversarial Robustness
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Pang T, Xu K, Dong Y, et al. Rethinking softmax cross-entropy loss for adversarial robustness[J]. ICLR, 2020.](https://arxiv.org/abs/1905.10626?spm=5176.12281978.0.0.5f793e46BkBcJw&file=1905.10626)
+- 论文代码：
