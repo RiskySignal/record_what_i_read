@@ -446,7 +446,75 @@
 
 ### Contribution
 
+1. 简称：AWP（**A**dversarial **W**eight **P**erturbation）；
+2. 提出了一种在高训练集鲁棒性的前提下，获得高测试机鲁棒性的算法；
+
 ### Notes
+
+1. **Weight Loss Landscape** 和 **Robust Generalization Gap** 的关系：
+
+   (1) 首先要解释下这两个词：
+
+   - Weight Loss Landscape：指的是微小地修改模型的参数，目标 Loss（这个在下面提到）值得改变情况；
+   - Robust Generalization Gap：指的是训练集和测试集上模型鲁棒性的差距；
+
+   (2) 目标 Loss 度量：
+
+   <img src="pictures/image-20210305193954917.png" alt="image-20210305193954917" style="zoom: 25%;" />
+
+   $\bold{w}$ 指的是模型的参数，$\bold{d}$ 指的是随机高斯分布（实验中采样 10 次）的参数修改方向，$\alpha$ 指的是参数修改量的大小；另外，文章中使用的 loss 函数 $\mathcal{l}$ 是交叉熵函数，用 PGD 算法动态生成对抗样本使得 loss 最大化。
+
+   (3) 实验结果：
+
+   <img src="pictures/image-20210305195019886.png" alt="image-20210305195019886" style="zoom: 45%;" />
+
+   - **The Connection in the Learning Process of Adversarial Training**：上图 a 中可以看出，Weight Loss Landscape 越平坦，Robust Generalization Gap 就越小；
+   - **The Connection across Different Adversarial Training Methods**：上图 b 中可以看出，AT-ES 对抗训练算法的 Weight Loss Landscape 最平坦，并且 Robust Generalization Gap 也最小；
+   - **Does Flatter Weight Loss Landscape Certainly Lead to Higher Test Robustness**：一个平坦的减肥景观确实直接导致一个较小的鲁棒推广差距，但只有在训练过程足够的条件下（即训练鲁棒性高），才有利于最终测试的鲁棒性；
+
+2. 文章算法：
+
+   (1) 根据上面实验的分析，我们原始的目标是”希望**训练集鲁棒性强**，且**测试集和训练集的鲁棒性差距小**“，可以转换成新的目标是”希望**训练集鲁棒性强**，且**新提出的度量 Loss 小**“，即：
+
+   <img src="pictures/image-20210305200548393.png" alt="image-20210305200548393" style="zoom: 25%;" />
+
+   (2) 然后，我们需要展开上式，得到：
+
+   <img src="pictures/image-20210305200657910.png" alt="image-20210305200657910" style="zoom: 30%;" />
+
+   其中，$\bold{v}$ 是模型参数的一个可能的修改量，这个修改量的范围由模型各层参数的大小分别确定，即：
+
+   <img src="pictures/image-20210305200845013.png" alt="image-20210305200845013" style="zoom: 8%;" />
+
+   (3) 参数更新过程：
+
+   - 修改输入 $\bold{x}$ ：使用 PGD 算法生成对抗样本
+
+     <img src="pictures/image-20210305202000184.png" alt="image-20210305202000184" style="zoom: 20%;" />
+
+   - 改变模型参数的修改量 $\bold{v}$ ：使用梯度上升算法
+
+     <img src="pictures/image-20210305202259907.png" alt="image-20210305202259907" style="zoom:25%;" />
+
+     其中，$m$ 是 batch size，另外这里 $\bold{v}$ 的更新也是分层更新的，即
+
+     <img src="pictures/image-20210305202943936.png" alt="image-20210305203048988" style="zoom:25%;" />
+
+   - 更新模型参数：
+
+<img src="pictures/image-20210305202450224.png" alt="image-20210305202450224" style="zoom: 25%;" />
+
+​		(4) 伪代码：
+
+<img src="pictures/image-20210305202648140.png" alt="image-20210305202648140" style="zoom:50%;" />
+
+​			注：<u>伪代码中可能忘记了每一步 $t$ 之前，应该将 $\bold{v}$ 初始化为 0</u>；
+
+ 3. 实验结果：
+
+    <img src="pictures/image-20210305204419577.png" alt="image-20210305204419577" style="zoom: 42%;" />
+
+    <img src="pictures/image-20210305204511222.png" alt="image-20210305204511222" style="zoom: 43%;" />
 
 ### Links
 
