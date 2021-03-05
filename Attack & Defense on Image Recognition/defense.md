@@ -89,7 +89,7 @@
 
 ### Contribution
 
-1. Trades.
+1. 简称：Trades.
 2. 从理论上证明了 成功率和鲁棒性 对于分类问题来说是一个权衡利弊的问题；（<u>虽然我并不太关注这个证明</u>）
 3. 在理论的基础上，提出了新的对抗训练的损失函数；
 
@@ -190,27 +190,31 @@
 
 ### Contribution
 
-1. RST.
+1. 简称：RST（**R**obust **S**elf-**T**raining）.
 2. 在 [TRADES](#Theoretically Principled Trade-off between Robustness and Accuracy) 的基础上修改了损失函数，添加了无标签数据；
 3. 文章给我的感觉是，就是利用更多数据来训练网络，不过这个数据可以是无标签的数据，这样的话就不需要进行大量的认为标注；
 
 ### Notes
 
-1. 训练方法：（证明部分直接忽略不看）
+1. 背景：使用更多的训练数据有助于获得更好的模型鲁棒性，但是收集数据以及打标签是一个十分昂贵的过程；
+
+2. 思路：在对抗训练过程中加上自监督学习；
+
+3. 训练方法：（证明部分直接忽略不看）
 
    <img src="pictures/image-20210202073617084.png" alt="image-20210202073617084" style="zoom:50%;" />
 
-   - 首先使用有标签数据训练网络，这里使用 standard loss 为：
+   - 首先使用有标签数据（正常地）训练网络，这里使用 $Standard\ Loss$（即交叉熵损失函数）为：
 
      <img src="pictures/image-20210202073956120.png" alt="image-20210202073956120" style="zoom: 19%;" />
 
-   - 使用训练好的网络，标记无标签的数据；
+   - 使用训练好的网络，给无标签的数据打标签；
 
-   - 使用有标签和“自标签”的数据继续训练网络，这里使用 robust loss 为：
+   - 使用有标签和“自标签”的数据继续训练网络，这里使用$Robust\ Loss$（和Trades一样）为：
 
      <img src="pictures/image-20210202074235297.png" alt="image-20210202074235297" style="zoom: 31%;" />
 
-     这里又到了经典的如何拟合 $L_{reg}(\theta, x)$ 项（因为寻找邻域内的最大值太困难），作者提出了两种方法：
+     其中 $L_{reg}$ 项保证了在样本的领域内模型的输出概率是稳定的。这又回到了经典的如何拟合 $L_{reg}(\theta, x)$ 项（因为寻找邻域内的最大值太困难），作者提出了两种方法（从实验的结果来看，Adversarial Training 的效果略优于 Stability Training）：
 
      - **Adversarial Training**：使用 PGD 获取邻域最大值
 
@@ -224,11 +228,11 @@
 
        <img src="pictures/image-20210202080219912.png" alt="image-20210202080219912" style="zoom:38%;" />
 
-2. 实验：
+4. 实验：
 
    (0) 实验参数：
 
-   - 数据集：大致意思就是从 **80M的CIFAR10-TINY** 中为每个类挑选出 50K 张图片组成一个 500K 大小的无标签数据集；
+   - 数据集：大致意思就是从 **80M 的 CIFAR10-TINY** 中为每个类挑选出 50K 张图片组成一个 500K 大小的无标签数据集；
 
    <img src="pictures/image-20210202210522050.png" alt="image-20210202210522050" style="zoom:45%;" />
 
@@ -433,3 +437,19 @@
 
 - 论文链接：[Pang T, Xu K, Dong Y, et al. Rethinking softmax cross-entropy loss for adversarial robustness[J]. ICLR, 2020.](https://arxiv.org/abs/1905.10626?spm=5176.12281978.0.0.5f793e46BkBcJw&file=1905.10626)
 - 论文代码：
+
+
+
+
+
+## Adversarial Weight Perturbation Helps Robust Generalization
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Wu D, Xia S T, Wang Y. Adversarial weight perturbation helps robust generalization[J]. Advances in Neural Information Processing Systems, 2020, 33.](https://arxiv.org/abs/2004.05884)
+- 论文代码：https://github.com/csdongxian/AWP
+

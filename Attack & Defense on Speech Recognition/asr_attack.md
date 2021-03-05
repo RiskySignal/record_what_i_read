@@ -892,7 +892,7 @@
 
 ### Contribution
 
-### Notes
+1. 利用两个本地替代模型，实现对商业语音API的黑盒攻击；
 
 ### Links
 
