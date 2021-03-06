@@ -606,4 +606,83 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 - 论文链接：[Suya F, Chi J, Evans D, et al. Hybrid batch attacks: Finding black-box adversarial examples with limited queries[C]//29th {USENIX} Security Symposium (USENIX Security 2020). 2020: 1327-1344.](https://www.usenix.org/conference/usenixsecurity20/presentation/suya)
 - 论文代码：https://github.com/suyeecav/Hybrid-Attack
 
-  
+
+
+
+
+## Reliable Evaluation of Adversarial Robustness with an Ensemble of Diverse Parameter-free Attacks
+
+### Contribution
+
+1. 提出了一种新的对抗攻击算法 APGD，且使得防御算法的测试变得更加自动化；
+2. 提出了一种新的 loss 损失函数用于对抗样本的生成；
+
+### Notes
+
+1. 文章思想：
+
+   (1) 目的：提出一个能够自动调参的，且由于现在使用交叉熵损失函数的 PGD 的自动测试框架；
+
+   (2) PGD 存在的问题：
+
+   - Fixed step size：步长是固定的；
+   - Agnostic of the budget：算法经过一定轮数后，样本的 loss 就不再改变了，故无法用迭代的论述来衡量一个对抗攻击算法的强度；
+   - Unaware of the trend：算法不知道迭代的过程是否让样本更优化，更无法对这个做出改变；
+
+2. ⭐ **Auto-PGD 算法**：
+
+   (1) 算法伪代码：
+
+   <img src="pictures/image-20210306094248432.png" alt="image-20210306094248432" style="zoom: 55%;" />
+
+   (2) **对抗样本的更新**：和 PGD 不同之处是，文章算法更新的时候添加了一个 Momentum 操作，如下
+
+   <img src="pictures/image-20210306095032354.png" alt="image-20210306095032354" style="zoom: 18%;" />
+
+   其中，$\alpha \in [0,1]$ 是动量系数，文章中使用的是 $0.75$；
+
+   (3) **步长的更新**：如果对抗样本的迭代满足以下两个条件中的一个，则更新步长（文章中，初始化步长为 $\eta^{(0)}=2\epsilon$）
+
+   - 条件一：如果迭代对抗样本使得其目标更优化的比率低于某个值，则更新步长；
+
+     <img src="pictures/image-20210306101533713.png" alt="image-20210306101533713" style="zoom: 22%;" />
+
+     其中 $\rho$ 在文章中取值为 $0.75$，$w_j$ 是迭代轮数；
+
+   - 条件二：如果上一轮步长迭代中未修改步长，而上一轮对抗样本的更新中目标没有得到任何优化，则更新步长；
+
+     <img src="pictures/image-20210306102233478.png" alt="image-20210306102233478" style="zoom:19%;" />
+
+   (4) **从最优点继续迭代**：每次更新步长后，都将对抗样本置为前面的最优结果，再进行迭代，即
+
+   <img src="pictures/image-20210306102650531.png" alt="image-20210306102650531" style="zoom:10%;" />
+
+   (5) **步长检查的迭代轮数选择**：
+
+   <img src="pictures/image-20210306103111262.png" alt="image-20210306103111262" style="zoom:10%;" />
+
+   <img src="pictures/image-20210306103209250.png" alt="image-20210306103209250" style="zoom:20%;" />
+
+   其中，$p_0=0,\ p_1=0.22$ ；
+
+   (6) 实验效果：这里使用的对比算法是带有 Momentum 的 PGD 算法；
+
+   <img src="pictures/image-20210306103900209.png" alt="image-20210306103900209" style="zoom: 67%;" />
+
+3. ⭐ **DLR 损失函数**
+
+   (1) 交叉熵损失函数存在的问题：这边的交叉熵损失函数，实际上在程序中是 Softmax-交叉熵损失函数。正是由于 softmax 函数的存在，导致对抗样本生成过程中，如果原始样本的分类十分接近0，就很难产生一个有效的梯度。作者的实验如下
+
+   <img src="pictures/image-20210306121907651.png" alt="image-20210306121907651" style="zoom:38%;" />
+
+   (2) DLR (Difference of Logits Ratio) 损失函数：作者提出了一个新的损失函数，如下
+
+   <img src="pictures/image-20210306122216465.png" alt="image-20210306122216465" style="zoom:14%;" />
+
+   其中，$\pi_1$ 和 $\pi_3$ 指的是概率降序排序后的第一、第三个概率值；
+
+### Links
+
+- 论文链接：[Croce F, Hein M. Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks[C]//International Conference on Machine Learning. PMLR, 2020: 2206-2216.](https://arxiv.org/abs/2003.01690)
+- 论文代码：https://github.com/fra31/auto-attack
+

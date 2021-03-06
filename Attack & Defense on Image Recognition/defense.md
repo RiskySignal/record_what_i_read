@@ -19,6 +19,8 @@
 
 
 
+
+
 ## Towards Deep Learning Models Resistant to Adversarial Attacks
 
 > 由于时间原因，该文章的笔记借鉴自 “前人分享”（链接见下）。
@@ -364,7 +366,7 @@
 
    <img src="pictures/image-20210212110243153.png" alt="image-20210212110243153" style="zoom: 50%;" />
 
-2. 方法：对参数和模型提取出来的特征，在最后一个softmax层之前做normalization，然后计算loss；
+2. 方法：对参数和模型提取出来的特征，在最后一个 softmax 层之前做 normalization，然后计算 loss；
 
    <img src="pictures/image-20210212110557246.png" alt="image-20210212110557246" style="zoom:50%;" />
 
