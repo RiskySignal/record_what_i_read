@@ -686,3 +686,39 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 - 论文链接：[Croce F, Hein M. Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks[C]//International Conference on Machine Learning. PMLR, 2020: 2206-2216.](https://arxiv.org/abs/2003.01690)
 - 论文代码：https://github.com/fra31/auto-attack
 
+
+
+
+
+## WITCHCRAFT: EFFICIENT PGD ATTACKS WITH RANDOM STEP SIZE
+
+### Contribution
+
+1. 提出随机化学习率能够更好地生成对抗样本；
+
+### Notes
+
+1. 在 PGD 的基础上，每一步学习率都随机选取，算法如下：
+
+   <img src="pictures/image-20210309195847159.png" alt="image-20210309195847159" style="zoom:30%;" />
+
+2. 实验结果
+
+   (1) 和 PGD 方法相比，效果更好：
+
+   <img src="pictures/image-20210309201338184.png" alt="image-20210309201338184" style="zoom: 33%;" />
+
+   <img src="pictures/image-20210309201531166.png" alt="image-20210309201531166" style="zoom: 32%;" />
+
+   (2) 不同的学习率区间对结果的影响：
+
+   <img src="pictures/image-20210309201712480.png" alt="image-20210309201712480" style="zoom: 50%;" />
+
+### Links
+
+- 论文链接：[Chiang P Y, Geiping J, Goldblum M, et al. Witchcraft: Efficient pgd attacks with random step size[C]//ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020: 3747-3751.](https://arxiv.org/abs/1911.07989)
+
+
+
+
+

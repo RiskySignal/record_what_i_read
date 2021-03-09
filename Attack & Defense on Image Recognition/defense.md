@@ -523,3 +523,32 @@
 - 论文链接：[Wu D, Xia S T, Wang Y. Adversarial weight perturbation helps robust generalization[J]. Advances in Neural Information Processing Systems, 2020, 33.](https://arxiv.org/abs/2004.05884)
 - 论文代码：https://github.com/csdongxian/AWP
 
+
+
+
+
+## FAST IS BETTER THAN FREE: REVISITING ADVERSARIAL TRAINING
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Wong E, Rice L, Kolter J Z. Fast is better than free: Revisiting adversarial training[J]. arXiv preprint arXiv:2001.03994, 2020.](https://arxiv.org/abs/2001.03994)
+- 论文代码：
+
+
+
+
+
+# Uncovering the Limits of Adversarial Training against Norm-Bounded Adversarial Examples
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：
+- 论文代码：
