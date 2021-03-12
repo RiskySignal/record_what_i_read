@@ -457,7 +457,7 @@
 
    (1) 首先要解释下这两个词：
 
-   - Weight Loss Landscape：指的是微小地修改模型的参数，目标 Loss（这个在下面提到）值得改变情况；
+   - Weight Loss Landscape：指的是微小地修改模型的参数，目标 Loss（这个在下面提到）值的改变情况；
    - Robust Generalization Gap：指的是训练集和测试集上模型鲁棒性的差距；
 
    (2) 目标 Loss 度量：
