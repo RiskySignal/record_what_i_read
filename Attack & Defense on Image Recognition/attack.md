@@ -690,7 +690,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
-## WITCHCRAFT: EFFICIENT PGD ATTACKS WITH RANDOM STEP SIZE
+## WITCHcraft: Efficient PGD attacks with random step size
 
 ### Contribution
 
@@ -719,6 +719,46 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 - 论文链接：[Chiang P Y, Geiping J, Goldblum M, et al. Witchcraft: Efficient pgd attacks with random step size[C]//ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020: 3747-3751.](https://arxiv.org/abs/1911.07989)
 
 
+
+
+
+## An Alternative Surrogate Loss for PGD-based Adversarial Testing
+
+### Contribution
+
+1. 提出了一种新的 MultiTargeted 攻击方法；
+
+### Notes
+
+1. 形式化 PGD 算法：
+
+   <img src="pictures/image-20210314101242146.png" alt="image-20210314101242146" style="zoom:50%;" />
+
+   这边可能影响 PGD 算法攻击性的 **因素** 有：重复执行的次数 $N_r$ ，计算梯度时使用的损失函数 $\hat{L}^{(r)}$，迭代优化器 $Opt$，噪声生成器 $SampleForm$，每轮的迭代次数 $K$，迭代的学习率 $a^{(k)}$。其中，$L$ 是用来判断对抗攻击是否成功的判别函数，对最终的结果没什么影响，可以用来控制迭代的次数，实现提早停止迭代的功能；
+
+2. MultiTargeted Attack：主要思想是将原来的一次 PGD 迭代拆分，分别对每一个其他类别做一次梯度迭代，使用的损失函数如下：
+
+   <img src="pictures/image-20210314105144910.png" alt="image-20210314105144910" style="zoom: 24%;" />
+
+   对上面伪代码的 $2\sim3$ 行进行修改：
+
+   <img src="pictures/image-20210314105450355.png" alt="image-20210314105450355" style="zoom: 48%;" />
+
+   为了减小复杂性，可以把多目标限定在 $Top-K$ 中：
+
+   <img src="pictures/image-20210314110257234.png" alt="image-20210314110257234" style="zoom: 25%;" />
+
+3. 实验：
+
+   ![image-20210314111319387](pictures/image-20210314111319387.png)
+
+   - 首先可以看到，MultiTargeted 方法相比于 PGD（带有 restarts）是有效的，实验中当多目标 $K=5$ 时达到了最优状态；
+   - 过多的 restarts 次数对于 PGD 算法来说并不是特别有效（不过我理解的可能是每次 restart 时的随机噪声可能效果都相似，限制了 restarts 的发挥）；
+   - 每一个 restart 迭代更多的次数确实能够增强 PGD 的攻击性，但是可以看到这个增加的效果并不是特别明显；
+
+### Links
+
+- 论文连接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
 
 
 
