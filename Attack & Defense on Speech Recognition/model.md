@@ -182,11 +182,13 @@ $$
 
 
 
+
+
 ## Deep speech: Scaling up end-to-end speech recognition
 
 ### Notes
 
-### 代码阅读
+### 代码理解
 
 ### Links
 

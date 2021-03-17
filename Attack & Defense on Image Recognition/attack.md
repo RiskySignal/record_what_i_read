@@ -736,7 +736,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
    这边可能影响 PGD 算法攻击性的 **因素** 有：重复执行的次数 $N_r$ ，计算梯度时使用的损失函数 $\hat{L}^{(r)}$，迭代优化器 $Opt$，噪声生成器 $SampleForm$，每轮的迭代次数 $K$，迭代的学习率 $a^{(k)}$。其中，$L$ 是用来判断对抗攻击是否成功的判别函数，对最终的结果没什么影响，可以用来控制迭代的次数，实现提早停止迭代的功能；
 
-2. MultiTargeted Attack：主要思想是将原来的一次 PGD 迭代拆分，分别对每一个其他类别做一次梯度迭代，使用的损失函数如下：
+2. MultiTargeted Attack：主要思想是改变 restarts 过程中使用的损失函数如下：
 
    <img src="pictures/image-20210314105144910.png" alt="image-20210314105144910" style="zoom: 24%;" />
 
