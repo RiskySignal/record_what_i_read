@@ -758,7 +758,52 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 ### Links
 
-- 论文连接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
+- 论文链接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
 
 
 
+
+
+## Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack
+
+### Contribution
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Croce F, Hein M. Minimally distorted adversarial examples with a fast adaptive boundary attack[C]//International Conference on Machine Learning. PMLR, 2020: 2196-2205.](https://arxiv.org/abs/1907.02044)
+- 论文代码：https://github.com/fra31/fab-attack
+
+
+
+
+
+## Composite Adversarial Attacks
+
+### Contribution
+
+1. 像 AutoML 和 AutoAugment 一样，本文提出了一种自动搭配不同的对抗攻击基础算法和参数的 **自学习对抗攻击算法**；
+
+### Notes
+
+1. 文章方法：核心思想是像 AutoML 和 AutoAugment 那样让程序自动寻找更好的攻击方法和参数的搭配，以达到最优效果，搜索算法用的是 $NSGA$-Ⅱ，伪代码如下
+
+   <img src="pictures/image-20210319212036925.png" alt="image-20210319212036925" style="zoom: 43%;" />
+
+   整体的流程就是首先构造一个候选集，然后在候选集中验证各种搭配的得分情况，这里得分的计算公式如下：
+
+   <img src="pictures/image-20210319212828169.png" alt="image-20210319212828169" style="zoom: 15%;" />
+
+   左式用来评估算法的成功率，右式用来评估算法的复杂度；
+
+2.  实验结果：（因为比赛的缘故，我更加关心哪种搭配能够产生最好的攻击成功率，所以 $S_{l_\infty}$ 可以参考一下）
+
+   <img src="pictures/image-20210319214507273.png" alt="image-20210319214507273" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Mao X, Chen Y, Wang S, et al. Composite Adversarial Attacks[J]. arXiv preprint arXiv:2012.05434, 2020.](https://arxiv.org/abs/2012.05434)
+- 论文代码：https://github.com/vtddggg/CAA

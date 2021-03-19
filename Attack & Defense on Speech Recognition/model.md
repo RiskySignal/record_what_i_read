@@ -183,10 +183,15 @@ $$
 
 
 
-
 ## Deep speech: Scaling up end-to-end speech recognition
 
+### Contribution
+
+
+
 ### Notes
+
+
 
 ### 代码理解
 
@@ -203,7 +208,7 @@ $$
 
 ### Contribution
 
-1. 提出了一种**新的端到端**的语音识别模型；
+1. 提出了一种**新的端到端**的语音识别模型 LAS；
 
 ### Notes
 

@@ -8,7 +8,26 @@
 
 ## Todo List
 
-1. Felix Kreuk, Yossi Adi, Moustapha Cisse, and Joseph Keshet. 2018. Fooling endto-end speaker verification with adversarial examples. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 1962–1966.
+
+
+
+
+
+
+## Fooling End-to-end Speaker Verification by Adversarial Examples
+
+### Contribution
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Kreuk F, Adi Y, Cisse M, et al. Fooling end-to-end speaker verification with adversarial examples[C]//2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2018: 1962-1966.](https://arxiv.org/abs/1801.03339)
+- 
+
+
 
 
 
