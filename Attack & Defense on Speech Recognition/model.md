@@ -19,6 +19,44 @@
 
 
 
+## AIC 和 BIC 准则
+
+### Notes
+
+模型选择问题在 **模型复杂度** 与 **模型对数据集描述能力** 之间寻求最佳平衡；
+
+#### AIC 准则
+
+赤池信息准则（Akaike Information Criterion，AIC），AIC 定义为：
+$$
+AIC=2k−2ln(L)
+$$
+其中 $k$ 为参数个数，$L$ 为似然函数。从一组可供选择的模型中选择最佳模型时，**通常选择 AIC 最小的模型**：
+
+- 当两个模型之间存在较大差异时，差异主要体现在似然函数项，当似然函数差异不显著时，上式第一项，即模型复杂度则起作用，从而**参数个数少**的模型是较好的选择；
+- 一般而言，当模型复杂度提高（$k$ 增大）时，似然函数 $L$ 也会增大，从而使 AIC 变小，但是 $k$ 过大时，似然函数增速减缓，导致 AIC 增大，模型过于复杂容易造成过拟合现象;
+- 目标是选取AIC最小的模型，AIC不仅要提高模型拟合度（极大似然），而且引入了惩罚项，使模型参数尽可能少，有助于降低过拟合的可能性；
+
+#### BIC 准则
+
+贝叶斯信息准则（Bayesian Information Criterion，BIC），BIC 定义为：
+$$
+BIC=kln(n)−2ln(L)
+$$
+其中，$k$ 为模型参数个数，$n$ 为样本数量，$L$ 为似然函数。从一组可供选择的模型中选择最佳模型时，**通常选择 BIC 最小的模型**；
+
+#### 比较
+
+AIC 和BIC 的公式中后半部分是一样的；当 $n \ge 10^2$ 时，$kln(n)≥2k$，所以，BIC 相比AIC 在**大数据量时对模型参数惩罚得更多**，导致 BIC 更倾向于选择参数少的简单模型。所以还是**考虑使用 BIC 准则**；
+
+### Links
+
+- 参考链接：[AIC和BIC准则详解](https://blog.csdn.net/SanyHo/article/details/108024024)
+
+
+
+
+
 ## Optimizer in Deep Learning
 
 ### 梯度下降法（Gradient Descent）
@@ -136,6 +174,128 @@ $$
 
 - 参考链接：[优化算法 Optimizer 比较和总结](https://zhuanlan.zhihu.com/p/55150256)
 - Adam 论文链接：[Kingma D P, Ba J. Adam: A method for stochastic optimization[J]. arXiv preprint arXiv:1412.6980, 2014.](https://arxiv.org/abs/1412.6980)
+
+
+
+
+
+## 高斯混合模型 GMM
+
+### Notes
+
+#### 高斯分布
+
+例如，对城市人口的身高水平进行抽样调查，调查的结果就符合高斯分布，如下图所示：
+
+<img src="pictures/v2-b53ae90fe547609f970b71a670b7076a_720w.jpg" alt="img"  />
+
+**一元高斯分布**的概率密度函数公式如下所示：
+$$
+f_s(x|\mu,\delta^2)  = \frac{1}{\sqrt{2\delta^2\pi}} e^{-\frac{(x-\mu)^2}{2\delta^2}}
+$$
+**多元高斯分布**的概率密度函数公式如下所示：（$n$ 为数据的维度）
+$$
+f_m(x|\mu, \delta^2) = \frac{1}{(2\pi)^{\frac{n}{2}}|\Sigma|^{\frac{1}{2}}} \cdot e^{-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)}
+$$
+
+#### 高斯混合分布
+
+例如，对城市中的男女身高水平分别建模，这时候男生的身高符合一个高斯分布，而女生的身高则符合另外一个高斯分布，即形成了一个高斯混合分布，如下图所示：
+
+![img](pictures/v2-5cc4a35306b5b1f3176188e04d786c86_720w.jpg)
+
+**一元高斯混合分布**的概率密度函数公式如下所示：
+$$
+p(x|\phi,\mu,\delta) 
+= \sum_{i=1}^K \phi_i \cdot \frac{1}{\sqrt{2\delta_i^2\pi}} e^{-\frac{(x-\mu_i)^2}{2\delta_i^2}}
+= \sum_{i=1}^K \phi_i \cdot f_s(x|\mu_i,\delta_i)
+$$
+**多元高斯混合分布**的概率密度函数公式如下所示：
+$$
+p(x|\phi, \mu,\delta) 
+= \sum_{i=1}^K \phi_i \cdot \frac{1}{(2\pi)^{\frac{n}{2}}|\Sigma_i|^{\frac{1}{2}}} \cdot e^{-\frac{1}{2}(x-\mu_i)^T\Sigma_i^{-1}(x-\mu_i)}
+= \sum_{i=1}^K \phi_i \cdot f_m(x|\mu_i,\delta_i)
+$$
+
+#### 多元高斯分布的最大似然估计
+
+假设我们对 $m$ 个样本采样，得到**似然估计函数**：
+$$
+L(\mu, \Sigma) = (2\pi)^{-\frac{mn}{2}} \cdot |\Sigma|^{-\frac{m}{2}}
+\exp\left( -\frac{1}{2} \sum_{i=1}^m(x^{(i)}-\mu)^T \Sigma^{-1} (x^{(i)}-\mu) \right)
+$$
+计算**对数似然估计函数**：
+$$
+\ln\left(L(\mu,\Sigma)\right) = -\frac{mn}{2}\cdot\ln2\pi - \frac{m}{2}\cdot\ln|\Sigma| - \frac{1}{2}\cdot\sum_{i=1}^m
+(x^{(i)}-\mu)^T \Sigma^{-1} (x^{(i)}-\mu)
+$$
+参数优化的目的是，采样这 $m$ 个样本时，尽可能地保证它们出现的概率最大化，即最大化对数似然估计。下面通过求极值的方式（偏导为 $0$）来计算参数值：
+$$
+\begin{cases}
+\frac{\partial \ln\left(L(\mu, \Sigma) \right)}{\partial \mu} = 0 \\
+\frac{\partial \ln\left(L(\mu, \Sigma) \right)}{\partial \Sigma} = 0
+\end{cases}
+$$
+最终得到：（详细过程见 <u>参考链接2</u>）
+$$
+\begin{cases}
+\hat{\mu} = \frac{1}{m} \cdot \sum_{i=1}^m x^{(i)} \\
+\hat{\Sigma} = \frac{1}{m}  \cdot \sum_{i=1}^m (x^{(i)}-\mu)(x^{(i)}-\mu)^T
+\end{cases}
+$$
+
+#### 多元高斯混合分布的 EM 算法流程
+
+EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计方法，其首先估计样本属于某一个概率模型的可能性，然后在这个可能性的基础上最大化似然函数，不断迭代更新参数直至收敛。多元高斯混合分布参数的具体更新流程如下：
+
+1. 初始化模型参数，这里初始化方法有两种：**随机初始化** 或 **K-means初始化**；
+
+2. **E-Step**：根据当前参数 $(\phi^{(t)},\mu^{(t)},\delta^{(t)})$，计算**每个数据 $x_j$ 属于第 $k$ 个多元高斯分布的可能性**（$t$ 表示迭代的轮数）
+   $$
+   \gamma_{j,k}^{(t+1)} = \frac{\phi_k^{(t)} \cdot f_m(x_j|\mu_k^{(t)},\delta_k^{(t)})}{\sum_{i=1}^K \phi_i^{(t)} \cdot f_m(x_j|\mu_i^{(t)},\delta_i^{(t)})}
+   $$
+
+3. **M-Step**：更新模型参数（$m$ 为样本个数）
+   $$
+   \mu_k^{(t+1)} = \frac{\sum_{j=1}^m \gamma_{j,k}^{(t+1)} \cdot x_j}{\sum_{j=1}^m \gamma_{j,k}^{(t+1)}}
+   $$
+
+   $$
+   \Sigma_k^{(t+1)} = \frac{\sum_{j=1}^m \gamma_{j,k}^{(t+1)} \cdot (x_j-\mu_k^{(t+1)})(x_j-\mu_k^{(t+1)})^T}{\sum_{j=1}^m \gamma_{j,k}^{(t+1)}}
+   $$
+
+   $$
+   \phi_k^{(t+1)}=\frac{\sum_{j=1}^m \gamma_{j,k}^{(t+1)}}{m}
+   $$
+
+   
+
+4. 重复迭代 $2, 3$ 步骤，直至收敛；
+
+### Codes
+
+#### 实验一
+
+参考代码：https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_covariances.html#sphx-glr-auto-examples-mixture-plot-gmm-covariances-py
+
+
+
+#### 实验二
+
+参考代码：https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_selection.html#sphx-glr-auto-examples-mixture-plot-gmm-selection-py
+
+
+
+#### 源码
+
+
+
+### Links
+
+- 参考链接 1：[一文详解高斯混合模型原理](https://zhuanlan.zhihu.com/p/31103654)
+- 参考链接 2：[概率笔记12——多维正态分布的最大似然估计](https://www.cnblogs.com/bigmonkey/p/11379144.html)
+- 参考链接 3：[高斯混合模型（GMM）](https://zhuanlan.zhihu.com/p/30483076)
+- 参考链接 4：[GMM covariances](https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_covariances.html#sphx-glr-auto-examples-mixture-plot-gmm-covariances-py)
 
 
 
