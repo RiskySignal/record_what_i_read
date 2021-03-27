@@ -278,17 +278,189 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
 
 参考代码：https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_covariances.html#sphx-glr-auto-examples-mixture-plot-gmm-covariances-py
 
+- 代码结果：
 
+  <img src="pictures/sphx_glr_plot_gmm_covariances_001.png" alt="spherical, diag, tied, full" style="zoom:80%;" />
+
+- 均值的初始化：和实验二中的初始化方法（随机初始化）不同的是，这里在随机初始化之后，还**额外自定义初始化了每个高斯分布的均值**，导致这个不同的关键点在于**实验一的训练数据是知道隐状态的**，**额外知道隐状态十分有利于提升模型的精度和拟合能力**，下面列出代码中的不同
+
+  ```python
+  # 关键差异：知道训练数据的隐状态
+  X_train = iris.data[train_index]
+  y_train = iris.target[train_index]
+  ......
+  # 初始化每个高斯分布的均值
+  estimator.means_init = np.array([X_train[y_train == i].mean(axis=0)
+                                      	for i in range(n_classes)])
+  ```
+
+- 对 `covariance_type` 参数的理解：
+
+  (1) `covariance_type='full', each component has its own general covariance matrix`，每个高斯分布的轴的方向不同，且可以任意旋转，并且轴长不相同；
+
+  (2) `covariance_type='tied', all components share the same general covariance matrix`，每个高斯分布的轴（轴长，轴的方向）是相同的，但轴的方向可以旋转；
+
+  (3) `covariance_type='diag', each component has its own diagonal covariance matrix`，每个高斯分布的轴的方向是固定的（平行于坐标轴方向），但是轴长不同；
+
+  (4) `covariance_type='spherical', each component has its own single variance`，每个高斯分布的轴的方向是固定的（平行于坐标轴方向），轴长不同，形状是一个圆；
 
 #### 实验二
 
 参考代码：https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_selection.html#sphx-glr-auto-examples-mixture-plot-gmm-selection-py
 
+- 代码结果：
 
+  <img src="pictures/sphx_glr_plot_gmm_selection_001.png" alt="每个模型的BIC得分，选定的GMM：完整模型，2个组成部分" style="zoom: 80%;" />
 
-#### 源码
+- 代码中使用 **BIC 准则**来挑选模型；
 
+#### 源码分析
 
+由于 `covariance_type` 存在四种选择，理解起来比较复杂，这里只对 `covariance_type='full'` 进行分析；另外需要**注意**的一个点是，计算过程都是在 `ln` 域中进行的；
+
+- 协方差矩阵的优化计算：计算过程中，需要求协方差矩阵的逆，直接求的复杂度很高，所以优化计算；（参考一下 [链接](https://blog.csdn.net/lanchunhui/article/details/50890391)）
+
+  1. 求出协方差矩阵的 `cholesky`分解；
+  2. 对分解得到的下三角矩阵求逆；
+  3. 保存求逆的结果 `precisions_cholesky_`；
+
+  ```python
+  """
+  precisions_cholesky_ : array-like
+      The cholesky decomposition of the precision matrices of each mixture
+      component. A precision matrix is the inverse of a covariance matrix.
+      A covariance matrix is symmetric positive definite so the mixture of
+      Gaussian can be equivalently parameterized by the precision matrices.
+      Storing the precision matrices instead of the covariance matrices makes
+      it more efficient to compute the log-likelihood of new samples at test
+      time. The shape depends on `covariance_type`
+  """
+  ```
+
+- E-Step：具体的实现过程涉及到 `_estimate_log_gaussian_prob` ，`_estimate_log_weights`，`_estimate_log_prob_resp`等函数。
+
+  - 计算 $(x-\mu)^T\Sigma^{-1}(x-\mu)$：这里就用到了上面的 `precisions_cholesky_`；
+
+  ```python
+  log_prob = np.empty((n_samples, n_components))
+  for k, (mu, prec_chol) in enumerate(zip(means, precisions_chol)):
+      y = np.dot(X, prec_chol) - np.dot(mu, prec_chol)
+      log_prob[:, k] = np.sum(np.square(y), axis=1)
+  ```
+
+  - 计算 $-\frac{1}{2} \cdot \ln|\Sigma|$：这里我们要对这个公式转换一下 $\frac 1 2 \cdot \ln\frac{1}{|\Sigma|}$，根据 [性质 1](https://zhuanlan.zhihu.com/p/50912180)得到 $\frac 1 2 \cdot \ln |\Sigma^{-1}|$，根据 [性质 9](https://zhuanlan.zhihu.com/p/50912180) 得到 $\ln|L|$ ，这里的 $L$ 指的是 `precisions_cholesky_` （是一个三角矩阵），[三角矩阵的行列式等于对角线的乘积](https://zh.wikipedia.org/wiki/%E4%B8%89%E8%A7%92%E7%9F%A9%E9%98%B5)，所以就是计算对角线元素 `ln` 值的累和，代码中也是这样来实现的；
+
+  ```python
+  # det(precision_chol) is half of det(precision)
+  log_det = _compute_log_det_cholesky(
+      precisions_chol, covariance_type, n_features)
+  # 在函数_compute_log_det_cholesky中这样计算
+  n_components, _, _ = matrix_chol.shape
+  log_det_chol = (np.sum(np.log(
+      matrix_chol.reshape(
+          n_components, -1)[:, ::n_features + 1]), 1))
+  ```
+
+  - 计算 $\ln f_m(x_j|\mu_k^{(t)},\delta_k^{(t)})$：把前面两项和 <u>一个常数项</u> 累和即可；
+
+  ```python
+  -.5 * (n_features * np.log(2 * np.pi) + log_prob) + log_det
+  ```
+
+  - 计算 $\ln \gamma_{j,k}^{(t+1)}$：因为前面计算都是在 $\ln$ 域的，所以要先求 $\exp$ ，累和后再计算 $\ln$；
+
+  ```python
+  weighted_log_prob = self._estimate_weighted_log_prob(X)
+  log_prob_norm = logsumexp(weighted_log_prob, axis=1)
+  log_resp = weighted_log_prob - log_prob_norm[:, np.newaxis]
+  ```
+
+  至此 E-Step 的工作结束。
+
+- M-Step：具体过程涉及到 `_estimate_gaussian_parameters`，`_estimate_gaussian_covariances_full` 等函数。
+
+  - 计算 $\phi_k^{(t+1)}$：这里需要注意的是，前面 E-Step 的计算都是 $\ln$ 域的，所以在 M-Step 中直接 $\exp$ 计算；
+
+  ```python
+  # 函数调用的时候直接exp
+  self.weights_, self.means_, self.covariances_ = _estimate_gaussian_parameters(X, np.exp(log_resp), self.reg_covar, self.covariance_type)
+  # 计算每类高斯分布的样本数量，函数调用外层会除以样本的总数
+  nk = resp.sum(axis=0) + 10 * np.finfo(resp.dtype).eps
+  ```
+
+  - 计算 $\mu_k^{(t+1)}$ 和 $\Sigma_k^{(t+1)}$：均值、方差的计算很清晰，其中 `reg_covar=1e-6` 是用来保证协方差矩阵恒大于 $0$ 的；
+
+  ```python
+  # 计算均值
+  means = np.dot(resp.T, X) / nk[:, np.newaxis]
+  # 计算方差
+  def _estimate_gaussian_covariances_full(resp, X, nk, means, reg_covar):
+      """注释详见源码"""
+      n_components, n_features = means.shape
+      covariances = np.empty((n_components, n_features, n_features))
+      for k in range(n_components):
+          diff = X - means[k]
+          covariances[k] = np.dot(resp[:, k] * diff.T, diff) / nk[k]
+          covariances[k].flat[::n_features + 1] += reg_covar
+      return covariances
+  # 因为 covariance_type 有四种类型，所以他的调用写的还是比较有意思的
+  covariances = {"full": _estimate_gaussian_covariances_full,
+                 "tied": _estimate_gaussian_covariances_tied,
+                 "diag": _estimate_gaussian_covariances_diag,
+                 "spherical": _estimate_gaussian_covariances_spherical
+                 }[covariance_type](resp, X, nk, means, reg_covar)
+  ```
+  - 计算 `precisions_cholesky_`：更新的时候不能把它忘了；
+
+  ```python
+  self.precisions_cholesky_ = _compute_precision_cholesky(self.covariances_, self.covariance_type)
+  ```
+
+  至此 M-Step 的工作结束。
+
+- 最优模型的获取：参数 `n_init` 可以指定代码拟合多个随机初始化的模型，挑选一个最优的模型；
+
+  ```python
+  for init in range(n_init): # 拟合多个模型
+      if do_init:
+          self._initialize_parameters(X, random_state)  # 初始化参数
+      lower_bound = (-np.infty if do_init else self.lower_bound_)
+      for n_iter in range(1, self.max_iter + 1):
+          prev_lower_bound = lower_bound
+          log_prob_norm, log_resp = self._e_step(X)  # e-step
+          self._m_step(X, log_resp)  # m-step
+          lower_bound = self._compute_lower_bound(
+              log_resp, log_prob_norm)
+          change = lower_bound - prev_lower_bound
+          if abs(change) < self.tol:  # 判断是否收敛
+              self.converged_ = True
+              break
+      self._print_verbose_msg_init_end(lower_bound)
+      if lower_bound > max_lower_bound:  # 判断是否为最优模型
+          max_lower_bound = lower_bound
+          best_params = self._get_parameters()
+          best_n_iter = n_iter
+  ```
+
+- 模型参数初始化：参数初始化有 **随机数** 和 **`k-means`** 两种方法；
+
+  ```python
+  def _initialize_parameters(self, X, random_state):
+      n_samples, _ = X.shape
+      if self.init_params == 'kmeans':
+          resp = np.zeros((n_samples, self.n_components))
+          label = cluster.KMeans(n_clusters=self.n_components, n_init=1,
+                                 random_state=random_state).fit(X).labels_
+          resp[np.arange(n_samples), label] = 1
+      elif self.init_params == 'random':
+          resp = random_state.rand(n_samples, self.n_components)
+          resp /= resp.sum(axis=1)[:, np.newaxis]
+      else:
+          raise ValueError("Unimplemented initialization method '%s'"
+                           % self.init_params)
+  
+      self._initialize(X, resp)
+  ```
 
 ### Links
 
@@ -296,6 +468,10 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
 - 参考链接 2：[概率笔记12——多维正态分布的最大似然估计](https://www.cnblogs.com/bigmonkey/p/11379144.html)
 - 参考链接 3：[高斯混合模型（GMM）](https://zhuanlan.zhihu.com/p/30483076)
 - 参考链接 4：[GMM covariances](https://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_covariances.html#sphx-glr-auto-examples-mixture-plot-gmm-covariances-py)
+
+- 参考链接 5：[矩阵分解——三角分解（Cholesky 分解）](https://blog.csdn.net/lanchunhui/article/details/50890391)
+- 参考链接 6：[线性代数之——行列式及其性质](https://zhuanlan.zhihu.com/p/50912180)
+- 参考链接 7：[三角矩阵](https://zh.wikipedia.org/wiki/%E4%B8%89%E8%A7%92%E7%9F%A9%E9%98%B5)
 
 
 
