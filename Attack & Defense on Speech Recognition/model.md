@@ -57,6 +57,48 @@ AIC 和BIC 的公式中后半部分是一样的；当 $n \ge 10^2$ 时，$kln(n)
 
 
 
+## 交叉熵、相对熵、JS 散度
+
+### 熵
+
+熵（信息熵）指的是信息量的期望；
+$$
+H(X) = -\sum_{i=1}^n p(x_i) \log (p(x_i))
+$$
+
+### 相对熵（KL 散度）
+
+相对熵（KL 散度）用来衡量两个分布的差异；
+$$
+D_{KL}(p||q) = \sum_{i=1}^n p(x_i) \ log \left(\frac{p(x_i)}{q(x_i)} \right)
+$$
+相对熵是非对称的，使用时 $p(x)$ 用来表示样本的真实分布，而 $q(x)$ 用来表示模型所预测的分布；
+
+### 交叉熵
+
+交叉熵可以通过相对熵变化而来，在机器学习中通常直接用交叉熵作为损失函数；
+$$
+H(p,q) = -\sum_{i=1}^n p(x_i)\log(q(x_i))
+$$
+
+### JS 散度
+
+JS 散度用来衡量两个分布的相似度，是基于相对熵的变体，解决了相对熵的非对称问题；
+$$
+JS(P_1||P_2) = \frac{1}{2} KL(P_1||\frac{P_1 + P_2}{2}) + \frac{1}{2} KL(P_2||\frac{P_1+P_2}{2})
+$$
+
+### Wasserstein 距离
+
+Wasserstein 距离用来度量两个概率分布之间的距离，解决了当两个分布 $P$, $Q$ 相差很远时，KL 散度和 JS 散度梯度消失的问题；
+$$
+W(P_1, P_2) = \inf_{\gamma \sim \Pi(P_1, P_2)} \mathbb{E}_{(x,y)\sim\gamma}[\lVert x-y \rVert]
+$$
+
+
+
+
+
 ## Optimizer in Deep Learning
 
 ### 梯度下降法（Gradient Descent）
@@ -477,48 +519,6 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
 
 
 
-## 交叉熵、相对熵、JS 散度
-
-### 熵
-
-熵（信息熵）指的是信息量的期望；
-$$
-H(X) = -\sum_{i=1}^n p(x_i) \log (p(x_i))
-$$
-
-### 相对熵（KL 散度）
-
-相对熵（KL 散度）用来衡量两个分布的差异；
-$$
-D_{KL}(p||q) = \sum_{i=1}^n p(x_i) \ log \left(\frac{p(x_i)}{q(x_i)} \right)
-$$
-相对熵是非对称的，使用时 $p(x)$ 用来表示样本的真实分布，而 $q(x)$ 用来表示模型所预测的分布；
-
-### 交叉熵
-
-交叉熵可以通过相对熵变化而来，在机器学习中通常直接用交叉熵作为损失函数；
-$$
-H(p,q) = -\sum_{i=1}^n p(x_i)\log(q(x_i))
-$$
-
-### JS 散度
-
-JS 散度用来衡量两个分布的相似度，是基于相对熵的变体，解决了相对熵的非对称问题；
-$$
-JS(P_1||P_2) = \frac{1}{2} KL(P_1||\frac{P_1 + P_2}{2}) + \frac{1}{2} KL(P_2||\frac{P_1+P_2}{2})
-$$
-
-### Wasserstein 距离
-
-Wasserstein 距离用来度量两个概率分布之间的距离，解决了当两个分布 $P$, $Q$ 相差很远时，KL 散度和 JS 散度梯度消失的问题；
-$$
-W(P_1, P_2) = \inf_{\gamma \sim \Pi(P_1, P_2)} \mathbb{E}_{(x,y)\sim\gamma}[\lVert x-y \rVert]
-$$
-
-
-
-
-
 ## GMM-UBM 模型
 
 ### Notes
@@ -531,9 +531,57 @@ GMM 模型将空间分布的概率密度用**多个高斯概率密度函数的�
 
 #### 算法整体流程
 
-GMM-UBM 模型的目标就是解决这个问题。首先，使用大量的背景数据（**非目标说话人的语料**）训练一个通用背景模型（Universal Background Model，是一个 GMM 模型）；接着，使用少量的背景数据（**目标说话人的语料**）和最大后验估计 MAP 算法，调整 UBM 各个高斯分布的均值，生成目标用户的 GMM 模型；
+<img src="pictures/8ov1gcun9ic5sqshic7fvlg09wo.png" alt="图片" style="zoom:70%;" />
+
+GMM-UBM 模型的目标就是解决这个问题。首先，使用大量的背景数据（**非目标说话人的语料**）训练一个通用背景模型（Universal Background Model，是一个 GMM 模型）；接着使用少量的背景数据（**目标说话人的语料**）和最大后验估计 MAP 算法，调整 UBM 各个高斯分布的均值，生成目标用户的 GMM 模型；
 
 #### 最大后验估计 MAP 算法
+
+<img src="pictures/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDI3ODQwNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom: 67%;" />
+
+（算法的原理在这里不再探究，我们直接来看这个算法是如何更新 UBM 的参数的）现在我们假设有少量的目标说话人的训练语料 $\mathcal{X} = \{ x_1, x_2, x_3, \dots, x_T \}$，和一个已经通过大量的非目标说话人语料训练得到的 UBM 模型：
+$$
+\text{UBM}(\phi, \mu, \delta) = \sum_{i=1}^K \phi_i \cdot f_m(x|\mu_i,\delta_i)
+$$
+
+- **Step 1**：计算每段训练语料属于第 $k$ 个高斯混合分布的概率；
+
+$$
+\Pr(k | x_t) = \frac{\phi_k \cdot f_m(x|\mu_k, \delta_k)}{\sum_{i=1}^K \phi_i \cdot f_m(x|\mu_i, \delta_i)}
+$$
+
+- **Step 2**：估计每个高斯分布的加权数量值、均值和方差；（前两步的做法是和 EM 算法的 E-Step 是一样的）
+
+$$
+\text{N}_i = \sum_{t=1}^T \Pr(k|x_t) \\
+\text{E}_i(\mathcal{X}) = \frac{1}n \cdot \left( \sum_{t=1}^T \Pr(k|x_t)\cdot x_t \right) \\
+\text{E}_i(\mathcal{X}^2) = \frac 1 n \cdot \left( \sum_{t=1}^T \Pr(k|x_t) \cdot x_t^2 \right)
+$$
+
+- **Step 3**：更新参数；
+
+$$
+\hat{\phi_i} = \gamma \cdot \left[\alpha_i^w \cdot \frac{\text{N}_i}T + (1-\alpha_i^w) \cdot \phi_i \right] \\
+\hat{\mu_i} = \alpha_i^m \cdot \text{E}_i(\mathcal{X}) + (1-\alpha_i^m) \cdot \mu_i \\
+\hat{\delta_i} = \alpha_i^v \cdot \text{E}_i(\mathcal{X}^2) + (1-\alpha_i^v) \cdot \left((\delta_i + \mu_i^2) - \hat{\mu_i} ^2 \right)
+$$
+
+​	其中，$\gamma$ 为权重项的归一化因子； $\alpha_i^\rho \ ,\ \left(\rho \in \{w,m,v\}\right)$ 是自适应系数，用来控制新 / 老估计量之间的平衡，其公式定义为：
+$$
+\alpha_i^\rho = \frac{\text{N}_i}{\text{N}_i + r^\rho}
+$$
+​	$r^\rho$ 是一个固定的相关因子。在 GMM-UBM 系统中，通常会使用相同的 $\alpha_i^\rho$ 来更新参数。实验表明，$r^\rho$ 的取值范围为 $[8, 20]$ 最有效，且自适应过程只更新均值效果最佳，即 $\alpha_i^w = \alpha_i^v = 0$；
+
+- 识别说话人：识别说话人的方法有以下两种
+
+  - 可以直接遍历不同说话人的 GMM 模型，计算当前语音片段在各个 GMM 下的 $\ln$ 域的似然估计，哪个似然估计值高，则当前语音片段属于哪个 GMM，即属于某个说话人；
+
+  - 另外，可以使用对数似然比的方法，计算 $\Lambda(x)$ 大于某阈值，则认为 $x$ 属于说话人 $spk$；
+    $$
+    \Lambda(x) = \log p(x|\text{GMM}_{spk}) - \log p(x|\text{UBM})
+    $$
+
+### Codes
 
 
 
