@@ -292,12 +292,12 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
 
 1. 初始化模型参数，这里初始化方法有两种：**随机初始化** 或 **K-means初始化**；
 
-2. **E-Step**：根据当前参数 $(\phi^{(t)},\mu^{(t)},\delta^{(t)})$，计算**每个数据 $x_j$ 属于第 $k$ 个多元高斯分布的可能性**（$t$ 表示迭代的轮数）
+2. **E-Step**：根据当前参数 $(\phi^{(t)},\mu^{(t)},\delta^{(t)})$，计算**每个数据 $x_j$ 属于第 $k$ 个多元高斯分布的可能性**（$t$ 表示迭代的轮数）；
    $$
    \gamma_{j,k}^{(t+1)} = \frac{\phi_k^{(t)} \cdot f_m(x_j|\mu_k^{(t)},\delta_k^{(t)})}{\sum_{i=1}^K \phi_i^{(t)} \cdot f_m(x_j|\mu_i^{(t)},\delta_i^{(t)})}
    $$
 
-3. **M-Step**：更新模型参数（$m$ 为样本个数）
+3. **M-Step**：更新模型参数（$m$ 为样本个数）；
    $$
    \mu_k^{(t+1)} = \frac{\sum_{j=1}^m \gamma_{j,k}^{(t+1)} \cdot x_j}{\sum_{j=1}^m \gamma_{j,k}^{(t+1)}}
    $$
@@ -312,7 +312,15 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
 
    
 
-4. 重复迭代 $2, 3$ 步骤，直至收敛；
+4. 重复迭代 $2, 3$ 步骤，直至收敛，收敛的条件是**样本集似然概率**的增长小于某个阈值；
+
+$$
+\text{Log-Likelihood}(\mathcal{X}, \phi_k^{(t)}, \mu_k^{(t)}, \delta_k^{(t)}) = 
+\sum_{j=1}^m \log \left( \sum_{i=1}^K \phi_i^{(t)} \cdot f_m(x_j|\mu_i^{(t)},\delta_i^{(t)}) \right) \\
+\text{If} \ \ \left( \text{Log-Likelihood}(\mathcal{X}, \phi_k^{(t+1)}, \mu_k^{(t+1)}, \delta_k^{(t+1)}) - \text{Log-Likelihood}(\mathcal{X}, \phi_k^{(t)}, \mu_k^{(t)}, \delta_k^{(t)}) \right) \le \text{threshold}, \ \ \text{Then stop E/M steps.}
+$$
+
+
 
 ### Codes
 
@@ -503,6 +511,29 @@ EM 算法是用于**含有隐变量**的概率模型参数的最大似然估计�
   
       self._initialize(X, resp)
   ```
+  
+- 模型是否收敛：前面计算过程中，已经得到 `log_prob_norm` 这个参数（指的就是 $\ln$ 域的概率），所以计算 $\text{Log-Likelihood}$ （在程序中用 `lower_bound` 参数来指代）的时候只需要求和即可，这里我们直接求均值
+
+  ```python
+  def _compute_lower_bound(self, _, log_prob_norm):
+      return log_prob_norm
+  ```
+
+  在函数 `fit_predict` 函数中判断是否收敛
+
+  ```python
+  for n_iter in range(1, self.max_iter + 1):
+      prev_lower_bound = lower_bound
+      log_prob_norm, log_resp = self._e_step(X)  # e-step
+      self._m_step(X, log_resp)  # m-step
+      lower_bound = self._compute_lower_bound(  # 计算对数似然概率
+          log_resp, log_prob_norm)
+      change = lower_bound - prev_lower_bound
+      self._print_verbose_msg_iter_end(n_iter, change)
+      if abs(change) < self.tol:  # 判断收敛
+          self.converged_ = True
+          break
+  ```
 
 ### Links
 
@@ -547,32 +578,34 @@ $$
 - **Step 1**：计算每段训练语料属于第 $k$ 个高斯混合分布的概率；
 
 $$
-\Pr(k | x_t) = \frac{\phi_k \cdot f_m(x|\mu_k, \delta_k)}{\sum_{i=1}^K \phi_i \cdot f_m(x|\mu_i, \delta_i)}
+\Pr(k | x_t)^{(t+1)} = \frac{\phi_k^{(t)} \cdot f_m(x|\mu_k^{(t)}, \delta_k^{(t)})}{\sum_{i=1}^K \phi_i^{(t)} \cdot f_m(x|\mu_i^{(t)}, \delta_i^{(t)})}
 $$
 
 - **Step 2**：估计每个高斯分布的加权数量值、均值和方差；（前两步的做法是和 EM 算法的 E-Step 是一样的）
 
 $$
-\text{N}_i = \sum_{t=1}^T \Pr(k|x_t) \\
-\text{E}_i(\mathcal{X}) = \frac{1}n \cdot \left( \sum_{t=1}^T \Pr(k|x_t)\cdot x_t \right) \\
-\text{E}_i(\mathcal{X}^2) = \frac 1 n \cdot \left( \sum_{t=1}^T \Pr(k|x_t) \cdot x_t^2 \right)
+\text{N}_i^{(t+1)} = \sum_{t=1}^T \Pr(k|x_t)^{(t+1)} \\
+\text{E}_i(\mathcal{X})^{(t+1)} = \frac{1}n \cdot \left( \sum_{t=1}^T \Pr(k|x_t)^{(t+1)}\cdot x_t \right) \\
+\text{E}_i(\mathcal{X}^2)^{(t+1)} = \frac 1 n \cdot \left( \sum_{t=1}^T \Pr(k|x_t)^{(t+1)} \cdot x_t^2 \right)
 $$
 
 - **Step 3**：更新参数；
 
 $$
-\hat{\phi_i} = \gamma \cdot \left[\alpha_i^w \cdot \frac{\text{N}_i}T + (1-\alpha_i^w) \cdot \phi_i \right] \\
-\hat{\mu_i} = \alpha_i^m \cdot \text{E}_i(\mathcal{X}) + (1-\alpha_i^m) \cdot \mu_i \\
-\hat{\delta_i} = \alpha_i^v \cdot \text{E}_i(\mathcal{X}^2) + (1-\alpha_i^v) \cdot \left((\delta_i + \mu_i^2) - \hat{\mu_i} ^2 \right)
+\phi_i^{(t+1)} = \gamma \cdot \left[\alpha_i^w \cdot \frac{\text{N}_i^{(t+1)}}{T} + (1-\alpha_i^w) \cdot \phi_i^{(t)} \right] \\
+\mu_i^{(t+1)} = \alpha_i^m \cdot \text{E}_i(\mathcal{X})^{(t+1)} + (1-\alpha_i^m) \cdot \mu_i^{(t)} \\
+\delta_i^{(t+1)} = \alpha_i^v \cdot \text{E}_i(\mathcal{X}^2)^{(t+1)} + (1-\alpha_i^v) \cdot \left((\delta_i^{(t)} + ({\mu_i^{(t)}})^2) - (\mu_i^{(t+1)}) ^2 \right)
 $$
 
 ​	其中，$\gamma$ 为权重项的归一化因子； $\alpha_i^\rho \ ,\ \left(\rho \in \{w,m,v\}\right)$ 是自适应系数，用来控制新 / 老估计量之间的平衡，其公式定义为：
 $$
 \alpha_i^\rho = \frac{\text{N}_i}{\text{N}_i + r^\rho}
 $$
-​	$r^\rho$ 是一个固定的相关因子。在 GMM-UBM 系统中，通常会使用相同的 $\alpha_i^\rho$ 来更新参数。实验表明，$r^\rho$ 的取值范围为 $[8, 20]$ 最有效，且自适应过程只更新均值效果最佳，即 $\alpha_i^w = \alpha_i^v = 0$；
+​	$r^\rho$ 是一个固定的相关因子。在 GMM-UBM 系统中，通常会使用相同的 $\alpha_i^\rho$ 来更新参数。实验表明，$r^\rho$ 的取值范围为 $[8, 20]$ 最有效，且**自适应过程只更新均值效果最佳**，即 $\alpha_i^w = \alpha_i^v = 0$；
 
-- 识别说话人：识别说话人的方法有以下两种
+- **Step 4**：重复前面的步骤，直至模型收敛；
+
+- **说话人识别**：识别说话人的方法有以下两种
 
   - 可以直接遍历不同说话人的 GMM 模型，计算当前语音片段在各个 GMM 下的 $\ln$ 域的似然估计，哪个似然估计值高，则当前语音片段属于哪个 GMM，即属于某个说话人；
 
@@ -583,11 +616,37 @@ $$
 
 ### Codes
 
+因为 `MAP Adaptation` 算法和 GMM 的训练过程基本相似，我们就来简单看看参考代码的整体结构：
 
+- 计算 MFCC：脚本 `extract_mfcc_conefficient.py` 将语音转换成 13 维的 MFCC 特征；
+- 训练 GMM-UBM 模型：脚本 `UBM.py` 用来训练 UBM 模型，并调用 MAP 算法（<u>原先我一直以为说话人的识别是以一段语音去拟合其分布的，但是看了这块代码才发现是以**每一帧的 MFCC 去拟合高斯混合分布**的</u>）；
+- MAP 算法：脚本 `MAP_adapt.py` 主要用来实现 MAP 算法；
+- 说话人识别：脚本 `testing_model.py` 主要用来测试音频为目标说话人的概率；
+
+代码里面我有几个疑问：
+
+- 算法里面没有使用 `VAD` 算法，这个可能导致误差；
+- 最后给定一段语音，可以得到每帧的概率，那最终如何得到这个语音是否属于目标说话人呢；
+
+另外，代码里面有一处错误，这个错误导致了数组的越界问题，我已经在 `issue` 中给出了[解决方案](https://github.com/scelesticsiva/speaker_recognition_GMM_UBM/issues/4)；
 
 ### Links
 
 - 参考链接：[声纹识别之GMM-UBM系统框架简介](https://blog.csdn.net/taw19960426/article/details/96202294)
+- 参考代码：[speaker_recognition_GMM_UBM](https://github.com/scelesticsiva/speaker_recognition_GMM_UBM)
+- 代码 `Bug`：[I totally got MFCC 3380 lines, but it errors, Wouly you help me,thank you very much?](https://github.com/scelesticsiva/speaker_recognition_GMM_UBM/issues/4)
+
+
+
+
+
+## 基于 i-vector 和 PLDA 的说话人识别技术
+
+### Notes
+
+### Links
+
+- 参考：《Kaldi 语音识别实践》基于 i-vector 和 PLDA 的说话人识别技术
 
 
 
