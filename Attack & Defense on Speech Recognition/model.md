@@ -616,7 +616,7 @@ $$
 
 ### Codes
 
-因为 `MAP Adaptation` 算法和 GMM 的训练过程基本相似，我们就来简单看看参考代码的整体结构：
+因为 `MAP Adaptation` 算法和 GMM 的训练过程基本相似，我们就来简单看看参考代码的整体结构：（在 ivector 中我会具体分析一下 Kaldi 的代码实现）
 
 - 计算 MFCC：脚本 `extract_mfcc_conefficient.py` 将语音转换成 13 维的 MFCC 特征；
 - 训练 GMM-UBM 模型：脚本 `UBM.py` 用来训练 UBM 模型，并调用 MAP 算法（<u>原先我一直以为说话人的识别是以一段语音去拟合其分布的，但是看了这块代码才发现是以**每一帧的 MFCC 去拟合高斯混合分布**的</u>）；
