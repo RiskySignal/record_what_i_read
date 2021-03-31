@@ -76,6 +76,96 @@
 
 
 
+## Visualizing and Understanding Neural Machine Translation
+
+> 上过刘洋老师的 NLP 课后，一直很崇拜刘洋老师！:smiley::smiley::smiley: 
+
+### Contribution
+
+1. 将 LRP（Layer-wise Relevance Propagation）方法应用到“基于注意力机制的机器翻译任务”中，用于**判断不同层不同神经元（或称为隐藏状态）对结果的贡献度**；
+
+### Notes
+
+> 原文在各个细节方面都讲地非常清楚，并且逻辑清晰、言语流畅，因此十分**推荐直接阅读原文**，下面只是对原文的一些摘要；
+
+1. 基于注意力机制的机器翻译任务：
+
+   <img src="images/image-20210331203551689.png" alt="image-20210331203551689" style="zoom: 45%;" />
+
+   
+
+2. LRP 算法的简单示例：（文章内容有些多，但其实如果你知道 LRP 算法是怎么做的话，这篇文章只是对这个方法的应用）
+
+   以一个简单的**前向神经网络**举例，网络结构如下：
+
+   <img src="images/image-20210331204046048.png" alt="image-20210331204046048" style="zoom: 25%;" />
+
+   现在我们关注**输入层**和**隐藏层**各神经元对**输出神经元 $v_1$** 的影响，首先我们计算**隐藏层的影响因子**：
+
+   <img src="images/image-20210331204505568.png" alt="image-20210331204505568" style="zoom: 16%;" />
+
+   然后我们计算**输入层的影响因子**：
+
+   <img src="images/image-20210331204653043.png" alt="image-20210331204653043" style="zoom: 28%;" />
+
+3. LRP 算法定义：（从算法的定义上来看，**算法并不需要依赖于可导的梯度计算**）
+
+   <img src="images/image-20210331204924929.png" alt="image-20210331204924929" style="zoom: 50%;" />
+
+   其中，$v \in \text{OUT}(u)$ 指在神经网络中神经元 $u$ 指向神经元 $v$；$w_{u \rightarrow z}$ 的定义如下（**在 LRP 原文中，作者发现这个相关系数和网络的激活函数是无关的，所以下面均没有考虑神经元的激活函数**）
+
+   - 如果是形如 $\bold{v} = \bold{Wu}$ 这样的**矩阵相乘**，则
+
+   <img src="images/image-20210331205356249.png" alt="image-20210331205356249" style="zoom: 13%;" />
+
+   - 如果是形如 $\bold{v} = \bold{u_1} \circ \bold{u_2}$ 的**向量点积**，则
+
+   <img src="images/image-20210331205733116.png" alt="image-20210331205733116" style="zoom:11%;" />
+
+   - 如果是形如 $v=\max{\{u_1, u_2 \}}$ 的**求最值**，则
+
+   <img src="images/image-20210331210242737.png" alt="image-20210331210242737" style="zoom: 17%;" />
+
+   其中，$u' \in \text{IN}(v)$ 指在神经元中神经元 $u'$ 指向神经元 $v$；
+
+4. 实验：从实验的结果来看，**LRP 方法不仅能够得到和 Attention 可视化方法相似的结果，并且能够分析更多的隐藏层内容**。（正例是对正常翻译结果的分析，而反例则是机器翻译中常出现错误翻译问题的举例）
+
+   - （正例）Source Side，即 Encoder 侧的影响因子可视化：
+
+     <img src="images/image-20210331210628539.png" alt="image-20210331210628539" style="zoom:40%;" />
+
+   - （正例）Target Side，即 Decoder 侧的印象因子可视化：
+
+     <img src="images/image-20210331210847350.png" alt="image-20210331210847350" style="zoom:43%;" />
+
+   - （反例）Word Omission，即过早结束翻译：
+
+     <img src="images/image-20210331211453468.png" alt="image-20210331211453468" style="zoom:39%;" />
+
+   - （反例）Word Repetition，即重复翻译；
+
+     <img src="images/image-20210331211617034.png" alt="image-20210331211617034" style="zoom: 45%;" />
+
+   - （反例）Unrelated Words，即翻译出了完全无关的词汇；
+
+     <img src="images/image-20210331211746706.png" alt="image-20210331211746706" style="zoom:45%;" />
+
+   - （反例）Negation Reversion，即翻译时把否定词遗漏了；（<u>文章的这个地方，我觉得是问题最大的，翻译过程中把“不”给遗漏了，不一定分析“about”这个词，作者对这个词的分析位置的选择，我觉得存粹是从中文的角度来看问题的，因为“谈 (talk)”后面跟的是“不”，他就来分析这个“about”</u>）
+
+     <img src="images/image-20210331211924440.png" alt="image-20210331211924440" style="zoom: 45%;" />
+
+   - （反例）Extra Words，即翻译中出现了多余的词；
+
+     <img src="images/image-20210331212412328.png" alt="image-20210331212412328" style="zoom:45%;" />
+
+### Links
+
+- 论文链接：[Ding Y, Liu Y, Luan H, et al. Visualizing and understanding neural machine translation[C]//Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers). 2017: 1150-1159.](https://www.aclweb.org/anthology/P17-1106/)
+
+
+
+
+
 ## 机器学习模型可解释性方法、应用与安全研究综述
 
 ### Notes
