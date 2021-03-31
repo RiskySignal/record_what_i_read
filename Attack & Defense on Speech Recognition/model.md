@@ -634,6 +634,8 @@ $$
 
 - 参考链接：[声纹识别之GMM-UBM系统框架简介](https://blog.csdn.net/taw19960426/article/details/96202294)
 - 参考代码：[speaker_recognition_GMM_UBM](https://github.com/scelesticsiva/speaker_recognition_GMM_UBM)
+- 参考 PPT：http://www.inf.ed.ac.uk/teaching/courses/asr/2018-19/asr17-speaker.pdf
+- 论文链接：[Speaker Verification Using Adapted Gaussian Mixture Models](https://www.cs.swarthmore.edu/~turnbull/cs97/f09/paper/reynolds00.pdf)
 - 代码 `Bug`：[I totally got MFCC 3380 lines, but it errors, Wouly you help me,thank you very much?](https://github.com/scelesticsiva/speaker_recognition_GMM_UBM/issues/4)
 
 
@@ -644,9 +646,120 @@ $$
 
 ### Notes
 
+#### 背景
+
+在实际应用中，由于说话人语音中说话人信息和各种干扰信息掺杂在一起，不同的采集设备的信道之间也具有差异性，会使我们**收集到的语音中掺杂信道干扰信息**。这种干扰信息会引起说话人信息的扰动。传统的 GMM-UBM 方法，没有办法克服这一问题，导致系统性能不稳定。
+
+在 GMM-UBM 模型里，每个目标说话人都可以用 GMM 模型来描述。因为从 UBM 模型自适应到每个说话人的 GMM 模型时，只改变均值，对于权重和协方差不做任何调整，所以**说话人的信息大部分都蕴含在 GMM 的均值里面**。GMM 均值矢量中，**除了绝大部分的说话人信息之外，也包含了信道信息**。联合因子分析（Joint Factor Analysis，JFA）可以**对说话人差异和信道差异分别建模**，从而可以很好地对信道差异进行补偿，提高系统表现。但由于 JFA 方法需要大量不同通道的训练语料，获取困难，并且计算复杂度高，所以难以投入实际使用。由 Dehak 提出的，基于 I-Vector 因子分析技术，提出了全新的解决方法。JFA 方法是对说话人差异空间与信道差异空间分别建模，而基于 I-Vector 的方法是**对全局差异（将说话人和信道差异一起）进行建模**，这样的处理放宽了对训练语料的限制，并且计算简单，性能也相当。
+
+#### 均值超矢量
+
+均值超矢量（Supervector）是 GMM-UBM 模型的最终结果。在 GMM-UBM 框架下，说话人模型是从 UBM 模型自适应得到的，过程中值改变了均值的大小，因此说话人之间的区别信息都蕴含在 GMM 的均值矢量中。**将说话人 GMM 模型的每个高斯成分的均值堆叠起来，形成一个高维的超矢量，即为均值超矢量**。假设语音声学特征参数的维度为 $P$，GMM 中含有 $M$ 个高斯分布，则该均值超矢量的维度为 $(M,P)$。
+
+<img src="pictures/webp2348hfjakvb432" alt="img" style="zoom: 67%;" />
+
+**由于均值超矢量的维度非常高，一般情况下都会高达上万维，会有一定程度的冗余信息存在，为此我们需要使用因子分析对其进行降维，提取具有区分性的特征**。
+
+#### 因子分析
+
+信息冗余是高维数据分析常见的问题，使用因子分析方法，可以将**一些信息重叠和复杂的关系变量简化为较少的足够描述原有观测信息的几个因子**，是一种**数据降维**的统计方法。上面提到的 JFA 和 I-Vector 都是因子分析方法。
+
+因子分析的实质是认为 $m$ 个 $n$ 维特征的训练样本 $\mathcal{X}=\left( x_1, x_2, x_3, \dots, x_m \right)$ 的产生过程如下：
+
+1. 首先在一个 $k$ 维的空间中按照**多元高斯分布**生成 $m$ 个 $\mathcal{Z}=\left( z_1, z_2, z_3, \dots, z_m \right)$，即
+   $$
+   z_i \sim \N(0, \bold{I})
+   $$
+
+2. 然后存在一个变换矩阵 $\Lambda \in \mathbb{R}^{n\times k}$，将 $z_i$ 映射到 $n$ 维空间中，即
+   $$
+   \Lambda z_i
+   $$
+   因为 $z_i$ 的均值是 $0$，**映射**后仍然是 $0$；
+
+3. 然后将 $\Lambda z_i$ 加上一个均值 $\mu \in \mathbb{R}^n$，即
+   $$
+   \mu + \Lambda z_i
+   $$
+   对应的意义是将变换后的 $\Lambda z_i$ **移动**到训练样本集 $\mathcal{X}$ 的中心；
+
+4. 由于真实样本 $x_i$ 与上述模型生成的点之间存在**误差**，因此我们继续加上误差项 $\epsilon \in \mathbb{R}^n$，而且 $\epsilon$ 符合多元高斯分布，即
+   $$
+   \epsilon \sim \mathbb{N}(0, \bold{\Psi}) \\
+   \mu + \Lambda z_i + \epsilon
+   $$
+
+5. 最后的结果认为即为真实训练样本 $x_i$ 的生成公式
+   $$
+   x_i = \mu + \Lambda z_i + \epsilon
+   $$
+
+#### I-Vector
+
+（**定义**）给定说话人 $s$ 的一段语音 $h$，这一新的说话人及信道相关的 GMM 均值超矢量定义为如下公式：
+$$
+M_{s,h} = m_u+ T \omega_{s,h}
+$$
+其中 $m_u$ 是说话人与信道独立的均值超矢量，即为 UBM 的均值超矢量；$T$ 为全局差异空间；$\omega_{s,h}$ 为全局差异空间因子，即为 **I-Vector 矢量**，它先验地服从标准正态分布；上式中，$M_{s,h}$ 和 $m_u$ 是我们可以计算出的，而 $T$ 和 $\omega_{s,h}$ 是我们需要估计的。
+
+I-Vector 的确认过程中，我们需要首先估计全局差异空间矩阵 $T$。**该过程中认为所有给定的数据都来自不同的说话人，即使是一个说话人的多端语音也同样认为是来自不同人的**。
+
+1. **计算 Baum-Welch 统计量**：给定说话人 $s$ 和他的特征矢量序列 $(Y_1, Y_2, \dots, Y_T)$，假设 GMM-UBM 有 $C$ 个高斯分类，每一个高斯分量 $c$，定义**混合权值**、**均值矢量**、**协方差矩阵**对应的 Baum-Welch 统计量如下公式
+   $$
+   N_c(s) = \sum_{t=1}^T \gamma_t(c) \\
+   F_c(s) = \sum_{t=1}^T \gamma_t(c) \cdot Y_t \\
+   S_c(s) = \text{diag} \left(\sum_{t=1}^T \gamma_t(c) \cdot Y_tY_t^{tr} \right) \\
+   \text{where} \ \ \gamma_t(c) = \frac{\phi_c \cdot f_c(Y_t)}{\sum_{j=1}^C \phi_j \cdot f_j(Y_t)}
+   $$
+   其中， $\text{diag}(\cdot)$ 返回矩阵的对角线元素；$Y_t^*$ 为 $Y_t$ 的共轭转置矩阵；另外，定义**一阶中心统计量**和**二阶中心统计量**如下公式
+   $$
+   \tilde{F}_c(s) = \sum_{t=1}^T \gamma_t(c) \cdot (Y_t-m_c) = F_c(s) - N_c(s)m_c \\
+   \tilde{S}_c(s) = \text{diag} \left( \sum_{t=1}^T \gamma_t(c) \cdot (Y_t-m_c)(Y_t-m_c)^{tr} \right) = S_c(s) - \text{diag} \left( F_c(s)m_c^*  + m_c F_c(s)^* -N_c(s)m_cm_c^* \right)
+   $$
+   为了后面方便计算，将**统计量扩展为矩阵形式**，如下
+   $$
+   N(s) = 
+   \begin{bmatrix}
+   N_1(s) & \  & 0 \\
+   \ & \dots & \ \\
+   0 & \ & N_C(s)
+   \end{bmatrix} , \ \ \ \ \ \ \ \ \ \ 
+   \tilde F(s) = 
+   \begin{bmatrix}
+   \tilde F_1(s) \\
+   \dots \\
+   \tilde F_C(s)
+   \end{bmatrix}
+   $$
+   在训练之前，先对 $T$ 矩阵进行随机初始化；
+
+2. **E-Step**：计算**说话人因子的方差和均值**，公式如下（<u>这里的 $\Sigma$ 指的是什么？</u>）
+   $$
+   l(s) = I + T^{tr} \Sigma ^{-1} N(s)T \\
+   E[\omega_{s,h}] = l^{-1}(s) \cdot T^{tr} \Sigma^{-1} \tilde F(s) \\
+   Cov(\omega_{s,h}, \omega_{s,h}) = l^{-1}(s) \\
+   E[\omega_{s,h}\ \omega_{s,h}^{tr}] = Cov(\omega_{s,h},\omega_{s,h}) + E[\omega_{s,h}]E[\omega_{s,h}]^{tr}
+   $$
+
+3. M-Step：重新攻击最大似然值最大似然值，公式如下
+   $$
+   N_c = \sum_s N_c(s) \\
+   A_c = \sum_s N_c(s) E[\omega_{s,h}\ \omega_{s,h}^{tr}] \\
+   C = \sum_s \tilde{F}(u) E[\omega_{s,h}] \\
+   $$
+   
+
+4. 
+
+### Codes
+
 ### Links
 
-- 参考：《Kaldi 语音识别实践》基于 i-vector 和 PLDA 的说话人识别技术
+- 参考：《Kaldi 语音识别实践》基于 i-vector 和 PLDA 的说话人识别技术	
+- 参考链接：[声纹识别之I-Vector](https://blog.csdn.net/weixin_38206214/article/details/81096092)
+- 参考链接：[【kaldi学习.5】I-vector的主要理论](https://www.jianshu.com/p/e730e70de7f8)
+
+- 参考 PPT：http://www1.icsi.berkeley.edu/Speech/presentations/AFRL_ICSI_visit2_JFA_tutorial_icsitalk.pdf
 
 
 
@@ -662,7 +775,7 @@ $$
 
 
 
-### 代码理解
+### Codes
 
 ### Links
 
