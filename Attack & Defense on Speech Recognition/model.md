@@ -702,7 +702,7 @@ M_{s,h} = m_u+ T \omega_{s,h}
 $$
 其中 $m_u$ 是说话人与信道独立的均值超矢量，即为 UBM 的均值超矢量；$T$ 为全局差异空间；$\omega_{s,h}$ 为全局差异空间因子，即为 **I-Vector 矢量**，它先验地服从标准正态分布；上式中，$M_{s,h}$ 和 $m_u$ 是我们可以计算出的，而 $T$ 和 $\omega_{s,h}$ 是我们需要估计的。
 
-I-Vector 的确认过程中，我们需要首先估计全局差异空间矩阵 $T$。**该过程中认为所有给定的数据都来自不同的说话人，即使是一个说话人的多端语音也同样认为是来自不同人的**。
+I-Vector 的提取过程中，我们需要首先估计全局差异空间矩阵 $T$。**该过程中认为所有给定的数据都来自不同的说话人，即使是一个说话人的多端语音也同样认为是来自不同人的**。
 
 1. **计算 Baum-Welch 统计量**：给定说话人 $s$ 和他的特征矢量序列 $(Y_1, Y_2, \dots, Y_T)$，假设 GMM-UBM 有 $C$ 个高斯分类，每一个高斯分量 $c$，定义**混合权值**、**均值矢量**、**协方差矩阵**对应的 Baum-Welch 统计量如下公式
    $$
@@ -729,10 +729,16 @@ I-Vector 的确认过程中，我们需要首先估计全局差异空间矩阵 $
    \tilde F_1(s) \\
    \dots \\
    \tilde F_C(s)
+   \end{bmatrix}, \ \ \ \ \ \ \ \ \ \ 
+   \tilde{S}(s) = 
+   \begin{bmatrix}
+\tilde{S}_1(s) & \ & 0 \\
+   \ & \dots \ & \ \\
+   \ & \  & \tilde{S}_C(s)
    \end{bmatrix}
    $$
    在训练之前，先对 $T$ 矩阵进行随机初始化；
-
+   
 2. **E-Step**：计算**说话人因子的方差和均值**，公式如下（<u>这里的 $\Sigma$ 指的是什么？</u>）
    $$
    l(s) = I + T^{tr} \Sigma ^{-1} N(s)T \\
@@ -741,17 +747,59 @@ I-Vector 的确认过程中，我们需要首先估计全局差异空间矩阵 $
    E[\omega_{s,h}\ \omega_{s,h}^{tr}] = Cov(\omega_{s,h},\omega_{s,h}) + E[\omega_{s,h}]E[\omega_{s,h}]^{tr}
    $$
 
-3. M-Step：重新攻击最大似然值最大似然值，公式如下
+3. **M-Step：重新估计最大似然值最大似然值**；
+   
+   ​	首先计算统计量，公式如下
    $$
    N_c = \sum_s N_c(s) \\
-   A_c = \sum_s N_c(s) E[\omega_{s,h}\ \omega_{s,h}^{tr}] \\
-   C = \sum_s \tilde{F}(u) E[\omega_{s,h}] \\
-   $$
+A_c = \sum_s N_c(s) E[\omega_{s,h}\ \omega_{s,h}^{tr}] \\
+   C = \sum_s \tilde{F}(s) E[\omega_{s,h}] \\
+   N = \sum_s N(s)
+$$
    
+   ​	更新参数，公式如下
+$$
+   T_i \cdot A_c = C_i \\
+   \Sigma = N^{-1} \left( \sum_s \tilde{S}(s) - \text{diag}(CT^{tr}) \right)
+$$
+   
+4. 循环 EM 步骤，直到收敛；
 
-4. 
+上面的计算过程后，我们已经得到了 $T$ 矩阵。现给定说话人的一句话，先提取零阶、一阶 Baum-Welch 统计量，即可**计算 i-vector 的估计值**，公式如下：
+$$
+E[\omega_{s,h}] 
+= l^{-1}(s) \cdot T^{tr} \Sigma^{-1} \tilde F(s) 
+= \left(I + T^{tr} \Sigma ^{-1} N(s)T \right)^{-1}\cdot T^{tr} \Sigma^{-1} \tilde F(s)
+$$
+
+#### 基于 PLDA 对 i-vector 分类
+
+
 
 ### Codes
+
+代码部分主要分析 Kaldi 的 `sre08` 示例，`sre08` 是 Kaldi 针对美国国家标准与技术研究院在 2008 年举办的说话人识别比赛（Speaker Recognition Evaluation） 任务的解决方案，另外相似的还有 `sre10` 和 `sre16`。
+
+#### i-vector 的提取
+
+(1) 首先，看一下整个步骤，具体在文件 `run.sh` 中：
+
+```bash
+# 首先训练一个对角协方差矩阵的 UBM，然后训练一个非对角协方差矩阵的 UBM
+sid/train_diag_ubm.sh --nj 30 --cmd "$train_cmd" data/train_4k 2048 exp/diag_ubm_2048
+sid/train_full_ubm.sh --nj 30 --cmd "$train_cmd" data/train_8k exp/diag_ubm_2048 exp/full_ubm_2048
+
+# 分别为男/女说话人训练一个非对角协方差矩阵的 UBM （wait 用于同时执行两条指令）
+sid/train_full_ubm.sh --nj 30 --remove-low-count-gaussians false --num-iters 1 --cmd "$train_cmd" data/train_male_8k exp/full_ubm_2048 exp/full_ubm_2048_male &
+sid/train_full_ubm.sh --nj 30 --remove-low-count-gaussians false --num-iters 1 --cmd "$train_cmd" data/train_female_8k exp/full_ubm_2048 exp/full_ubm_2048_female &
+wait
+
+# 分别训练男/女说话人的i-vector模型
+sid/train_ivector_extractor.sh --cmd "$train_cmd --mem 35G" --num-iters 5 exp/full_ubm_2048_male/final.ubm data/train_male exp/extractor_2048_male
+sid/train_ivector_extractor.sh --cmd "$train_cmd --mem 35G" --num-iters 5 exp/full_ubm_2048_female/final.ubm data/train_female exp/extractor_2048_female
+```
+
+
 
 ### Links
 
@@ -1007,7 +1055,8 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 ## Lingvo: a modular and scalable framework for sequence-to-sequence modeling
 
-谷歌开源的基于tensorflow的序列模型框架。
+> 谷歌开源的基于tensorflow的序列模型框架。
+>
 
 ### Notes
 
@@ -1016,3 +1065,47 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 - 论文链接：[Lingvo: a modular and scalable framework for sequence-to-sequence modeling](https://arxiv.org/abs/1902.08295)
 - Github：[Lingvo](https://github.com/tensorflow/lingvo)
 
+
+
+
+
+## Handling Background Noise in Neural Speech Generation
+
+### Notes
+
+#### 研究背景
+
+低码率的语音编码器由于基于神经网络的声码器的发展音质得到巨大提高。当输入的语音存有噪声的时候，语音编码器的音质将会下降，因此本文实验如何来处理该噪声，使合成的音质更高
+
+#### 详细设计
+
+本文主要在声码器前端加入 denoiser 模型来去噪。其实验主要对比以下 5 种方案：
+
+- c2c：clean-to-clean
+- n2n：noise-to-noisy
+- n2c：noise-to-clean
+- dc2c：在c2c前边使用denoiser模型进行处理
+- dn2n：在n2n前边使用denoiser模型进行处理
+
+其中声码器 WaveGRU 如 1 所示，Encoder 是把波形转成 `log melspectra`，Decoder 把 `log melspectra` 转成语音波形；denoiser 的模型 TASNet 如图 2 所示
+
+​                  <img src="pictures/1234uhfb2j3jv" alt="图片" style="zoom: 50%;" /> <img src="pictures/856bvsmvbkjkq" alt="图片" style="zoom:50%;" />
+
+#### 实验
+
+实验结果如图所示：
+
+<img src="pictures/8934v%E5%B0%BC%E6%96%AF%E5%A5%A5" alt="图片" style="zoom:50%;" />
+
+![图片](pictures/65872987hfriyti1)
+
+- c2c：可以很好处理clean的语音，但不能处理带噪的语音；
+- n2n：可以提高带噪语音质量，但牺牲了干净语音质量；
+- n2c：可以提高带噪语音质量，但会造成音素丢失；
+- dc2c：可以很好处理干净和带噪数据；
+- dn2n：在 n2n 的基础上使用 denoiser 具有提高音质效果；
+
+### Links
+
+- 论文链接：[Denton T, Luebs A, Lim F S C, et al. Handling Background Noise in Neural Speech Generation[J]. arXiv preprint arXiv:2102.11906, 2021.](https://arxiv.org/pdf/2102.11906.pdf)
+- 参考链接：[语音信号处理论文优选：Handling Background Noise in Neural Speech Generation](https://mp.weixin.qq.com/s/5H6m4oQgYxQkgOIXt0JrnA)

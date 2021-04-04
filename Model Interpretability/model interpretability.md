@@ -27,6 +27,34 @@
 
 
 
+## On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Bach S, Binder A, Montavon G, et al. On pixel-wise explanations for non-linear classifier decisions by layer-wise relevance propagation[J]. PloS one, 2015, 10(7): e0130140.](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0130140)
+
+
+
+
+
+## Layer-wise Relevance Propagation for Neural Networks with Local Renormalization Layers
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Binder A, Montavon G, Lapuschkin S, et al. Layer-wise relevance propagation for neural networks with local renormalization layers[C]//International Conference on Artificial Neural Networks. Springer, Cham, 2016: 63-71.](https://arxiv.org/abs/1604.00825)
+
+
+
+
+
 ## SmoothGrad: removing noise by adding noise
 
 ### Contributes
