@@ -320,8 +320,6 @@ $$
 \text{If} \ \ \left( \text{Log-Likelihood}(\mathcal{X}, \phi_k^{(t+1)}, \mu_k^{(t+1)}, \delta_k^{(t+1)}) - \text{Log-Likelihood}(\mathcal{X}, \phi_k^{(t)}, \mu_k^{(t)}, \delta_k^{(t)}) \right) \le \text{threshold}, \ \ \text{Then stop E/M steps.}
 $$
 
-
-
 ### Codes
 
 #### 实验一
@@ -750,19 +748,17 @@ I-Vector 的提取过程中，我们需要首先估计全局差异空间矩阵 $
 3. **M-Step：重新估计最大似然值最大似然值**；
    
    ​	首先计算统计量，公式如下
-   $$
-   N_c = \sum_s N_c(s) \\
+$$
+N_c = \sum_s N_c(s) \\
 A_c = \sum_s N_c(s) E[\omega_{s,h}\ \omega_{s,h}^{tr}] \\
    C = \sum_s \tilde{F}(s) E[\omega_{s,h}] \\
    N = \sum_s N(s)
 $$
-   
-   ​	更新参数，公式如下
+更新参数，公式如下
 $$
    T_i \cdot A_c = C_i \\
    \Sigma = N^{-1} \left( \sum_s \tilde{S}(s) - \text{diag}(CT^{tr}) \right)
 $$
-   
 4. 循环 EM 步骤，直到收敛；
 
 上面的计算过程后，我们已经得到了 $T$ 矩阵。现给定说话人的一句话，先提取零阶、一阶 Baum-Welch 统计量，即可**计算 i-vector 的估计值**，公式如下：
@@ -782,7 +778,9 @@ $$
 
 #### i-vector 的提取
 
-(1) 首先，看一下整个步骤，具体在文件 `run.sh` 中：
+##### `run.sh`
+
+首先，看一下整个步骤，具体在文件 `run.sh` 中：
 
 ```bash
 # 首先训练一个对角协方差矩阵的 UBM，然后训练一个非对角协方差矩阵的 UBM
@@ -799,7 +797,145 @@ sid/train_ivector_extractor.sh --cmd "$train_cmd --mem 35G" --num-iters 5 exp/fu
 sid/train_ivector_extractor.sh --cmd "$train_cmd --mem 35G" --num-iters 5 exp/full_ubm_2048_female/final.ubm data/train_female exp/extractor_2048_female
 ```
 
+##### `train_ivector_extractor.sh`
 
+ (1) 具体来看一下脚本 `train_ivector_extractor.sh` 的第一部分：
+
+```bash
+# Initialize the i-vector extractor using the FGMM input
+$cmd $dir/log/convert.log \
+	fgmm-global-to-gmm $dir/final.ubm $dir/final.dubm || exit 1;  # 把全协方差 GMM 转换成对角协方差 GMM
+$cmd $dir/log/init.log \
+	ivector-extractor-init --ivector-dim=$ivector_dim --use-weights=$use_weights $dir/final.ubm $dir/0.ie || exit 1  # 初始化 i-vector 提取器
+```
+
+- `fgmm-global-to-gmm`：将全协方差 GMM 转换成对角协方差 GMM；
+
+```c++
+// fgmmbin/fgmm-global-to-gmm.c
+DiagGmm gmm;
+gmm.CopyFromFullGmm(fgmm); // 拷贝 GMM，具体实现见下
+WriteKaldiObject(gmm, gmm_wxfilename, binary); // 写入文件
+// gmm/diag-gmm.cc 
+void DiagGmm::CopyFromFullGmm(const FullGmm &fullgmm) {
+  int32 num_comp = fullgmm.NumGauss(), dim = fullgmm.Dim();
+  Resize(num_comp, dim);
+  gconsts_.CopyFromVec(fullgmm.gconsts()); // 拷贝 gconsts_，这个变量用来加快 log-likelihood 的计算，定义为：log(weight) - 0.5 * (log det(var) + mean'*inv(var)*mean)
+  weights_.CopyFromVec(fullgmm.weights());
+  Matrix<BaseFloat> means(num_comp, dim);
+  fullgmm.GetMeans(&means); // 获取均值矩阵，具体实现见下
+  int32 ncomp = NumGauss();
+  for (int32 mix = 0; mix < ncomp; mix++) {
+    SpMatrix<double> covar(dim);
+    covar.CopyFromSp(fullgmm.inv_covars()[mix]);
+    covar.Invert();
+    Vector<double> diag(dim);
+    diag.CopyDiagFromPacked(covar);  // 从全协方差阵中提取对角协方差阵，因为是对角阵，所以只保存对角向量
+    diag.InvertElements();
+    inv_vars_.Row(mix).CopyFromVec(diag);
+  }
+  means_invvars_.CopyFromMat(means);
+  means_invvars_.MulElements(inv_vars_);  // 均值乘以协方差的逆，因为这边协方差是一个对角阵，所以可以直接用 元素相乘 进行计算
+  ComputeGconsts(); // 重新计算 gconsts_
+}
+// gmm/full-gmm-inl.h
+// Kaldi中没有存储GMM的均值向量，而是存储了 mean_times_invcovar，所以还需要通过矩阵运算得出来
+template<class Real>
+void FullGmm::GetMeans(Matrix<Real> *M) const {
+  KALDI_ASSERT(M != NULL);
+  M->Resize(NumGauss(), Dim());
+  SpMatrix<Real> covar(Dim());
+  Vector<Real> mean_times_invcovar(Dim());
+  for (int32 i = 0; i < NumGauss(); i++) {
+    covar.CopyFromSp(inv_covars_[i]);
+    covar.InvertDouble();
+    mean_times_invcovar.CopyFromVec(means_invcovars_.Row(i));
+    (M->Row(i)).AddSpVec(1.0, covar, mean_times_invcovar, 0.0); // like: this.AddSpVec(alpha, M, v, beta), means "this <-- beta*this + alpha*M*v"
+  }
+}
+```
+
+- `ivector-extractor-init`：初始化 i-vector 提取器；
+
+```c++
+// ivectorbin/ivector-extractor-init.cc
+FullGmm fgmm;
+ReadKaldiObject(fgmm_rxfilename, &fgmm); // 读取fgmm
+IvectorExtractor extractor(ivector_opts, fgmm); // 初始化 i-vector 特征提取器，具体实现见下
+WriteKaldiObject(extractor, ivector_extractor_wxfilename, binary); // 写入文件
+```
+
+这部分代码比较混乱，下面对每个参数进行分析：
+
+`Sigma_inv_` ：保存 GMM 协方差矩阵的逆 $\Sigma_i^{-1}$；
+
+```c++
+// ivector-extractor.cc -> IvectorExtractor::IvectorExtractor
+Sigma_inv_.resize(fgmm.NumGauss());
+for (int32 i = 0; i < fgmm.NumGauss(); i++) {
+    const SpMatrix<BaseFloat> &inv_var = fgmm.inv_covars()[i];
+    Sigma_inv_[i].Resize(inv_var.NumRows());
+    Sigma_inv_[i].CopyFromSp(inv_var);
+}
+```
+
+`gconsts_`：保存 $-\frac 1 2 \cdot (n\log2\pi + \log|\Sigma_i|)$，这个的实现过程很有意思；
+
+```c++
+// ivector-extractor.cc -> IvectorExtractor::ComputeDerivedVars
+gconsts_.Resize(NumGauss());
+for (int32 i = 0; i < NumGauss(); i++) {
+    double var_logdet = -Sigma_inv_[i].LogPosDefDet(); // “矩阵和逆矩阵的行列式互为相反数”
+    gconsts_(i) = -0.5 * (var_logdet + FeatDim() * M_LOG_2PI);
+}
+// sp-matrix.cc
+template<typename Real>
+Real SpMatrix<Real>::LogPosDefDet() const {
+    TpMatrix<Real> chol(this->NumRows());
+    double det = 0.0;
+    double diag;
+    chol.Cholesky(*this);  // Will throw exception if not +ve definite!
+    for (MatrixIndexT i = 0; i < this->NumRows(); i++) {
+    diag = static_cast<double>(chol(i, i));
+    det += kaldi::Log(diag);  // 对角矩阵的行列式即为对角线元素相乘
+    }
+    return static_cast<Real>(2*det);  // 因为上面对对角矩阵作了Cholesky分解，所以这里要乘以2
+}
+```
+
+`U_`：保存 $u_i^T \Sigma_i u_i$ ；（<u>这里挺奇怪的，明明是一个标量，却要用矩阵来存</u>）
+
+```c++
+// ivector-extractor.cc -> IvectorExtractor::ComputeDerivedVars
+U_.Resize(NumGauss(), IvectorDim() * (IvectorDim() + 1) / 2);
+SpMatrix<double> temp_U(IvectorDim());
+temp_U.AddMat2Sp(1.0, M_[i], kTrans, Sigma_inv_[i], 0.0); // temp_U = M_i^T Sigma_i^{-1} M_i
+SubVector<double> temp_U_vec(temp_U.Data(),
+                           IvectorDim() * (IvectorDim() + 1) / 2);
+U_.Row(i).CopyFromVec(temp_U_vec);
+```
+
+`Sigma_inv_M_`：保存矩阵 $\Sigma_i^{-1}u_i$ ；
+
+```c++
+// ivector-extractor.cc -> IvectorExtractor::ComputeDerivedVars
+Sigma_inv_M_.resize(NumGauss());  // The product of Sigma_inv_[i] with M_[i].
+Sigma_inv_M_[i].Resize(FeatDim(), IvectorDim());
+Sigma_inv_M_[i].AddSpMat(1.0, Sigma_inv_[i], M_[i], kNoTrans, 0.0);
+```
+
+(2) 再看脚本的第二部分：
+
+```bash
+$cmd JOB=1:$nj_full $dir/log/gselect.JOB.log \
+    gmm-gselect --n=$num_gselect $dir/final.dubm "$feats" ark:- \| \
+    fgmm-global-gselect-to-post --min-post=$min_post $dir/final.ubm "$feats" ark,s,cs:-  ark:- \| \
+    scale-post ark:- $posterior_scale "ark:|gzip -c >$dir/post.JOB.gz" || exit 1;
+```
+
+- `gmm-gselect`：
+- `fgmm-global-gselect-to-post`：
+- `scale-post`：
 
 ### Links
 
