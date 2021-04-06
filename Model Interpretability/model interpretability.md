@@ -45,11 +45,35 @@
 
 ### Contribution
 
+1. 作者将 LRP 可解释方法扩展到了 Local Renormalization Layer 这种非线性的网络层；
+
 ### Notes
+
+1. LRP（Layer-wise Relevance Propagation）：该方法利用 **神经元之间的数值关系**，回传 **相关性系数** （注意和梯度是有区别的，<u>我认为他和梯度的方法最大的不同点在于，该方法考虑了神经元之间的相关性</u>）
+
+   (1) 神经元的激活公式如下：
+
+   <img src="images/image-20210407000254371.png" alt="image-20210407000254371" style="zoom: 10%;" />
+
+   (2) 给定一张图片 $x$ 和一个神经网络 $f$ ，LRP 方法的目的在于给图像的每一个像素点都给定一个 **相关性系数**：
+
+   <img src="images/image-20210407000605063.png" alt="image-20210407000605063" style="zoom:9%;" />
+
+   (3) 给定神经网络 $l+1$ 层的神经元，它的 **相关性系数** 存在如下公式：
+
+   <img src="images/image-20210407000931610.png" alt="image-20210407000931610" style="zoom:10%;" />
+
+   (4) 那么，我们就可以得到 $l$ 层的神经元，它的 **相关性系数** 存在如下公式：（即完成了系数的回传）
+
+   <img src="images/image-20210407001056776.png" alt="image-20210407001056776" style="zoom:10%;" />
+
+2. 
 
 ### Links
 
 - 论文链接：[Binder A, Montavon G, Lapuschkin S, et al. Layer-wise relevance propagation for neural networks with local renormalization layers[C]//International Conference on Artificial Neural Networks. Springer, Cham, 2016: 63-71.](https://arxiv.org/abs/1604.00825)
+- 参考链接：[Tensorflow的LRN是怎么做的](https://www.jianshu.com/p/c06aea337d5d)
+- 参考链接：[【阅读笔记】神经网络中的LRP及其在非线性神经网络中的运用](https://blog.csdn.net/ChangHao888/article/details/109320053)
 
 
 
