@@ -67,7 +67,83 @@
 
    <img src="images/image-20210407001056776.png" alt="image-20210407001056776" style="zoom:10%;" />
 
-2. 
+   ​	其中，最后一层的 相关性系数 等于 $f(x)$；
+
+   (5) 在 [前文](#On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation) 中，有两套公式来计算系数的回传：
+
+   - $\epsilon-rule$：
+
+     <img src="images/image-20210407090115029.png" alt="image-20210407090115029" style="zoom:15%;" />
+
+     其中，<img src="images/image-20210407090227665.png" alt="image-20210407090227665" style="zoom:19%;" />；$\epsilon$ 用来防止除 $0$；
+
+   - $\beta-rule$：
+
+     <img src="images/image-20210407090516976.png" alt="image-20210407090516976" style="zoom:18%;" />
+
+     其中，$\beta$ 用来控制相关性再分配中对负相关系数的关注程度，其值越大生成的热力图越锐化；
+
+   - 合并上面两套公式：
+
+     <img src="images/image-20210407091700377.png" alt="image-20210407091700377" style="zoom:19%;" />
+
+2. Extending LRP：将 LRP 方法扩展到 LRN 层；
+
+   (1) 扩展的原因：我们先看一下 LRN 层的激活公式
+
+   <img src="images/image-20210407091943735.png" alt="image-20210407091943735" style="zoom:15%;" />
+
+   ​	很显然，它不满足第一部分讲得一般的神经网络激活公式；
+
+   (2) ⭐ 泰勒展开式：假设存在 <img src="images/image-20210407093831787.png" alt="image-20210407093831787" style="zoom:12%;" />，我们可以对其使用一阶泰特展开式展开
+
+   <img src="images/image-20210407093727551.png" alt="image-20210407093727551" style="zoom:25%;" />
+
+   ​	那么，我们可以得到相关性系数的公式为
+
+   <img src="images/image-20210407093954658.png" alt="image-20210407093954658" style="zoom:29%;" />
+
+   (3) 推导 LRN 层：对 $y_k$ 求偏导，
+   $$
+   \frac{\partial y_{k}}{\partial x_{j}}
+   =
+   \begin{cases}
+   \frac{1}{\left ( 1+b\sum_{i=1}^{n}x_{i}^{2} \right )^{c}}-\frac{2bcx_{j}x_{k}}{\left ( 1+b \sum_{i=1}^{n}x_{i}^{2}\right )^{c+1}} & ,j=k
+   \\
+   -\frac{2bcx_{j}x_{k}}{\left ( 1+b \sum_{i=1}^{n}x_{i}^{2}\right )^{c+1}} & ,j\ne k
+   \end{cases}
+   $$
+   ​	整理一下就可以得到原文公式
+
+   <img src="images/image-20210407095219010.png" alt="image-20210407095219010" style="zoom:23%;" />
+
+   (4) **特殊**泰勒展开点：（<u>我很困惑，为什么明知道这个展开点不好展开，还要在这个点去进行展开</u>）假设现在有实际输入 $z_{1}=\left ( x_{1},x_{2},...,x_{n} \right )$ 和 泰勒展开点 $z_{2}=\left ( 0,0,...,x_{k},...,0 \right )$，不难得到如下公式
+
+   <img src="images/image-20210407103615172.png" alt="image-20210407103615172" style="zoom:19%;" />
+
+   ​	可以看到，这里的泰特一阶展开式是无效的。所以，下面对其进行相应的修改
+
+   <img src="images/image-20210407104106897.png" alt="image-20210407104106897" style="zoom:25%;" />
+
+   ​	然后可以用 (2) 进行回传；
+
+3. 实验：（只简单地看一下其中两个实现结果）
+
+   (1) 验证得到的重要特征是否是有效的
+
+   - 检验手段：模糊化目标像素点，观察模型置信度的变化；
+
+   - 实验结果：文章的方法可以找到图像中的重要特征点；
+
+     <img src="images/image-20210407191847142.png" alt="image-20210407191847142" style="zoom:35%;" />
+
+   (2) 检验文章方法是否优于原有方法（原有方法直接将相关性权重整个回传给中心特征点 $x_k$）
+
+   - 检验手段：同样模糊化重要特征，观察模型 `AUC` 的变化（越小越好）；
+
+   - 实验结果：文章方法更优；
+
+     <img src="images/image-20210407192122910.png" alt="image-20210407192122910" style="zoom: 40%;" />
 
 ### Links
 
