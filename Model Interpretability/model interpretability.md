@@ -31,6 +31,8 @@
 
 ### Contribution
 
+1. 作者提出了 LRP 的可解释性方法；
+
 ### Notes
 
 ### Links
