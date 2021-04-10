@@ -214,7 +214,7 @@ $$
 
 #### Local Response Normalization
 
-(1) 重要思想：借鉴“侧抑制”（Lateral Inhibitio）的思想实现**局部神经元抑制**，即使得局部的神经元产生竞争机制，使其中响应值大的变得更大，响应值小的变得更小（<u>这一点我从数值上并没有看不出来</u>）；
+(1) 重要思想：借鉴“侧抑制”（Lateral Inhibitio）的思想实现**局部神经元抑制**，即使得局部的神经元产生竞争机制，使其中响应值大的变得更大，响应值小的变得更小（<u>这一点我从数值上并没有看不出来</u>）；<u>在运用 Local Response Normalization 过程中，我觉得需要注意的是它是对 **FeatureMap** 的一个正则化操作</u>
 
 (2) 公式：
 
@@ -222,27 +222,19 @@ $$
 
 其中，$i,j$ 表示 FeatureMap 的索引，$a_{(x,y)}^j$ 表示第 $j$ 个 FeatureMap 中位于 $(x,y)$ 处的响应值；常用的值为：$k=2, n=5,\alpha=10^{-4}, \beta=0.75$ 。
 
-(3) 代码实现：<u>在运用 Local Response Normalization 过程中，我觉得需要注意的是它是对 **FeatureMap** 的一个正则化操作</u>；
+(3) 2015 年的 VGG 中发现 Local Response Normalization 的方法并没有什么作用，故后来很少再被采用；
 
-- [PyTorch](https://pytorch.org/docs/stable/generated/torch.nn.LocalResponseNorm.html)：
+(4) 参考链接：
 
-  <img src="../pictures/image-20210410100022286.png" alt="image-20210410100022286" style="zoom: 50%;" />
-
-- [Tensorflow](https://www.tensorflow.org/api_docs/python/tf/nn/local_response_normalization)：
-
-  <img src="../pictures/image-20210410100414146.png" alt="image-20210410100414146" style="zoom: 50%;" />
-
-(4) 2015 年的 VGG 中发现 Local Response Normalization 的方法并没有什么作用，故后来很少再被采用；
-
-(5) 参考链接：[深度学习饱受争议的局部响应归一化(LRN)详解](https://blog.csdn.net/qq_27825451/article/details/88745034#:~:text=%E5%89%8D%E8%A8%80%EF%BC%9ALocal%20Response%20Normalization(LRN,%E6%A8%A1%E5%9E%8B%E4%B8%AD%E6%8F%90%E5%87%BA%E8%BF%99%E4%B8%AA%E6%A6%82%E5%BF%B5%E3%80%82))
+- [深度学习饱受争议的局部响应归一化(LRN)详解](https://blog.csdn.net/qq_27825451/article/details/88745034#:~:text=%E5%89%8D%E8%A8%80%EF%BC%9ALocal%20Response%20Normalization(LRN,%E6%A8%A1%E5%9E%8B%E4%B8%AD%E6%8F%90%E5%87%BA%E8%BF%99%E4%B8%AA%E6%A6%82%E5%BF%B5%E3%80%82))
 
 #### Batch Normalization
 
-(1) 使用 Batch Normalization 层能够**使网络的训练更加稳定**，**加速神经网络的收敛速度**（当网络训练的收敛速度慢时可以考虑使用 BN 层），使得神经网络**对于初始化的敏感度下降**，并且**具有一定的正则化效果**；知乎大佬说 BN 层的优势是可以**防止“梯度弥散”**（<u>我感觉不出来</u>）；
+(1) 主要思想：使用 Batch Normalization 层能够**使网络的训练更加稳定**，**加速神经网络的收敛速度**（当网络训练的收敛速度慢时可以考虑使用 BN 层），使得神经网络**对于初始化的敏感度下降**，并且**具有一定的正则化效果**；知乎大佬说 BN 层的优势是可以**防止“梯度弥散”**（<u>我感觉不出来</u>）；
 
 (2) 公式：
 
-<img src="../pictures/9ad70be49c408d464c71b8e9a006d141_720w.jpg" alt="img" style="zoom:80%;" />
+<img src="../pictures/9ad70be49c408d464c71b8e9a006d141_720w.jpg" alt="img" style="zoom:75%;" />
 
 其中，$\gamma$ 和 $\beta$ 两个仿射参数，是为了经过 BN 层处理后的数据仍**可以**恢复到之前的分布，从而**提升了网络结构的 Capacity**，即在做出一定改变的同时，仍保留之前的能力。注意，**上面用的是 “可以” 这个词汇，具体“是不是”**，还是要看模型训练的结果，训练的过程即**正常的求导梯度下降法**，公式如下：
 
@@ -284,17 +276,98 @@ $$
 
 #### Weight Normalization
 
-#### Batch Normalization
+(1) 主要思想：相比于 BN 层，WN 层并不是对输入的特征数据进行归一化操作，而是**对神经网络中指定的层的参数做归一化操作**；WN 层摆脱了对于 Batch 的依赖，这意味着 WN 层完全可以用在 RNN 网络中，以及对于噪声敏感的任务；WN 层的计算成本低，可以**减少模型的运行时间**；
 
-#### Weight Normalization
+(2) 公式：将参数 $w$ 拆分成方向和长度两个部分
+$$
+y = \Phi(w*x + b) \Rightarrow y=\Phi(g*\frac{v}{||v||} * x + b)
+$$
+我们把公式转换一下，就可以发现 **BN 层其实等同于使用参数的统计值对数据进行归一化**，
+$$
+\Rightarrow y = \Phi(gv * \frac{v}{||v||} + b)
+$$
+参数的学习，直接通过梯度下降的方法即可
+$$
+\nabla_g L = \frac{\nabla_{\mathbf w}L \cdot \mathbf{v}}{||\mathbf{v}||} \qquad \nabla_{\mathbf{v}} L = \frac{g}{||\mathbf{v}||} \nabla_{\mathbf{w}} L - \frac{g\nabla_g L}{||\mathbf{v}||^2} \mathbf{v}
+$$
+(3) 参考链接：
+
+- [模型优化之Weight Normalization](https://zhuanlan.zhihu.com/p/55102378)
+- [详解深度学习中的Normalization，BN/LN/WN](https://zhuanlan.zhihu.com/p/33173246)
 
 #### Layer Normalization
 
+(1) 主要思想：LN 层和 BN 层非常相似，不同之处在于，BN 层是对一个 Batch 中的**所有样本的不同维度**做 Normalization，而 LN 是对**单个样本的所有维度**做 Normalization；LN 层是为了解决 BN 层**对 `batch` 数据和内存的依赖**，并**减少 normalization 的时间**；
+
+![img](../pictures/v2-36724870b2fc4a3545a516d942f73cc8_720w.jpg)
+
+(2) 公式：（注意，**这里的统计量是一个标量**）
+
+<img src="../pictures/image-20210410164851133.png" alt="image-20210410164851133" style="zoom: 25%;" />
+
+在 RNN 中，我们对每个时间片的输入都使用 LN 层来进行归一化，$t$ 时刻循环网络层的输入可以表示为：
+
+<img src="../pictures/image-20210410170252857.png" alt="image-20210410170252857" style="zoom: 25%;" />
+
+则可以在 $\mathbb{a}^t$ 上应用 LN 层：
+
+<img src="../pictures/image-20210410170457423.png" alt="image-20210410170457423" style="zoom:43%;" />
+
+(3) 参考链接：
+
+- [模型优化之Layer Normalization](https://zhuanlan.zhihu.com/p/54530247)
+
 #### Instance Normalization
+
+(1) 主要思想：IN 层和 LN 层相似，仅**对单个样本进行归一化，但是 IN 层并不进行仿射变换**；
+
+(2) 公式：
+
+<img src="../pictures/v2-e9c9c3047fb5ef5a37ca2657991f07ee_720w.jpg" alt="img" style="zoom:90%;" />
+
+这边需要注意，IN 层和 LN 层还有一点不同是，**IN 层是作用在 FeatureMap 的单个 Channel 上的**，所以它计算出来的统计量是一个向量；
+
+(3) 代码：
+
+- [PyTorch](https://pytorch.org/docs/stable/generated/torch.nn.InstanceNorm2d.html)：
+
+<img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210410173158307.png" alt="image-20210410173158307" style="zoom:80%;" />
+
+可以看到，代码中也有一个 `track_running_stats` 参数；并且，可以设置 `affine=True` 来额外添加仿射参数；
+
+- [Tensorflow](https://www.tensorflow.org/addons/api_docs/python/tfa/layers/InstanceNormalization)：
+
+  <img src="../pictures/image-20210410173651488.png" alt="image-20210410173651488" style="zoom: 80%;" />
+
+  Tensorflow 2 中，IN 层则在 `tensorflow_addons` 包中；
+
+(4) 有两个场景建议不要使用 IN 层：
+
+- **MLP 或者 RNN 中**：因为在 MLP 或者 RNN 中，每个通道上只有一个数据，这时会自然不能使用 IN；
+- **FeatureMap 比较小时**：因为此时 IN 的采样数据非常少，得到的归一化统计量将不再具有代表性；
+
+(5) 参考链接：
+
+- [模型优化之Instance Normalization](https://zhuanlan.zhihu.com/p/56542480)
 
 #### Consine Normalization
 
+(1) 主要思想：CN 层和前面的思想都不太一样，其不对输入数据做归一化，也不对参数做归一化，而是对输入数据和参数之间的点乘做出改动，改为**计算两者的余弦相似度** $\cos(\theta)$；**CN 层将模型的输出进行归一化，使得输出有界，但是也因此丢弃了原本输出中所含的 Scale 信息，所以其作用有待探讨**；
+
+(2) 公式：
+$$
+w*x \Rightarrow \frac{w*x}{|w| * |x|}
+$$
+
 #### Group Normalization
+
+(1) 主要思想：**GN 层更像是 LN 层和 IN 层的一般化形式，通过参数 $G$ 进行控制**；当 $G=1$，GN 层即等价于 IN 层；当 $G=C$ 时，GN 层即等价于 LN 层；
+
+![img](../pictures/v2-b2678be870213e29cea7521ae787cbdd_720w.jpg)
+
+(2) 公式：
+
+<img src="../pictures/v2-4c6fe8b210b769b1427b7c40ee57227e_720w.jpg" alt="img" style="zoom:80%;" />
 
 
 
