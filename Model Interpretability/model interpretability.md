@@ -33,8 +33,6 @@
 
 1. 作者提出了 LRP 的可解释性方法；
 
-### Notes
-
 ### Links
 
 - 论文链接：[Bach S, Binder A, Montavon G, et al. On pixel-wise explanations for non-linear classifier decisions by layer-wise relevance propagation[J]. PloS one, 2015, 10(7): e0130140.](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0130140)
@@ -47,7 +45,7 @@
 
 ### Contribution
 
-1. 作者将 LRP 可解释方法扩展到了 Local Renormalization Layer 这种非线性的网络层；
+1. 作者将 LRP 可解释方法扩展到了 `Local Renormalization Layer` 这种非线性的网络层；
 
 ### Notes
 
@@ -147,11 +145,18 @@
 
      <img src="images/image-20210407192122910.png" alt="image-20210407192122910" style="zoom: 40%;" />
 
+### Codes
+
+> 下面的代码均参考： [Implementation of LRP for pytorch](https://github.com/fhvilshoj/TorchLRP)
+
+
+
 ### Links
 
 - 论文链接：[Binder A, Montavon G, Lapuschkin S, et al. Layer-wise relevance propagation for neural networks with local renormalization layers[C]//International Conference on Artificial Neural Networks. Springer, Cham, 2016: 63-71.](https://arxiv.org/abs/1604.00825)
 - 参考链接：[Tensorflow的LRN是怎么做的](https://www.jianshu.com/p/c06aea337d5d)
 - 参考链接：[【阅读笔记】神经网络中的LRP及其在非线性神经网络中的运用](https://blog.csdn.net/ChangHao888/article/details/109320053)
+- 参考链接：[Implementation of LRP for pytorch](https://github.com/fhvilshoj/TorchLRP)
 
 
 

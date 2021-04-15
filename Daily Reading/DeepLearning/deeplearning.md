@@ -385,10 +385,21 @@ $$
 
 - [【强基固本】机器学习常用评价指标总览](https://mp.weixin.qq.com/s/MVw3IIno4iyTNaEOjBLzAQ)
 
+- [【他山之石】Pytorch优化器及其内置优化算法原理介绍](https://mp.weixin.qq.com/s/nWK0ci4qtKXJd-j--ZsC4Q)
+  - [pytorch的计算图](https://zhuanlan.zhihu.com/p/33378444)
+  - [PyTorch 源码解读之 torch.autograd：梯度计算详解](https://zhuanlan.zhihu.com/p/321449610)
+  - [pytorch中ctx和self的区别](https://blog.csdn.net/littlehaes/article/details/103828130)：可以看到 `torch.nn.function` 中的 `apply` 这个方法已经在底层定义好了，并且我们自定义梯度回传时，要严格遵守 `forward / backward` 的参数定义——第一个参数使用 `cxt` 表示上下文信息，主要用来保存和读取变量，且 `backward` 返回的变量和 `forward` 输入的变量是相对应的；
+
+
+
 
 
 ## Problems in Coding
 
 - Keras  和 Multiprocessing 组合 Bug：
 
-  我在 windows 上面运行的很好，但是放到 Linux 服务器上面后，子进程中的 `keras.models.load_model()` 就卡住不动了。Bug 原理和解决方法参考博客 “[keras使用多进程](https://www.cnblogs.com/zongfa/p/12193561.html)”，写的非常棒，体会到了进程拷贝的问题。Bug 在 github 上面的链接参考 [Keras is not multi-processing safe](https://github.com/keras-team/keras/issues/9964) ；
+  我在` windows` 上面运行的很好，但是放到 Linux 服务器上面后，子进程中的 `keras.models.load_model()` 就卡住不动了。Bug 原理和解决方法参考博客 “[keras使用多进程](https://www.cnblogs.com/zongfa/p/12193561.html)”，写的非常棒，体会到了进程拷贝的问题。Bug 在 github 上面的链接参考 [Keras is not multi-processing safe](https://github.com/keras-team/keras/issues/9964) ；
+
+- Python 的 `@staticmethod / @classmethod` 方法：
+
+  主要参考知乎大佬 [正确理解Python中的 @staticmethod@classmethod方法](https://zhuanlan.zhihu.com/p/28010894)
