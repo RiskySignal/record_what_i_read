@@ -402,4 +402,8 @@ $$
 
 - Python 的 `@staticmethod / @classmethod` 方法：
 
-  主要参考知乎大佬 [正确理解Python中的 @staticmethod@classmethod方法](https://zhuanlan.zhihu.com/p/28010894)
+  主要参考知乎大佬 [正确理解Python中的 @staticmethod@classmethod方法](https://zhuanlan.zhihu.com/p/28010894)，这里需要注意的是 PyTorch 的 `torch.nn.Function` 类中的 `forward/backward` 方法是比较特殊的；
+  
+- PyTorch 的 `torch.nn.RNN` 源码分析：
+
+  主要参考知乎大佬 [读PyTorch源码学习RNN（1）](https://zhuanlan.zhihu.com/p/32103001)，这里注意 PyTorch 的输入输出，以及如何进行时间片上的状态传递的；
