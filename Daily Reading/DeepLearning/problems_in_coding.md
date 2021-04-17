@@ -43,3 +43,33 @@ def flip(x, dim):
     x = x.view(x.size(0), x.size(1), -1)[:, getattr(torch.arange(x.size(1)-1, -1, -1), ('cpu','cuda')[x.is_cuda])().long(), :]
     return x.view(xsize)
 ```
+
+#### PyTorch 梯度回传时的 `inplace` 问题
+
+实现 LRP 可解释方法的时候遇到了如下 `error` ：
+
+```shell
+Warning: No forward pass information available. Enable detect anomaly during forward pass for more information. (print_stack at ..\torch\csrc\autograd\python_anomaly_mode.cpp:40)
+Traceback (most recent call last):
+  File "D:/workspace/TorchLRP/examples/expalin_rnn.py", line 97, in lrp_explanation
+    grad = torch.autograd.grad(lrp_loss, [lrp_embedding_vector], allow_unused=True)[0].detach().cpu().numpy()  # shape: (batch_size, seq_len, feature_size)
+  File "D:\Anaconda\Anaconda3\envs\lemna_python37\lib\site-packages\torch\autograd\__init__.py", line 157, in grad
+    inputs, allow_unused)
+  File "D:\Anaconda\Anaconda3\envs\lemna_python37\lib\site-packages\torch\autograd\function.py", line 77, in apply
+    return self._forward_cls.backward(self, *args)
+  File "D:/workspace/TorchLRP\lrp\functional\linear.py", line 115, in backward
+    return _backward_alpha_beta(alpha, beta, ctx, relevance_output)
+  File "D:/workspace/TorchLRP\lrp\functional\linear.py", line 72, in _backward_alpha_beta
+    input, weights, bias = ctx.saved_tensors  # type: torch.Tensor, torch.Tensor,torch.Tensor
+RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [8]], which is output 0 of SelectBackward, is at version 10; expected version 9 instead. Hint: the backtrace further above shows the operation that failed to compute its gradient. The variable in question was changed in there or anywhere later. Good luck!
+```
+
+**关键点**：PyTorch 提示了存储的变量在计算梯度的时候发现这个变量已经被修改（`modefied by an inplace operation`）了，故无法求解梯度；
+
+**官网解释**：说明 PyTorch 的计算图并不支持原地赋值操作，这会让梯度的计算变得十分复杂，所以我们需要避免相应的原地赋值操作；
+
+<img src="../pictures/image-20210417103246355.png" alt="image-20210417103246355" style="zoom:50%;" />
+
+**RELU 单元**：Relu 单元中存在 In-place 操作，但是我的问题并不是出现在这个地方，参考链接 https://blog.csdn.net/manmanking/article/details/104830822；
+
+我在自定义 RNN 前向后向传播的过程中，对于 `hidden_state` 做了一个 In-place 操作，所以导致了错误；
