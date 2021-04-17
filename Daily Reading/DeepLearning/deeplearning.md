@@ -370,9 +370,3 @@ $$
 <img src="../pictures/v2-4c6fe8b210b769b1427b7c40ee57227e_720w.jpg" alt="img" style="zoom:80%;" />
 
 
-
-
-
-## 人工智能前言讲习
-
-> 
