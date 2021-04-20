@@ -363,6 +363,38 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
+## Semantic Adversarial Examples
+
+### Contribution
+
+1. 通过修改 HSV 色域，生成对抗样本；
+
+### Notes
+
+1. 图像语义对抗样本（Semantic Adversarial Examples）：将问题定义如下
+
+   <img src="pictures/image-20210420001523865.png" alt="image-20210420001535281" style="zoom: 20%;" />
+
+   其中，$\Omega$ 表示人的视觉系统；
+
+2. 方法：将图像从 RGB 色域转换到 HSV 色域，通过对全图修改 H（Hue，色相） 和 S（Saturation，饱和度）的值来生成对抗样本，算法如下
+
+   <img src="pictures/image-20210420090615311.png" alt="image-20210420090615311" style="zoom: 50%;" />
+
+3. 实验结果：（<u>感觉更像是不同分布导致网络的预测结果差，另外，采用的是 CIFAR-10 数据集可能也是原因之一，使用更加高清的图片集可能会没有这么好的效果</u>）
+
+   <img src="pictures/image-20210420091247693.png" alt="image-20210420091247693" style="zoom: 33%;" />
+
+   <img src="pictures/image-20210420091401734.png" alt="image-20210420091401734" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Hosseini H, Poovendran R. Semantic adversarial examples[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops. 2018: 1614-1619.](https://arxiv.org/abs/1804.00499)
+
+
+
+
+
 ## NES: Black-box Adversarial Attacks with Limited Queries and Information
 
 ### Contribution
