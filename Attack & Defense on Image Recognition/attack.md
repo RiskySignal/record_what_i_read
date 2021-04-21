@@ -390,6 +390,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 ### Links
 
 - 论文链接：[Hosseini H, Poovendran R. Semantic adversarial examples[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops. 2018: 1614-1619.](https://arxiv.org/abs/1804.00499)
+- 代码链接：https://github.com/HosseinHosseini/Semantic-Adversarial-Examples
 
 
 
