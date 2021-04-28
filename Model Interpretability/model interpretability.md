@@ -145,12 +145,6 @@
 
      <img src="images/image-20210407192122910.png" alt="image-20210407192122910" style="zoom: 40%;" />
 
-### Codes
-
-> 下面的代码均参考： [Implementation of LRP for pytorch](https://github.com/fhvilshoj/TorchLRP)
-
-
-
 ### Links
 
 - 论文链接：[Binder A, Montavon G, Lapuschkin S, et al. Layer-wise relevance propagation for neural networks with local renormalization layers[C]//International Conference on Artificial Neural Networks. Springer, Cham, 2016: 63-71.](https://arxiv.org/abs/1604.00825)
@@ -482,3 +476,96 @@
 
 
 
+
+
+## Layer-Wise Relevance Propagation: An Overview
+
+### Notes
+
+1. ⭐**信息守恒**：LRP 实现的传播过程服从守恒性质，神经元接收到的信息必须等量地重新分配到下一层。简单来看，LRP 就是一种权重不断回传的算法，如下图所示
+
+   <img src="images/image-20210428105041271.png" alt="image-20210428105041271" style="zoom: 37%;" />
+
+2. LRP Rules for Deep Rectifier Networks
+
+   该部分主要针对 ReLU 神经网络，为了一般化，文章设 $a_0=1$ 并且 $w_{0k}$ 是偏置项：
+
+   <img src="images/image-20210428110035537.png" alt="image-20210428110035537" style="zoom: 17%;" />
+
+   - **Basic Rule (LRP-0)**：即直接按照比例进行回传；
+
+     <img src="images/image-20210428110317923.png" alt="image-20210428110317923" style="zoom: 17%;" />
+
+     作者指出：尽管这条规则看起来很直观，但可以证明，这条规则应用在整个神经网络中时，等效于 $Grad \times Input$；
+
+   - **Epsilon Rule (LRP-$\pmb{\epsilon}$)**：即在相关性中引入一个 $\epsilon$ ；
+
+     <img src="images/image-20210428111230669.png" alt="image-20210428111230669" style="zoom: 17%;" />
+
+     作者指出：添加 $\epsilon$ 项可以用来稀释贡献较弱（weak）或相反（contradictory）的项，当其值变大时，只有那些影响大的项的结果才会被保留，这可以用来产生更稀疏，噪声更小的相关性解释；
+
+   - **Gamma Rule (LRP-$\pmb{\gamma}$)** ：即在相关性中引入一个正向系数的比例因子 $\gamma$；
+
+     <img src="images/image-20210428145011393.png" alt="image-20210428145011393" style="zoom: 20%;" />
+
+   - 算法实现：将上述三种规则统一为如下形式
+
+     <img src="images/image-20210428152211271.png" alt="image-20210428152211271" style="zoom: 20%;" />
+
+     这里，$\rho$ 主要和 $\gamma$ 相关。上述公式在实际中可以分成 4 步进行实现
+
+     <img src="images/image-20210428152552631.png" alt="image-20210428152552631" style="zoom: 45%;" />
+
+     其中第三步可以借助深度学习框架中的梯度下降算法来实现
+
+     <img src="images/image-20210428152753536.png" alt="image-20210428152753536" style="zoom:16%;" />
+
+     作者给出了可行的 **PyTorch** 实现
+
+     <img src="images/image-20210428152944695.png" alt="image-20210428152944695" style="zoom:45%;" />
+
+3. ⭐ **不同的神经网络层选择不同的 LRP 策略**
+
+   - 不同的 LRP 策略给解释结果带来的影响，如下图：
+
+     <img src="images/image-20210428205228055.png" alt="image-20210428205228055" style="zoom:50%;" />
+
+   - $\text{Softmax-Layer}$：神经网络的最后一层常见的都是使用 Softmax 输出模型最后的概率，公式如下
+     $$
+     \text{affine:  }z_c = \sum_{0,k} a_k w_{kc} \\
+     \text{softmax:   }P(\omega_c) = \frac{\exp(z_c)}{\sum_{c'}\exp{z_{c'}}} 
+     $$
+     如下图中间图所示
+
+     <img src="images/image-20210428235525813.png" alt="image-20210428235525813" style="zoom:50%;" />
+
+     如果直接对 $z_c$ 进行解释，可以发现模型结果与“乘用车”部分有较大的相关性，但是对于“火车头”仍然有较大的相关性，所以这样的可解释结果是不准确的（<u>如何区分模型的可解释性结果是模型导致的问题，还是解释性方法导致的问题？</u>）；
+
+     作者指出，可以转换成对 $\eta_c$ 的解释，效果如上图右边图所示，可以发现这次的模型解释结果更多得是在关注“乘用车”，而“火车头”部分则是出现了负相关的情况。公式如下：
+     $$
+     \eta_c = \log[P(\omega_c)/(1-P(\omega_c))]
+     $$
+     该公式可以通过两层计算得到：（<u>具体的实现如何做？</u>）
+
+     <img src="images/image-20210429000835187.png" alt="image-20210429000835187" style="zoom: 18%;" />
+
+     第一层公式用来计算  $\text{the log-probability ratios  - } \log[P(\omega_c)/P(\omega_{c'})]$ ，第二层公式用来计算 $\text{log-sum-exp pooling}$。对于这种池化操作，可以通过如下公式进行相关性系数的回传：
+
+     <img src="images/image-20210429001309618.png" alt="image-20210429001309618" style="zoom: 25%;" />
+
+   - $\text{Special Pooling Layers}$：在卷积网络中经常用到一些池化层
+
+     - $\text{Sum Pooling}$：可以采用正常的 linear-ReLU 层对这层进行替换；
+     - $\text{Max Pooling}$：可以采用 winner-take-all 策略，或是和 $\text{Sum Pooling}$ 采用相同的策略；
+
+   - $\text{Batch Normalization Layers}$：批量池化层在固定后起到的作用只是对输入起到了修改均值和缩放的作用，所以可以借助想用的线性仿射变换进行替代；
+
+   - $\text{Input Layer}$：对于像素点的输入层，作者指出可以使用 $z^\mathcal{B}\text{-rule}$ ，具体公式如下
+
+     <img src="images/image-20210429002843076.png" alt="image-20210429002843076" style="zoom: 21%;" />
+
+4. 
+
+### Links
+
+- 论文链接：[Montavon G, Binder A, Lapuschkin S, et al. Layer-wise relevance propagation: an overview[J]. Explainable AI: interpreting, explaining and visualizing deep learning, 2019: 193-209.](https://link.springer.com/chapter/10.1007/978-3-030-28954-6_10)
