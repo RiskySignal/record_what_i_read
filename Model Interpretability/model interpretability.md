@@ -562,9 +562,23 @@
 
    - $\text{Input Layer}$：对于像素点的输入层，作者指出可以使用 $z^\mathcal{B}\text{-rule}$ ，具体公式如下
 
-     <img src="images/image-20210429002843076.png" alt="image-20210429002843076" style="zoom: 21%;" />
+     <img src="images/image-20210429002843076.png" alt="image-20210429002843076" style="zoom: 20%;" />
 
-4. 
+   - $\text{LSTM Layer}$：其公式如下，作者指出一种常用的实现是将相关性系数沿着信号传递（即只沿着第二项进行传递）
+
+     <img src="images/image-20210429092849280.png" alt="image-20210429092849280" style="zoom: 23%;" />
+
+   - $\text{Pairwise Matching}$：常用在推荐系统或者图像-特征图匹配中（<u>这个场景太模糊了，有没有更具体的解释？</u>），作者指出一种可行的实现是构造如下神经元
+
+     <img src="images/image-20210429093506456.png" alt="image-20210429093506456" style="zoom: 20%;" />
+
+     其相关性的传递公式如下
+
+     <img src="images/image-20210429093602351.png" alt="image-20210429093602351" style="zoom: 15%;" />
+
+   - 常用的实现列表：
+
+     <img src="images/image-20210429093846601.png" alt="image-20210429093846601" style="zoom: 43%;" />
 
 ### Links
 
