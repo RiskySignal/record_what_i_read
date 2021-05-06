@@ -22,6 +22,7 @@
 11. GRADIENTS OF COUNTERFACTUALS(ICLR 2017)
 12. Simonyan, Karen, Vedaldi, Andrea, and Zisserman, Andrew. Deep inside convolutional networks: Visualising image classification models and saliency maps. arXiv preprint arXiv:1312.6034, 2013.
 13. Explainable Neural Network based on Generalized Additive Model.
+13. Montavon, G., Lapuschkin, S., Binder, A., Samek, W., M¨uller, K.R.: Explaining nonlinear classification decisions with deep Taylor decomposition. Pattern Recogn. 65, 211–222 (2017)
 
 
 
@@ -583,3 +584,23 @@
 ### Links
 
 - 论文链接：[Montavon G, Binder A, Lapuschkin S, et al. Layer-wise relevance propagation: an overview[J]. Explainable AI: interpreting, explaining and visualizing deep learning, 2019: 193-209.](https://link.springer.com/chapter/10.1007/978-3-030-28954-6_10)
+
+- 论文代码：https://git.tu-berlin.de/gmontavon/lrp-tutorial
+
+
+
+
+
+## LEMNA: Explaining Deep Learning based Security Applications
+
+### Contribution
+
+1. LEMNA (Local Explanation Method using Nonlinear Approximation)
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Guo W, Mu D, Xu J, et al. Lemna: Explaining deep learning based security applications[C]//proceedings of the 2018 ACM SIGSAC conference on computer and communications security. 2018: 364-379.](https://dl.acm.org/doi/10.1145/3243734.3243792)
