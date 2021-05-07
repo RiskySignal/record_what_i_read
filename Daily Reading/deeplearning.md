@@ -140,7 +140,7 @@ m_{t+1} = \mu \cdot m_t + \alpha \cdot \nabla_\theta J(\theta - \mu \cdot m_t)
 $$
 两者的对比：蓝色为 Momentum， 剩下的是 NAG；
 
-![First-Order Optimization Algorithms](../../Attack%2520&%2520Defense%2520on%2520Speech%2520Recognition/pictures/First-Order%2520Optimization%2520Algorithms.png)
+![First-Order Optimization Algorithms](pictures/First-Order%20Optimization%20Algorithms.png)
 
 ### 自适应学习率
 
@@ -197,7 +197,7 @@ v_t \leftarrow \beta_2 \cdot v_{t-1} + (1-\beta_2) \cdot g_t^2 \\
 $$
 论文伪代码：
 
-<img src="../../Attack%2520&%2520Defense%2520on%2520Speech%2520Recognition/pictures/image-20201230130939776.png" alt="image-20201230130939776" style="zoom: 43%;" />
+<img src="./pictures/image-20201230130939776.png" alt="image-20201230130939776" style="zoom: 43%;" />
 
 ### Links
 
@@ -218,7 +218,7 @@ $$
 
 (2) 公式：
 
-<img src="../pictures/v2-a4ebf0474337e9be5808ecac25abe37a_720w.jpg" alt="img" style="zoom: 80%;" />
+<img src="./pictures/v2-a4ebf0474337e9be5808ecac25abe37a_720w.jpg" alt="img" style="zoom: 80%;" />
 
 其中，$i,j$ 表示 FeatureMap 的索引，$a_{(x,y)}^j$ 表示第 $j$ 个 FeatureMap 中位于 $(x,y)$ 处的响应值；常用的值为：$k=2, n=5,\alpha=10^{-4}, \beta=0.75$ 。
 
@@ -234,11 +234,11 @@ $$
 
 (2) 公式：
 
-<img src="../pictures/9ad70be49c408d464c71b8e9a006d141_720w.jpg" alt="img" style="zoom:75%;" />
+<img src="./pictures/9ad70be49c408d464c71b8e9a006d141_720w.jpg" alt="img" style="zoom:75%;" />
 
 其中，$\gamma$ 和 $\beta$ 两个仿射参数，是为了经过 BN 层处理后的数据仍**可以**恢复到之前的分布，从而**提升了网络结构的 Capacity**，即在做出一定改变的同时，仍保留之前的能力。注意，**上面用的是 “可以” 这个词汇，具体“是不是”**，还是要看模型训练的结果，训练的过程即**正常的求导梯度下降法**，公式如下：
 
-<img src="../pictures/beb44145200caafe24fe88e7480e9730_720w.jpg" alt="img" style="zoom:75%;" />
+<img src="./pictures/beb44145200caafe24fe88e7480e9730_720w.jpg" alt="img" style="zoom:75%;" />
 
 (3) 代码实现：
 
@@ -248,7 +248,7 @@ $$
 
 - [PyTorch](https://pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html)：
 
-  <img src="../pictures/image-20210410103920150.png" alt="image-20210410103920150" style="zoom: 67%;" />
+  <img src="./pictures/image-20210410103920150.png" alt="image-20210410103920150" style="zoom: 67%;" />
 
   - 可以设置 `affine=False`，则不再设置后面的仿射参数；
   - 当设置（默认值） `track_running_state=True` 时，模型会使用动量法更新**两个全局的动态统计量** `running_mean` 和 `running_var`来归一定输入的 `mini_batch`；如何设置 `track_running_state=False` 时，则模型直接使用 `mini_batch` 作为统计量；（所以在测试的时候，最好就是将这个设置为 `False`）
@@ -256,15 +256,15 @@ $$
 
 - [Tensorflow](https://www.tensorflow.org/api_docs/python/tf/keras/layers/BatchNormalization)：（这里以 Tensorflow 2 为主，具体分析的话，可以发现它和 Tensorflow 1 的很多形为存在不同之处）
 
-  <img src="../pictures/image-20210410105314967.png" alt="image-20210410105314967" style="zoom: 67%;" />
+  <img src="./pictures/image-20210410105314967.png" alt="image-20210410105314967" style="zoom: 67%;" />
 
-  <img src="../pictures/image-20210410105404526.png" alt="image-20210410105404526" style="zoom:62.8%;" />
+  <img src="./pictures/image-20210410105404526.png" alt="image-20210410105404526" style="zoom:62.8%;" />
 
   - 可以看到，Tensorflow 在设计上和 pytorch 有所不同，tensorflow 直接将 BN 层设计成了 `traning` 模式 和 `inference` 模式；在 `traning` 模式下，模型会不断更新 `moving_mean` 和 `moving_var` 这两个变量，`mini_batch`的统计量直接由输入得到；而在 `inference` 模式下，模型则固定 `moving_mean` 和 `moving_var` 两个变量作为 `mini_batch` 的统计量（<u>这可能就是基于了同分布的假设</u>）；至于这个模式的变换，通过在调用 BN 层时设置一个 **`trainig`** 参数实现，下面具体看一下他的文档
 
-  <img src="../pictures/image-20210410112829564.png" alt="image-20210410112829564" style="zoom:80%;" />
+  <img src="./pictures/image-20210410112829564.png" alt="image-20210410112829564" style="zoom:80%;" />
 
-  <img src="../pictures/image-20210410113046024.png" alt="image-20210410113046024" style="zoom: 80%;" />
+  <img src="./pictures/image-20210410113046024.png" alt="image-20210410113046024" style="zoom: 80%;" />
 
   - BN 层含有两个比较关键的参数，`trainable` 用来表示 BN 层是否可训练，控制的是上面的仿射参数的状态；`training` 参数则用来控制 `inference` 状态；另外，当设置 `trainable=False` 时，tensorflow 2 中的 BN 层将自动进入 `inference` 状态（这个和 tensorflow 1 不同）；
   - 在 `model.compile()` 之后修改 BN 层的 `trainable` 属性，需要重新调用 `model.compile()` 才会起作用；
@@ -299,19 +299,19 @@ $$
 
 (1) 主要思想：LN 层和 BN 层非常相似，不同之处在于，BN 层是对一个 Batch 中的**所有样本的不同维度**做 Normalization，而 LN 是对**单个样本的所有维度**做 Normalization；LN 层是为了解决 BN 层**对 `batch` 数据和内存的依赖**，并**减少 normalization 的时间**；
 
-![img](../pictures/v2-36724870b2fc4a3545a516d942f73cc8_720w.jpg)
+![img](./pictures/v2-36724870b2fc4a3545a516d942f73cc8_720w.jpg)
 
 (2) 公式：（注意，**这里的统计量是一个标量**）
 
-<img src="../pictures/image-20210410164851133.png" alt="image-20210410164851133" style="zoom: 25%;" />
+<img src="./pictures/image-20210410164851133.png" alt="image-20210410164851133" style="zoom: 25%;" />
 
 在 RNN 中，我们对每个时间片的输入都使用 LN 层来进行归一化，$t$ 时刻循环网络层的输入可以表示为：
 
-<img src="../pictures/image-20210410170252857.png" alt="image-20210410170252857" style="zoom: 25%;" />
+<img src="./pictures/image-20210410170252857.png" alt="image-20210410170252857" style="zoom: 25%;" />
 
 则可以在 $\mathbb{a}^t$ 上应用 LN 层：
 
-<img src="../pictures/image-20210410170457423.png" alt="image-20210410170457423" style="zoom:43%;" />
+<img src="./pictures/image-20210410170457423.png" alt="image-20210410170457423" style="zoom:43%;" />
 
 (3) 参考链接：
 
@@ -323,7 +323,7 @@ $$
 
 (2) 公式：
 
-<img src="../pictures/v2-e9c9c3047fb5ef5a37ca2657991f07ee_720w.jpg" alt="img" style="zoom:90%;" />
+<img src="./pictures/v2-e9c9c3047fb5ef5a37ca2657991f07ee_720w.jpg" alt="img" style="zoom:90%;" />
 
 这边需要注意，IN 层和 LN 层还有一点不同是，**IN 层是作用在 FeatureMap 的单个 Channel 上的**，所以它计算出来的统计量是一个向量；
 
@@ -337,7 +337,7 @@ $$
 
 - [Tensorflow](https://www.tensorflow.org/addons/api_docs/python/tfa/layers/InstanceNormalization)：
 
-  <img src="../pictures/image-20210410173651488.png" alt="image-20210410173651488" style="zoom: 80%;" />
+  <img src="./pictures/image-20210410173651488.png" alt="image-20210410173651488" style="zoom: 80%;" />
 
   Tensorflow 2 中，IN 层则在 `tensorflow_addons` 包中；
 
@@ -363,10 +363,9 @@ $$
 
 (1) 主要思想：**GN 层更像是 LN 层和 IN 层的一般化形式，通过参数 $G$ 进行控制**；当 $G=1$，GN 层即等价于 IN 层；当 $G=C$ 时，GN 层即等价于 LN 层；
 
-![img](../pictures/v2-b2678be870213e29cea7521ae787cbdd_720w.jpg)
+![img](./pictures/v2-b2678be870213e29cea7521ae787cbdd_720w.jpg)
 
 (2) 公式：
 
-<img src="../pictures/v2-4c6fe8b210b769b1427b7c40ee57227e_720w.jpg" alt="img" style="zoom:80%;" />
-
+<img src="./pictures/v2-4c6fe8b210b769b1427b7c40ee57227e_720w.jpg" alt="img" style="zoom:80%;" />
 

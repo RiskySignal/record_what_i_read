@@ -68,7 +68,7 @@ RuntimeError: one of the variables needed for gradient computation has been modi
 
 **官网解释**：说明 PyTorch 的计算图并不支持原地赋值操作，这会让梯度的计算变得十分复杂，所以我们需要避免相应的原地赋值操作；
 
-<img src="../pictures/image-20210417103246355.png" alt="image-20210417103246355" style="zoom:50%;" />
+<img src="./pictures/image-20210417103246355.png" alt="image-20210417103246355" style="zoom:50%;" />
 
 **RELU 单元**：Relu 单元中存在 In-place 操作，但是我的问题并不是出现在这个地方，参考链接 https://blog.csdn.net/manmanking/article/details/104830822；
 
