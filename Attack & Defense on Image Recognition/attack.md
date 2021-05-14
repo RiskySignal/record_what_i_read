@@ -294,6 +294,18 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
+## Adversarial Patch
+
+### Contribution
+
+1. 成功在图像中打上一个通用的、鲁棒的、和输入无关的、物理中可成功的对抗样本；
+
+### Links
+
+- 论文链接：[Brown T B, Mané D, Roy A, et al. Adversarial patch[J]. arXiv preprint arXiv:1712.09665, 2017.](https://arxiv.org/abs/1712.09665)
+
+
+
 
 
 ## Synthesizing Robust Adversarial Examples
