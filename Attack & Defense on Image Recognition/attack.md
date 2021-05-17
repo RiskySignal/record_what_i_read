@@ -299,6 +299,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 ### Contribution
 
 1. 成功在图像中打上一个通用的、鲁棒的、和输入无关的、物理中可成功的对抗样本；
+2. 算法细节：使用梯度下降即可；
 
 ### Links
 
@@ -563,6 +564,53 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 #### Links
 
 - [Xiao C, Li B, Zhu J Y, et al. Generating adversarial examples with adversarial networks[J]. arXiv preprint arXiv:1801.02610, 2018.](https://arxiv.org/abs/1801.02610)
+
+
+
+
+
+## LaVAN: Localized and Visible Adversarial Noise
+
+### Contribution
+
+1. 相对于 Adversarial Patch 那篇文章，我觉得没有什么创新，只不过可能对实验部分做了更多的细化；
+
+### Notes
+
+1. Localized noise for a single image and location：先只是生成简单的对抗样本，不能实现 transfer 能力；（<u>另外，我觉得这边用 `Network Domain` 这样来生成对抗扰动明显是不合理的，因为这样的对抗样本在物理世界是根本不存在的；进一步来考虑，其实我们应该确定一个图像的精度，即像素值是1~255的整数，那么我们的最小精度应该设置在 1/255;</u>）
+
+   <img src="pictures/image-20210517224115183.png" alt="image-20210517224115183" style="zoom:50%;" />
+
+2. Transferable localized noise：生成强化后的对抗样本，对于不同的图片和位置不敏感；对上述算法做简单的修改，在每一轮的对抗样本生成过程中都选择 100 张图片，并且随机选择放置的位置；
+
+   看一下它生成的 Patch：可以发现这样的对抗攻击明显学习到了目标类别样本的特征；
+
+   ![image-20210517224934642](pictures/image-20210517224934642.png)
+
+3. 实验结果
+
+   - 评估指标：成功率、对位置的敏感性、对原始图片的敏感性、图像分类的敏感性；
+
+   - 图像分类的敏感性：即成功率是否与源图像/目标图像的类型相关，结果如图所示；
+
+     ![image-20210517230819430](C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210517230819430.png)
+
+4. 作者想分析一下，网络是不是更加关注 patch 部分了，然后它做了两个实验——“用梯度下降让源分类概率上升”和“用梯度下降让目标分类概率下降”，先看一下他分析的结果：
+
+   ![image-20210517233334616](pictures/image-20210517233334616.png)
+
+   可以看到，左边的 case 在 patch 框里面的扰动还是很多的，而右边这个 case 在 patch 框里面的扰动并不多；
+
+   作者给出的结论是，上面那个论点可能是不成立的（这个论点是在 Adversarial Patch 中提出的），<u>其实我感觉这个问题已经涉及到了“模型可解释性”的问题，至于这里给出用 Grad 的方法来解释合不合理，也是不太好争论的，所以这个问题还是需要进一步讨论的</u>；
+
+5. 最后，作者分析扰动的大小，他直接用“绝对值的大小”和“绝对值求和”来度量扰动的大小，<u>先说说我的想法，我觉得这样的评估很不合理，应该用人的感官来评估才是正确的方法</u>，然后放一下作者的结果；
+
+   <img src="pictures/image-20210517234704664.png" alt="image-20210517234704664" style="zoom: 25%;" />
+
+### Links
+
+- 论文链接：[Karmon D, Zoran D, Goldberg Y. Lavan: Localized and visible adversarial noise[C]//International Conference on Machine Learning. PMLR, 2018: 2507-2515.](https://arxiv.org/pdf/1801.02608.pdf)
+- 论文代码：[LaVAN_python-tf-](https://github.com/lith0613/LaVAN_python-tf-)
 
 
 
