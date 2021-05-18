@@ -1511,3 +1511,23 @@
 - 论文连接：[Hussain S, Neekhara P, Dubnov S, et al. WaveGuard: Understanding and Mitigating Audio Adversarial Examples[J]. arXiv preprint arXiv:2103.03344, 2021.](https://arxiv.org/abs/2103.03344)
 
 - 论文主页：https://waveguard.herokuapp.com/
+
+
+
+
+
+## Dompteur: Taming Audio Adversarial Examples
+
+### Contribution
+
+
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Eisenhofer T, Schönherr L, Frank J, et al. Dompteur: Taming Audio Adversarial Examples[J]. arXiv preprint arXiv:2102.05431, 2021.](https://arxiv.org/abs/2102.05431)
+
+- 论文代码：[Dompteur: Taming Audio Adversarial Examples](https://github.com/dompteur/artifacts)
