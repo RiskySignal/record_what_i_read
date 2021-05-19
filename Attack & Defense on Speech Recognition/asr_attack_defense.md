@@ -52,6 +52,7 @@
 23. F. Tramer, N. Carlini, W. Brendel, and A. Madry, “On adaptive attacks to adversarial example defenses,” 2020
 24. K. Rajaratnam, K. Shah, and J. Kalita, “Isolated and ensemble audio preprocessing methods for detecting adversarial examples against automatic speech recognition,” in Conference on Computational Linguistics and Speech Processing (ROCLING), 2018
 25. Universal adversarial perturbations for speech recognition systems
+26. On evaluating adversarial robustness. 
 
 
 
@@ -1518,13 +1519,72 @@
 
 ## Dompteur: Taming Audio Adversarial Examples
 
+> 如果你对语音对抗攻击比较了解的话，这篇文章你只看 Introduction 部分就可以知道这篇论文 80% 的内容；
+
 ### Contribution
 
-
+1. 给对抗防御带来了新的视角，很有启发性；
+2. 算法没有创新性；（<u>总的来看，这篇文章并不是那么优秀</u>）
+3. 实验比较充分；
 
 ### Notes
 
+1. ⭐文章对于如何防御对抗样本的观点十分新颖：**作者认为，对于语音识别中的对抗样本，我们不可能完全去除对抗样本存在的可能性，但是我们可以强化模型，使得对抗样本对于人来说都是可以感知的，这样就打破了对抗样本本身人不可感知这个特性，就实现了防御的效果；**
 
+   <img src="pictures/image-20210518224017741.png" alt="image-20210518224017741" style="zoom: 32%;" />
+
+2. 算法细节：算法相当简单，或者说，其实缺乏创新性
+
+   - 心理掩蔽效应-滤波：即对于频谱中能量低于掩蔽域值（带有一个适应性分量 $\Phi$）的分量，直接 mask 掉；
+
+     <img src="pictures/image-20210518235132754.png" alt="image-20210518235132754" style="zoom:27%;" />
+
+   - 带通滤波器：即只关注 $300～5000 Hz$ 的声音；
+
+     <img src="pictures/image-20210518235536422.png" alt="image-20210518235536422" style="zoom: 17%;" />
+
+3. Attack Model：<u>这一块其实没什么特别的，但是我关注的是作者最后一段话，即作者最终的目标是期望攻击者会添加更多的扰动，使得人耳能够听出异常，这样就解决了对抗攻击人不可感知的问题。我从另一个角度来看，这说明自然的对抗样本的研究很有价值，并且会给对抗样本领域带来很大的冲击</u>；
+
+   <img src="pictures/image-20210519000455190.png" alt="image-20210519000455190" style="zoom:33%;" />
+
+4. Evaluation：
+
+   - Benign Performance
+
+     - Band-Pass Filtering：最终选择 $200～7000Hz$ 带通滤波器，结果如下；
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210519101647940.png" alt="image-20210519101647940" style="zoom:50%;" />
+
+     - Psychoacoustic Filtering：会对原任务产生一定的影响，结果如下；
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210519101859775.png" alt="image-20210519101859775" style="zoom:50%;" />
+
+     - Cross-Model Benign Accuracy：对比各种设定之间模型的准确率，结果如下；
+
+     <img src="pictures/image-20210519102156198.png" alt="image-20210519102250709" style="zoom: 35%;" />
+
+   - Adaptive Attacker（<u>这一块需要自己实现对带通滤波器和心理掩蔽的梯度回传</u>）
+   
+     - Experimental Setup：选择了 [他们的一个工作](#Adversarial Attacks Against Automatic Speech Recognition Systems via Psychoacoustic Hiding) 来做攻击（原本这个攻击就是基于声学掩蔽效应的，用来控制噪声的大小，声学掩蔽控制噪声的大小，作者在实验中还设置了这个攻击是否打开声学掩蔽来隐藏对抗噪声），选择了 $50$ 个 $5s$ 长的 **WSJ** 测试语料集，词嵌入率选择的是 $4.8 \text{ phone/second}$ ；
+     - Results：从结果上来看，随着 $\Phi$ 的值越来越大，攻击（打开了声学掩蔽）就变得难以生成对抗样本，本且添加的噪声越来越小；（<u>我认为这个结果其实还是缺了一些东西，它为什么不关闭攻击的声学掩蔽呢，可能能够得到更好的攻击效果；或者换句话说，其实实验是没有穷举测试的，只能说，对于这种对抗攻击其实是一种不错的防御方法</u>），具体结果如下；
+   
+     <img src="pictures/image-20210519104932889.png" alt="image-20210519104932889"  />
+   
+     - Spectrograms of adversarial examples：作者还画了一下对抗样本的频谱，结果如下（<u>我认为最后一幅图的标题改成 ”听觉阈值的溢出值“ 会更容易理解一些</u>）；
+   
+     ![image-20210519105148536](pictures/image-20210519105148536.png)
+   
+     - Non-speech Audio Content：前面测的是在语料中嵌入，所以作者尝试在非语料（鸟叫和音乐）中嵌入，结果如下；
+   
+     <img src="pictures/image-20210519105353346.png" alt="image-20210519105353346" style="zoom:50%;" />
+   
+     - Target Phone Rate：测试不同的词嵌入率的影响，结果如下；
+   
+     <img src="pictures/image-20210519105717185.png" alt="image-20210519105717185" style="zoom:50%;" />
+   
+     - ⭐ Listening Tests：<u>**这个结果没有什么好分析的，但是我认为作者的做法明显是有缺陷的，因为有时候音频的质量差，可能是网络导致的，可能是设备导致的，可能是原始声音的质量导致的，可能是一个对抗样本；当一个用户听到一个非常奇怪的音频（带有大量噪声）时，并不能直接说明用户知道了样本在执行一个恶意的形为；这和文章的 Motivation 是不契合的，我理解的文章的最终目标应该是，虽然生成了对抗样本，但是正常的用户都能识别出其中的恶意形为（仅仅知道里面有噪声是完全不够的）**</u>；
+
+> 启发和思考：我觉得防御这块的工作，后面比较容易实现并且看得到成效的，可能就是利用这种对数据源的限制，另外配合上对抗训练的方式，来强化我们的模型；
 
 ### Links
 
