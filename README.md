@@ -24,11 +24,10 @@
 
 
 
-
-
 ## Others' Work
 
-- [attack-and-defense-methods](https://github.com/tao-bai/attack-and-defense-methods)
+- [attack-and-defense-methods](https://github.com/tao-bai/attack-and-defense-methods)：作者根据时间线列出了每年的 Attack & Defense 相关的工作；
+- [Awesome AI Security](https://github.com/DeepSpaceHarbor/Awesome-AI-Security)：作者列出了 `AI 安全方向` 相关的一些可用的学习资源；
 
 
 
@@ -46,6 +45,7 @@
 
   
 
-## 前辈的指导
+## 前辈/大佬的指导
 
-- 不管怎样，都要学习新的知识；（weifengchiu）
+- 不管怎样，都要学习新的知识；（By weifengchiu）
+- 你先不要只在这里想想法，去实现看看，很可能比你想象中的难实现多了，而且过程中你会有更多的想法；（By 何大佬）
