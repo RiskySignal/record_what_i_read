@@ -5,10 +5,4 @@
 ~$*.pptx
 
 # mywork
-My_Work/oppo/
-My_Work/2021/*
-My_Work/*.pptx
-My_Work/*.docx
-# !My_Work/2021/操作系统.md
-My_Work/2021/pictures/
-# !My_Work/*
+My_Work/

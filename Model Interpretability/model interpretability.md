@@ -295,6 +295,202 @@
 
 
 
+## A Unified Approach to Interpreting Model Predictions
+
+### Contribution
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Lundberg S, Lee S I. A unified approach to interpreting model predictions[J]. arXiv preprint arXiv:1705.07874, 2017.](https://proceedings.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html)
+
+- 论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
+
+
+
+
+
+## LEMNA: Explaining Deep Learning based Security Applications
+
+> 这篇文章，实际上我看了两遍：第一遍研一的时候看的，是文献阅读课，讲得很差，被老板批评了；第二遍研二项目中需要用到一系列的可解释性方法，和大佬一起又重新拜读了一下这篇文章，这次是结合代码来学习的，所以对 LEMNA 这种方法算是又有了新的认识；
+
+### Contribution
+
+1. LEMNA (Local Explanation Method using Nonlinear Approximation)，一种新的黑盒解释方法；
+2. Mixture Regression Model 拟合一个局部非线性（分段线性）模型；（<u>用我的话来说，其实是用高斯混合分布筛选扰动数据集</u>）
+3. Fused Lasso 限制的临近特征权重之间的差异；
+
+### Notes
+
+1. 先从作者总结的表格来看一下这些已有的可解释性方法：
+
+   ![image-20210508001350035](images/image-20210508001350035.png)
+
+   这里简单将现有的工作分为三类：
+
+   - White-box method (forward)：通过修改/去除前向传播的一些特征，观察模型输出的变化大小，来确定特征的重要性；
+   - White-box method (backward)：通过比较梯度的反向传播值的大小、正负，来确定特征的重要性；
+   - Black-box method：通过拟合模型的边界来确定特征的重要性；（<u>LEMNA 同样属于这一类</u>）
+
+   同时，作者也列出了一些理由，为什么不选择已有的这些工作：
+
+   - 是否支持 RNN/MLP，像 CAM 家族的工作都是依赖于卷积层的位置对应关系才得以将热力图回传的，所以这类工作不支持非 CNN 网络；
+   - 边界是否为非线性的；（<u>挺好奇的是，为什么作者这里认为白盒的方法不支持非线性？</u>）
+   - 方法是否支持黑盒（<u>这一点，我认为是比较 Weak</u>）；
+
+2. LEMNA 的方法设计：主要分为两块，一个是 Fused Lasso，一个是 Mixture Regression Model；
+
+   - Fused Lasso：作者的解释是，为了使得 LEMNA 方法将相关的（文中用的 relevant）或者是靠近的（文中用的 adjacent）特征关联起来，来生成解释。<u>换成我的话说，就是让相邻的（和 relevant 没有一点关系）特征的权重尽可能得相近</u>，看公式便一清二楚；
+
+     在 LIME 等前面的可解释性方法中，是使用最大似然估计 MLE 的方法来是如下的损失函数最小化：
+
+     <img src="images/image-20210509170637459.png" alt="image-20210509170637459" style="zoom: 12%;" />
+
+     LEMNA 使用 Fused Lasso 方法后，其目标就变成了在一定限制下使得损失函数最小化：
+
+     <img src="images/image-20210509171347666.png" alt="image-20210509171347666" style="zoom: 14%;" />
+
+     作者也给出了，基于 Fused Lasso 方法他希望得到的最终的可解释性形式：
+
+     <img src="images/image-20210509171600046.png" alt="image-20210509171600046" style="zoom:30%;" />
+
+   - Mixture Regression Model：作者的解释是，一个混合回归模型能够拟合一个局部非线性边界。换成我的话说，就是拟合一个局部分段线性模型。从作者的图里面比较容易理解：
+
+     <img src="images/image-20210509172134945.png" alt="image-20210509172134945" style="zoom:33%;" />
+
+     可以看到，LIME 拟合的是一个局部线性模型，LEMNA 拟合的是一个分段线性模型，<u>从示意图上可以感觉到用 **分段线性模型** 是更好的</u>；下面给出这个混合回归模型的公式：
+
+     <img src="images/image-20210509172341626.png" alt="image-20210509172341626" style="zoom:8%;" />
+
+     使用混合回归模型的目的，就是要找到上图中红色的这个线性模型，因为它对 $x$ 处的拟合效果是最好的；
+
+     <img src="images/image-20210509172642015.png" alt="image-20210509172642015" style="zoom: 30%;" />
+
+3. LEMNA 的具体实现：<u>这部分我们结合代码一起来看会比较有感觉</u>；
+
+   具体的代码实现，在 GitHub 上有三个相关的库：
+
+   - Henrygwb 的 [Explaining-DL](https://github.com/Henrygwb/Explaining-DL) 库（<u>大佬好像是跟我说这个是作者后来的工作</u>）：这个库中的 LEMNA 实现只有 Fused Lasso 部分（<u>我们暂时用的是这个库</u>）；
+   - nitishabharathi 的 [LEMNA](https://github.com/nitishabharathi/LEMNA/blob/master/lemna.py) 库：这个库中的 LEMNA 实现只有 Mixture Regression Model 部分；
+   - ZhihaoMeng 的 [CPSC8580](https://github.com/ZhihaoMeng/CPSC8580) 库：这个库中的 LEMNA 实现很 nice，非常全，强烈建议看这个库；（<u>虽然我还没运行过他的代码，但是我简单看了一下，实现上来说和第一个库差不多，所以花点功夫应该是可以跑起来的，有时间我也会跑一下，甚至替换到我们的项目中</u>）
+
+   代码的实现过程中，Fused Lasso 和 Mixture Regression Model 是几乎混在一起的，下面还是简单地拆开来分析；
+
+   - Fused Lasso：调用 R 语言的实现，下面简单列一下相关的代码；
+
+   ```python
+   # 导入rpy的包等等操作
+   from scipy import io
+   from rpy2 import robjects
+   from rpy2.robjects.packages import importr
+   r = robjects.r
+   rpy2.robjects.numpy2ri.activate()
+   # 导入r的包
+   importr('genlasso')
+   importr('gsubfn')
+   # 使用r来实现Fused Lasso
+   X = r.matrix(data_explain)
+   Y = r.matrix(lable_explain)
+   results = r.fusedlasso1d(y=Y, X=X)
+   ```
+
+   - Mixture Regression Model：（<u>希望看官不要嫌弃我的数学</u>）对于原问题，最小化如下损失函数
+
+     <img src="images/image-20210509175725889.png" alt="image-20210509175725889" style="zoom: 19%;" />
+
+     作者的实现**依赖于“单个线性模型的预测结果的误差 满足 高斯分布”这个假设**。我们将 $P(y_i|x_i)$ 写成高斯混合分布的形式：
+
+     <img src="images/image-20210509180210672.png" alt="image-20210509180210672" style="zoom:11%;" />
+
+     这样就通过**拟合高斯混合分布的方法**来计算模型的参数，即 EM 算法；但是因为我们需要结合 Fused Lasso 方法，对 EM 算法还需要做一些修改：
+
+     - E Step：和原来的 EM 步骤一样，估计各个样本属于哪个子分布，计算期望值；
+
+     - M Step：对于参数 $\pi_k$ 和 $\sigma_k$ 的更新和原来的 EM 步骤是一样的，但是对于 $\beta_k$ 的更新，改成使用 Fused Lasso 方法来对其进行更新；即已经用 E Step 得到了每个样本的子分布，在 M Step 中直接调用 Fused Lasso 方法对每个分布的样本进行拟合，下面给出作者的表达
+
+       <img src="images/image-20210509181202246.png" alt="image-20210509181202246" style="zoom:30%;" />
+
+     这里代码就不粘了，得说一下 ZhihaoMeng 里面三个脚本的区别：
+
+     - [lemna.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna.py)：（<u>算是一个阉割版</u>）直接用高斯混合分布对扰动数据集（Perturbation Samples）进行拟合，挑选出属于最优（$\pi_k$ 最大）的子高斯分布的样本点，用 Fused Lasso 对这些点进行拟合；
+     - [lemna-no-GMM.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna-no-GMM.py)：（<u>算是一个精简版</u>）只用了 Fused Lasso 方法，这个和 Henrygwb 的库的实现是一样的；
+     - [lemna-customGMM.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna-customGMM.py)：这是完整的 LEMNA 实现；
+
+   LEMNA 方法最后给出的特征重要性即为 $\pi_k$ 最大的线性分布模型的权重 $\beta_k$，下面给出作者的表达：
+
+   <img src="images/image-20210509183138541.png" alt="image-20210509183138541" style="zoom:30%;" />
+
+4. 我的理解：
+
+   - 为啥不用白盒梯度的方法呢：折腾来折腾去，就是拟合一个边界，感觉黑盒方法的优势并不存在；
+   - 筛选扰动数据集：黑盒方法的好坏很大层面上取决于你构造的扰动数据集的好坏；我们换个角度来看，LEMNA 算法最终得到的还是一个局部线性模型（混合回归模型就是多拟合几条线，我们来选一条最好的），他其实不就是用高斯混合模型对扰动数据集做了一个筛选么！
+   - 黑盒算法的性能受到特征维度的制约；
+   - 实现和理论不近相符：前面图片中我们想要得到的是红色的线性模型，即经过样本点的线性模型，但是实现过程中挑选最优的模型，则是判断混合分布的 $\pi_k$ 的大小；
+   - 作者在实现过程中还有一个 Trick，他在 Binary 这个模型的分析过程中，设置了一个大小为 40 的分析窗口；
+
+5. 论文实验：
+
+   - 实验针对的模型：
+
+     <img src="images/image-20210509183335534.png" alt="image-20210509183335534" style="zoom:30%;" />
+
+     - Binary Function Start：标记二进制代码函数起始位置的模型，用的 RNN 模型，其中 $O0\sim O3$ 表示 gcc 的编译优化等级；
+     - PDF Malware：PDF 恶意脚本检测的模型，人工提取出相应的特征，用的 MLP 模型，因为相邻特征之间没有绝对的相关性，所以这里没有用到 Fused Lasso；
+
+   - Baseline：和 LIME 方法和 Random 方法进行对比；
+
+   - 如何度量精度（Fidelity）
+
+     - Local Approximation Accuracy：即计算线性模型预测的概率和神经网络预测的概率之间的差别，用 RMSE 度量，公式如下
+
+       <img src="images/image-20210509184040483.png" alt="image-20210509184040483" style="zoom:13%;" />
+
+     - End-to-end Fidelity Tests：主要思想是保留、删除、生成重要特征，观察模型结果的变化，都用 PCR 来度量
+
+       - Feature Deduction Test：在原始数据中删除重要特征，PCR 越小说明解释方法越好；
+       - Feature Augmentation Test：挑选一个相反类（opposite class）数据，在数据中增加（从原始数据中分析得到的）重要特征，PCR 越大说明解释方法越好；
+       - Synthetic Test：在空白数据中只添加（从原始数据中分析得到的）重要特征，PRC 越大说明解释方法越好；
+
+   - 实验结果：
+
+     - Local Approximation Accuracy：LEMNA 方法的 RMSE 结果优于 LIME；
+
+       <img src="images/image-20210509184737868.png" alt="image-20210509184737868" style="zoom:33%;" />
+
+     - End-to-end Fidelity Tests
+
+       - Feature Deduction Test
+
+         <img src="images/image-20210509184907443.png" alt="image-20210509184907443" style="zoom: 40%;" />
+
+       - Feature Augmentation Test
+
+         <img src="images/image-20210509184944966.png" alt="image-20210509184944966" style="zoom:40%;" />
+
+       - Synthetic Test
+
+         <img src="images/image-20210509185031068.png" alt="image-20210509185031068" style="zoom:40%;" />
+
+       - 分析：LEMNA 方法均优于 LIME，并且发现对于 PDF Malware 这个网络，LIME 方法的效果和 Random 差不多；
+
+         <img src="images/image-20210509185328932.png" alt="image-20210509185328932" style="zoom:38%;" />
+
+   - 如何利用可解释方法：作者最后给出了几种有意思的可解决方法的利用场景，有兴趣可以再看看；
+
+### Links
+
+- 论文链接：[Guo W, Mu D, Xu J, et al. Lemna: Explaining deep learning based security applications[C]//proceedings of the 2018 ACM SIGSAC conference on computer and communications security. 2018: 364-379.](https://dl.acm.org/doi/10.1145/3243734.3243792)
+- 代码链接：[Black-box explanation of deep learning models using mixture regression models](https://github.com/Henrygwb/Explaining-DL)
+- 代码链接：https://github.com/nitishabharathi/LEMNA
+- 代码链接：https://github.com/ZhihaoMeng/CPSC8580
+
+
+
+
+
 ## 机器学习模型可解释性方法、应用与安全研究综述
 
 ### Notes
@@ -587,180 +783,3 @@
 
 - 论文代码：https://git.tu-berlin.de/gmontavon/lrp-tutorial
 
-
-
-
-
-## LEMNA: Explaining Deep Learning based Security Applications
-
-> 这篇文章，实际上我看了两遍：第一遍研一的时候看的，是文献阅读课，讲得很差，被老板批评了；第二遍研二项目中需要用到一系列的可解释性方法，和大佬一起又重新拜读了一下这篇文章，这次是结合代码来学习的，所以对 LEMNA 这种方法算是又有了新的认识；
-
-### Contribution
-
-1. LEMNA (Local Explanation Method using Nonlinear Approximation)，一种新的黑盒解释方法；
-2. Mixture Regression Model 拟合一个局部非线性（分段线性）模型；（<u>用我的话来说，其实是用高斯混合分布筛选扰动数据集</u>）
-3. Fused Lasso 限制的临近特征权重之间的差异；
-
-### Notes
-
-1. 先从作者总结的表格来看一下这些已有的可解释性方法：
-
-   ![image-20210508001350035](images/image-20210508001350035.png)
-
-   这里简单将现有的工作分为三类：
-
-   - White-box method (forward)：通过修改/去除前向传播的一些特征，观察模型输出的变化大小，来确定特征的重要性；
-   - White-box method (backward)：通过比较梯度的反向传播值的大小、正负，来确定特征的重要性；
-   - Black-box method：通过拟合模型的边界来确定特征的重要性；（<u>LEMNA 同样属于这一类</u>）
-
-   同时，作者也列出了一些理由，为什么不选择已有的这些工作：
-
-   - 是否支持 RNN/MLP，像 CAM 家族的工作都是依赖于卷积层的位置对应关系才得以将热力图回传的，所以这类工作不支持非 CNN 网络；
-   - 边界是否为非线性的；（<u>挺好奇的是，为什么作者这里认为白盒的方法不支持非线性？</u>）
-   - 方法是否支持黑盒（<u>这一点，我认为是比较 Weak</u>）；
-
-2. LEMNA 的方法设计：主要分为两块，一个是 Fused Lasso，一个是 Mixture Regression Model；
-
-   - Fused Lasso：作者的解释是，为了使得 LEMNA 方法将相关的（文中用的 relevant）或者是靠近的（文中用的 adjacent）特征关联起来，来生成解释。<u>换成我的话说，就是让相邻的（和 relevant 没有一点关系）特征的权重尽可能得相近</u>，看公式便一清二楚；
-
-     在 LIME 等前面的可解释性方法中，是使用最大似然估计 MLE 的方法来是如下的损失函数最小化：
-
-     <img src="images/image-20210509170637459.png" alt="image-20210509170637459" style="zoom: 12%;" />
-
-     LEMNA 使用 Fused Lasso 方法后，其目标就变成了在一定限制下使得损失函数最小化：
-
-     <img src="images/image-20210509171347666.png" alt="image-20210509171347666" style="zoom: 14%;" />
-
-     作者也给出了，基于 Fused Lasso 方法他希望得到的最终的可解释性形式：
-
-     <img src="images/image-20210509171600046.png" alt="image-20210509171600046" style="zoom:30%;" />
-
-   - Mixture Regression Model：作者的解释是，一个混合回归模型能够拟合一个局部非线性边界。换成我的话说，就是拟合一个局部分段线性模型。从作者的图里面比较容易理解：
-
-     <img src="images/image-20210509172134945.png" alt="image-20210509172134945" style="zoom:33%;" />
-
-     可以看到，LIME 拟合的是一个局部线性模型，LEMNA 拟合的是一个分段线性模型，<u>从示意图上可以感觉到用 **分段线性模型** 是更好的</u>；下面给出这个混合回归模型的公式：
-
-     <img src="images/image-20210509172341626.png" alt="image-20210509172341626" style="zoom:8%;" />
-
-     使用混合回归模型的目的，就是要找到上图中红色的这个线性模型，因为它对 $x$ 处的拟合效果是最好的；
-
-     <img src="images/image-20210509172642015.png" alt="image-20210509172642015" style="zoom: 30%;" />
-
-3. LEMNA 的具体实现：<u>这部分我们结合代码一起来看会比较有感觉</u>；
-
-   具体的代码实现，在 GitHub 上有三个相关的库：
-
-   - Henrygwb 的 [Explaining-DL](https://github.com/Henrygwb/Explaining-DL) 库（<u>大佬好像是跟我说这个是作者后来的工作</u>）：这个库中的 LEMNA 实现只有 Fused Lasso 部分（<u>我们暂时用的是这个库</u>）；
-   - nitishabharathi 的 [LEMNA](https://github.com/nitishabharathi/LEMNA/blob/master/lemna.py) 库：这个库中的 LEMNA 实现只有 Mixture Regression Model 部分；
-   - ZhihaoMeng 的 [CPSC8580](https://github.com/ZhihaoMeng/CPSC8580) 库：这个库中的 LEMNA 实现很 nice，非常全，强烈建议看这个库；（<u>虽然我还没运行过他的代码，但是我简单看了一下，实现上来说和第一个库差不多，所以花点功夫应该是可以跑起来的，有时间我也会跑一下，甚至替换到我们的项目中</u>）
-
-   代码的实现过程中，Fused Lasso 和 Mixture Regression Model 是几乎混在一起的，下面还是简单地拆开来分析；
-
-   - Fused Lasso：调用 R 语言的实现，下面简单列一下相关的代码；
-
-   ```python
-   # 导入rpy的包等等操作
-   from scipy import io
-   from rpy2 import robjects
-   from rpy2.robjects.packages import importr
-   r = robjects.r
-   rpy2.robjects.numpy2ri.activate()
-   # 导入r的包
-   importr('genlasso')
-   importr('gsubfn')
-   # 使用r来实现Fused Lasso
-   X = r.matrix(data_explain)
-   Y = r.matrix(lable_explain)
-   results = r.fusedlasso1d(y=Y, X=X)
-   ```
-
-   - Mixture Regression Model：（<u>希望看官不要嫌弃我的数学</u>）对于原问题，最小化如下损失函数
-
-     <img src="images/image-20210509175725889.png" alt="image-20210509175725889" style="zoom: 19%;" />
-
-     作者的实现**依赖于“单个线性模型的预测结果的误差 满足 高斯分布”这个假设**。我们将 $P(y_i|x_i)$ 写成高斯混合分布的形式：
-
-     <img src="images/image-20210509180210672.png" alt="image-20210509180210672" style="zoom:11%;" />
-
-     这样就通过**拟合高斯混合分布的方法**来计算模型的参数，即 EM 算法；但是因为我们需要结合 Fused Lasso 方法，对 EM 算法还需要做一些修改：
-
-     - E Step：和原来的 EM 步骤一样，估计各个样本属于哪个子分布，计算期望值；
-
-     - M Step：对于参数 $\pi_k$ 和 $\sigma_k$ 的更新和原来的 EM 步骤是一样的，但是对于 $\beta_k$ 的更新，改成使用 Fused Lasso 方法来对其进行更新；即已经用 E Step 得到了每个样本的子分布，在 M Step 中直接调用 Fused Lasso 方法对每个分布的样本进行拟合，下面给出作者的表达
-
-       <img src="images/image-20210509181202246.png" alt="image-20210509181202246" style="zoom:30%;" />
-
-     这里代码就不粘了，得说一下 ZhihaoMeng 里面三个脚本的区别：
-
-     - [lemna.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna.py)：（<u>算是一个阉割版</u>）直接用高斯混合分布对扰动数据集（Perturbation Samples）进行拟合，挑选出属于最优（$\pi_k$ 最大）的子高斯分布的样本点，用 Fused Lasso 对这些点进行拟合；
-     - [lemna-no-GMM.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna-no-GMM.py)：（<u>算是一个精简版</u>）只用了 Fused Lasso 方法，这个和 Henrygwb 的库的实现是一样的；
-     - [lemna-customGMM.py](https://github.com/ZhihaoMeng/CPSC8580/blob/master/MLM/lemna_O1/lemna-customGMM.py)：这是完整的 LEMNA 实现；
-
-   LEMNA 方法最后给出的特征重要性即为 $\pi_k$ 最大的线性分布模型的权重 $\beta_k$，下面给出作者的表达：
-
-   <img src="images/image-20210509183138541.png" alt="image-20210509183138541" style="zoom:30%;" />
-
-4. 我的理解：
-
-   - 为啥不用白盒梯度的方法呢：折腾来折腾去，就是拟合一个边界，感觉黑盒方法的优势并不存在；
-   - 筛选扰动数据集：黑盒方法的好坏很大层面上取决于你构造的扰动数据集的好坏；我们换个角度来看，LEMNA 算法最终得到的还是一个局部线性模型（混合回归模型就是多拟合几条线，我们来选一条最好的），他其实不就是用高斯混合模型对扰动数据集做了一个筛选么！
-   - 黑盒算法的性能受到特征维度的制约；
-   - 实现和理论不近相符：前面图片中我们想要得到的是红色的线性模型，即经过样本点的线性模型，但是实现过程中挑选最优的模型，则是判断混合分布的 $\pi_k$ 的大小；
-   - 作者在实现过程中还有一个 Trick，他在 Binary 这个模型的分析过程中，设置了一个大小为 40 的分析窗口；
-
-5. 论文实验：
-
-   - 实验针对的模型：
-
-     <img src="images/image-20210509183335534.png" alt="image-20210509183335534" style="zoom:30%;" />
-
-     - Binary Function Start：标记二进制代码函数起始位置的模型，用的 RNN 模型，其中 $O0\sim O3$ 表示 gcc 的编译优化等级；
-     - PDF Malware：PDF 恶意脚本检测的模型，人工提取出相应的特征，用的 MLP 模型，因为相邻特征之间没有绝对的相关性，所以这里没有用到 Fused Lasso；
-
-   - Baseline：和 LIME 方法和 Random 方法进行对比；
-
-   - 如何度量精度（Fidelity）
-
-     - Local Approximation Accuracy：即计算线性模型预测的概率和神经网络预测的概率之间的差别，用 RMSE 度量，公式如下
-
-       <img src="images/image-20210509184040483.png" alt="image-20210509184040483" style="zoom:13%;" />
-
-     - End-to-end Fidelity Tests：主要思想是保留、删除、生成重要特征，观察模型结果的变化，都用 PCR 来度量
-
-       - Feature Deduction Test：在原始数据中删除重要特征，PCR 越小说明解释方法越好；
-       - Feature Augmentation Test：挑选一个相反类（opposite class）数据，在数据中增加（从原始数据中分析得到的）重要特征，PCR 越大说明解释方法越好；
-       - Synthetic Test：在空白数据中只添加（从原始数据中分析得到的）重要特征，PRC 越大说明解释方法越好；
-
-   - 实验结果：
-
-     - Local Approximation Accuracy：LEMNA 方法的 RMSE 结果优于 LIME；
-
-       <img src="images/image-20210509184737868.png" alt="image-20210509184737868" style="zoom:33%;" />
-
-     - End-to-end Fidelity Tests
-
-       - Feature Deduction Test
-
-         <img src="images/image-20210509184907443.png" alt="image-20210509184907443" style="zoom: 40%;" />
-
-       - Feature Augmentation Test
-
-         <img src="images/image-20210509184944966.png" alt="image-20210509184944966" style="zoom:40%;" />
-
-       - Synthetic Test
-
-         <img src="images/image-20210509185031068.png" alt="image-20210509185031068" style="zoom:40%;" />
-
-       - 分析：LEMNA 方法均优于 LIME，并且发现对于 PDF Malware 这个网络，LIME 方法的效果和 Random 差不多；
-
-         <img src="images/image-20210509185328932.png" alt="image-20210509185328932" style="zoom:38%;" />
-
-   - 如何利用可解释方法：作者最后给出了几种有意思的可解决方法的利用场景，有兴趣可以再看看；
-
-### Links
-
-- 论文链接：[Guo W, Mu D, Xu J, et al. Lemna: Explaining deep learning based security applications[C]//proceedings of the 2018 ACM SIGSAC conference on computer and communications security. 2018: 364-379.](https://dl.acm.org/doi/10.1145/3243734.3243792)
-- 代码链接：[Black-box explanation of deep learning models using mixture regression models](https://github.com/Henrygwb/Explaining-DL)
-- 代码链接：https://github.com/nitishabharathi/LEMNA
-- 代码链接：https://github.com/ZhihaoMeng/CPSC8580

@@ -846,7 +846,13 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
    这边可能影响 PGD 算法攻击性的 **因素** 有：重复执行的次数 $N_r$ ，计算梯度时使用的损失函数 $\hat{L}^{(r)}$，迭代优化器 $Opt$，噪声生成器 $SampleForm$，每轮的迭代次数 $K$，迭代的学习率 $a^{(k)}$。其中，$L$ 是用来判断对抗攻击是否成功的判别函数，对最终的结果没什么影响，可以用来控制迭代的次数，实现提早停止迭代的功能；
 
-2. MultiTargeted Attack：主要思想是改变 restarts 过程中使用的损失函数如下：
+2. MultiTargeted Attack：即在保证目标分类 $y$ 的概率上升的同时，让其他 $top-k$ 个分类的概率下降；
+
+   为了有比较作用，首先看一下 PGD 中常用的 `cross-entropy loss` 和 `margin loss`：
+
+   <img src="pictures/image-20210519212053856.png" alt="image-20210519212053856" style="zoom: 45%;" />
+
+   而作者使用的损失函数的公式如下：
 
    <img src="pictures/image-20210314105144910.png" alt="image-20210314105144910" style="zoom: 24%;" />
 
@@ -869,6 +875,21 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 ### Links
 
 - 论文链接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
+
+
+
+
+
+## Adversarial Examples Are Not Bugs, They Are Features
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Ilyas A, Santurkar S, Tsipras D, et al. Adversarial examples are not bugs, they are features[J]. arXiv preprint arXiv:1905.02175, 2019.](https://arxiv.org/abs/1905.02175)
+- 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>真的是翻译得很烂，看完不懂系列</u>）
 
 
 
