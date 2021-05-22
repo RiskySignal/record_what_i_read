@@ -1,5 +1,3 @@
-
-
 # Model Interpretability
 
 
@@ -295,19 +293,214 @@
 
 
 
-## A Unified Approach to Interpreting Model Predictions
+## SHAP - SHapley Additive exPlanation
+
+> SHAP 提出的是一种特征重要性的度量方式，在具体的使用上它可以结合已有的可解释性方法（LIME、GRAD 等）一起运行，所以该部分不仅仅只关注其中某篇论文，而是关注 SHAP 这个方法；
+>
+> 因为 SHAP 实在是太难理解了，纯靠论文我实在是无法理解，所以下面我参考了大量网上的博客，如果有什么不清楚的地方，还是建议去读一读博客的原文和论文；
 
 ### Contribution
 
+
+
 ### Notes
+
+#### SHAP 的基本运作原理
+
+> 参考博客：[SHAP Values Explained Exactly How You Wished Someone Explained to You](https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30)
+>
+> 中文翻译：[SHAP 值的解释，以一种你期望的方式解释给你听](https://www.6aiq.com/article/1588001724187) （<u>这个翻译某些部分有点糟糕，但大致能够看懂，建议直接看英文原文</u>）
+
+##### Game Theory and Machine Learning
+
+- Shapley Values，是一个博弈论的概念；
+
+- 博弈论中，涉及到 “Game”（游戏） 和 “Players”（玩家） 两个概念。这两个概念和我们要解决的“**模型可解释性**”问题的对应关系为：
+
+  - <font color=blue>Game</font> 对应的是 <font color=blue>模型的输出值</font>；（作者特别强调了，“**One Game one observation**"，“一场游戏 对应着 一个样本输入到模型中得到的输出值”）
+  - <font color=red>Players</font> 对应的是 <font color=red>模型的特征</font>；
+
+  ⭐故 **Shapley Values 和 SHAP 方法的对应关系**为：
+
+  - Shapley Values 是用来度量每个 “Player” 对 “Game” 的贡献的；
+  - SHAP 是用来度量每个特征对模型输出值的贡献的；
+
+##### A Power Set of Features
+
+- 作者以 “**用年龄（Age）、性别（Gender）和工作（Job）来预测一个人的收入**” 进行举例（SHAP 是一中黑盒的可解释性方法，故这里我们并不需要关心实际的模型是个线性模型、决策树模型还是其他更加复杂的模型）；
+
+- Shapley Values 的基本思想：**Each possible combination (or coalition) of players should be considered to determine the importance of a single player**。<u>翻译到模型可解释性方向的话，就是**计算单个特征的重要性时，我们需要考虑全部特征的可能组合**</u>；
+
+- Power Set（**幂集**）：即全部特征的、所有可能的组合，可以用树的形式来表示，如下所示；
+
+  <img src="images/1_GOwxZ1ApAidTIDoa2l98ew.png" alt="1_GOwxZ1ApAidTIDoa2l98ew" style="zoom:80%;" />
+
+  其中，每个节点代表一个 **特征联盟**（A coalition of features），每一条边表示（上面的特征联盟中）**不存在的特征**。$f$ 指的是某个特征联盟中特征的数量，$F$ 指的是全部特征的数量。
+
+  ⭐**SHAP 在解释模型时，需要为每个特征联盟训练一个独立的预测模型**，即在这里，SHAP 需要训练 $2^F=8$ 个模型（这些模型的架构、超参数的设定和他们的训练数据都是一致的，唯一不同的是他们考虑的特征是不一样的）。作者举例，我们已经训练得到了 $8$ 个独立的预测模型，他们对某个输入 $x_0$ 在模型中的输出值都做了相应的预测，如下图所示：
+
+  <img src="images/1_9oHGJ9kAMaUUEYtnfKKKEA.png" alt="1_9oHGJ9kAMaUUEYtnfKKKEA" style="zoom:80%;" />
+
+  :warning: 一个可能存在的误区，先列出我们存在的两种不同的观点：
+
+  - <font color=red>（错误）对于每个节点，采用的是原始的我们要解释的模型，而不需要对每个节点训练一个模型</font>；
+  - <font color=green>（正确）对于每个节点，需要用相同的方法训练一个独立的模型</font>；
+
+  这里正确的是第二个观点，之所以会产生第一种错误的观点，是把 $Predict_{\varnothing}$ 当成了把所有特征取 $0$，而正确的理解应该是 $Predict_{\varnothing}$ 指的是每个特征都可以取任何值；
+
+##### Marginal Contributions of a Feature
+
+- 如上所述，**两个相连的节点之间只有一个特征的差异**，（前面还指出每个特征联盟的预测模型都使用的相同参数等），故**两个相连的模型的预测值之间的差异也主要是这个差异特征导致的**；我们把这种预测值之间的差异称为 <font color=red>**该差异特征**的 “Marginal Contribution”（边缘贡献）</font>；为了防止我理解的有偏差，这里给出原文截图：
+
+  <img src="images/image-20210521171044218.png" alt="image-20210521171044218" style="zoom:33%;" />
+
+- 举个例子，对于节点 ①，这个模型它不考虑任何特征，所以这个模型给出的就是（训练集的）平均收入水平 $50k\ \$$；再看节点 ②，这个模型它只考虑样本 $x_0$ 的年龄（Age）特征，它给出的预测结果是 $40k\ \$$；这说明，当我们考虑了 $x_0$ 的年龄特征后，模型的预测值下降了 $10k\ \$$；我们把这种差异称为 年龄（Age）的 边缘贡献（之一），用公式表示如下：
+  $$
+  MC_{Age,\{Age\}} = Predict_{\{Age\}}(x_0) - Predict_{\varnothing}(x_0) = 40k\ \$ - 50k\ \$ = -10k\ \$
+  $$
+  下图中画出了年龄（Age） 的全部边缘贡献：
+
+  <img src="images/1_7keBLSQszepu5jITz8SKxA.png" alt="1_7keBLSQszepu5jITz8SKxA" style="zoom:80%;" />
+
+  最终，SHAP 对这些边缘贡献进行 **加权求和**（权重的大小由下一小节解释）：
+  $$
+  \begin{align}
+  SHAP_{Age}(x_0) & =\ w_1 \times MC_{Age,\{Age \}}(x_0) \\
+  &\ + w_2 \times MC_{Age,\{Age, Gender\}}(x_0) \\
+  &\ + w_3 \times MC_{Age, \{Age, Job\}}(x_0) \\
+  &\ + w_4 \times MC_{Age, \{Age, Gender, Job\}}(x_0)\\
+  \end{align} \\
+  \text{where }\ w_1+w_2+w_3+w_4=1
+  $$
+
+##### Weighting the Marginal Contributions
+
+- 以上面的为例，我们直接给出每个边缘贡献的权重，如下图所示：
+
+  ![1_wOLS6BO2vGTSB4sCoAb6fQ](images/1_wOLS6BO2vGTSB4sCoAb6fQ.png)
+
+  简单来说，每个边缘贡献的权重 等于 每层边缘贡献数量的倒数；
+
+- **数学公式对上面的规律进行表示**：
+  $$
+  weight = f \times \dbinom{F}{f}
+  $$
+
+- 现在，我们可以求出最终的 SHAP 值：
+  $$
+  \begin{align}
+  SHAP_{Age}(x_0) & =\ [1 \times\dbinom{3}{1}]^{-1} \times MC_{Age,\{Age \}}(x_0) \\
+  &\ + [2 \times\dbinom{3}{2}]^{-1} \times MC_{Age,\{Age, Gender\}}(x_0) \\
+  &\ + [2 \times\dbinom{3}{2}]^{-1} \times MC_{Age, \{Age, Job\}}(x_0) \\
+  &\ + [3 \times\dbinom{3}{3}]^{-1} \times MC_{Age, \{Age, Gender, Job\}}(x_0)\\
+  &\ = \frac{1}{3} \times(-10k\ $) + \frac{1}{6} \times (-9k \ $) + \frac{1}{6} \times(-15k \ $) + \frac{1}{3} \times(-12k \ $) \\
+  &\ = -11.33k \ $
+  \end{align}
+  $$
+
+##### Wrapping it up
+
+- 最后，我们就得到了 **SHAP 文章中的公式**（<u>现在就很好理解这个公式了</u>）：
+  $$
+  SHAP_{feature}(x) = \sum_{set:\ feature\ \in\ set}[|set| \times \dbinom{F}{|set|}]^{-1}[Predict_{set}(x) - Predict_{set \setminus feature}(x)]
+  $$
+
+- 相应的，我们可以计算得到各个特征的 SHAP 值：
+  $$
+  SHAP_{Age}(x_0) = -11.33k \ \$ \\
+  SHAP_{Gender}(x_0) = -2.33k \ \$ \\
+  SHAP_{Job}(x_0) = +46.66k \ \$
+  $$
+  可以看到，把这些 SHAP 值全部加起来，正好等于 the full model（最下面的考虑全部特征的模型）减去 the null model（最上面的不考虑任何特征的模型）的预测值的差；这也正好是 **SHAP 方法的一个特点**，也是它取名的原由，为了不造成更多歧义，直接粘原文：
+
+  <img src="images/image-20210522122406221.png" alt="image-20210522122406221" style="zoom:33%;" />
+
+- 这里，虽然我们似乎已经做完了 SHAP 的全部步骤，但是在实际应用中，我们考虑的特征是非常多的，可以看到我们上面还要分别训练 $2^F$ 个模型，所以接下来的任务，就是**如何在拥有大量特征的情况下，用近似的方法来求解 SHAP 值**，论文原文的话如下所示；
+
+  <img src="images/image-20210522134030671.png" alt="image-20210522134030671" style="zoom: 45%;" />
+
+#### Kernel SHAP（Linear LIME + Shapley Values）
+
+> 参考博客：[Complete SHAP tutorial for model explanation Part 3. KernelSHAP](https://summer-hu-92978.medium.com/complete-shap-tutorial-for-model-explanation-part-3-kernelshap-4859186dc8be)（建议优先看这篇博客）
+>
+> 参考博客：[5.10.2 KernelSHAP](https://christophm.github.io/interpretable-ml-book/shap.html#kernelshap)
+>
+> 第二篇博客的中文翻译：[模型解释–SHAP Value的简单介绍](https://mathpretty.com/10699.html)（<u>一样，中文翻译一般都挺坑的</u>）
+
+- 符号表示
+
+  为了让下面的内容更容易看懂，我们得先解释一下一些符号的含义：
+
+  - $x$ 表示模型的输入，$f(x)$ 表示模型的输出；
+
+  - $z'$ 表示简化后的**特征域**（如：图像中我们会把模型的输入 $x$ 切成小的超像素块域 $z'$），$M$ 表示特征的数量，$h_x(z')$ 表示将特征域 $z'$ 映射到原输入域 $x$（**注意：这个映射是一个 one-to-many mapping**）；下面展示论文中的描述：
+
+    <img src="images/image-20210522144253177.png" alt="image-20210522144253177" style="zoom: 43%;" />
+
+  - $g$ 表示目标模型的替代解释模型；
+
+  - $\pi_x(z')$ 表示为样本 $z'$ 的权重；
+
+- LIME 可解释方法
+
+  LIME 的目标是最小化如下**目标函数**：
+  $$
+  \xi = \mathop{\arg\min}\limits_{g\in\mathcal{G}} L(f,g,\pi_x(z')) + \Omega(g)
+  $$
+  即，LIME 希望最终**得到的线性回归模型在采样点 $z'$ 上的加权误差尽可能的小**，并且**根据样本的修改程度来确定不同样本的权重** $\pi_x(z')$，使用 $\Omega(g)$ 来**限制回归模型的复杂度**；
+
+- ⭐ **Kernel SHAP 运行步骤**
+
+  1. 采样特征域样本 $z'$ ，一般地，我们需要采样 $2^M$ 个特征域样本；
+
+  2. 计算模型在采样样本上的预测结果 $f(h_x(z'))$；
+
+     因为上面提到，映射变换是一个一对多的变换，所以这里 $f(h_x(z'))=E[f(h(z'))]$；（:question: ​<u>是否会为了简化计算，把这个一对多的映射变成一个一对一的映射？这种映射可能还存在一个问题，就是说它的前提是每个特征需要相互独立的，但是在实际的数据分布中，并不是这样的；</u>）
+
+  3. 用如下 **SHAP Kernel** 计算每个特征域样本的权重：
+
+     <img src="images/1_8QAcN7ZQeMo6tXps-UoYEw.png" alt="1_8QAcN7ZQeMo6tXps-UoYEw" style="zoom: 60%;" />
+
+  4. 借助 LIME，构造**线性回归模型**：
+
+     <img src="images/1_Bas1PB1Dxh5XmYJfIvR6cw.png" alt="1_Bas1PB1Dxh5XmYJfIvR6cw" style="zoom: 63%;" />
+
+     去除原目标函数中的复杂度约束项 $\Omega(g)$，并将新的 SHAP Kernel 代入公式中，得到 **新的目标函数**：
+     $$
+     \xi = \mathop{\arg\min}\limits_{g\in\mathcal{G}} L(f,g,\pi_x(z')) \\
+     L(f,g,\pi_x(z')) = \sum_{z' \in Z} \left[f(h_x(z')) - g(z') \right]\cdot \pi_x(z')
+     $$
+
+  5. 拟合线性回归模型，得到的 $\phi_j$ 即为 **Shapley Values 的估计值**；（<u>论文中证明了，这种方法可以保证得到 Shapley Values 的估计值，具体的证明细节就不再探讨</u>）
+
+- 理解 SHAP Kernel
+
+  为了理解这个核函数，博客作者首先画了一下它的取值，如下图所示：
+
+  ![1_TqxlGgfg7Zx4K5CW3fvvjw](images/1_TqxlGgfg7Zx4K5CW3fvvjw.png)
+
+  可以看到，联盟中的特征很多或者很少时，联盟的权重相对更高；这造成的影响是，最后的回归模型对于小联盟或者大联盟的拟合想过更好；给出这一段的博客原文描述：
+
+  <img src="images/image-20210522152922044.png" alt="image-20210522152922044" style="zoom: 33%;" />
+
+- 理解 Kernel SHAP 方法（<u>是我个人的理解，谨慎参考</u>）
+
+  1. <u>Kernel SHAP 可解释方法，可以简单地认为是 LIME 方法的一个变种，因为我们是在 LIME 方法上对目标函数和样本权重公式做了相应的修改，最后还是拟合了一个线性回归模型；</u>
+  2. <u>但是，我认为这种方法可能并没有 LIME 方法来的好，因为**我可能更希望通过样本间的距离来赋值我的样本权重**；</u>
+  3. <u>Kernel SHAP 运行还是比较耗时，另外 Tree SHAP 在效率上得到了提高；</u>
+  4. :warning: <u>再讨论前面提到的是否训练了一个独立模型的问题，这边我觉得：如果这里采用的是一对多的映射函数的话，可以认为它训练了一个独立的模型（求期望）；如果这里采用的是一对一的映射函数的话，应该是没有训练独立的模型的；</u>
+
+#### Tree SHAP
 
 
 
 ### Links
 
 - 论文链接：[Lundberg S, Lee S I. A unified approach to interpreting model predictions[J]. arXiv preprint arXiv:1705.07874, 2017.](https://proceedings.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html)
-
+- 论文链接：[Consistent Individualized Feature Attribution for Tree Ensembles](Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.)
 - 论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
+- API 文档：https://shap.readthedocs.io/en/latest/
+- SHAP 简单入门博客：[SHAP：Python的可解释机器学习库](https://zhuanlan.zhihu.com/p/83412330)
 
 
 
