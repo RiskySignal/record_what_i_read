@@ -492,7 +492,40 @@
 
 #### Tree SHAP
 
+> 参考博客：[Complete SHAP tutorial for model explanation Part 4. TreeSHAP](https://summer-hu-92978.medium.com/complete-shap-tutorial-for-model-explanation-part-4-treeshap-322897c0462d)
+>
+> 
 
+##### Tree Prediction on Feature Missing Instance
+
+- 博客作者首先构造了一棵有 100 个训练样本、3 个特征（$x,y,z$）的决策树，如下图所示：
+
+  ![1_AejYpSEM48jC6s6a56SDQQ](images/1_AejYpSEM48jC6s6a56SDQQ.png)
+
+- 下面，我们来看 **如何根据该决策树得到 coalition（联盟）的预测值**：
+
+  - 如果我们关注联盟（$x=15$），根据决策树路径（$1\rightarrow 3\rightarrow 6$），得到节点 $6$，但是该节点并不是叶子节点，故我们没法根据节点 $6$ 获取联盟的预测值。所以我们需要根据它的子叶子节点（$12,13$），求得联盟的预测值：
+    $$
+    Prediction_{\{x=15\}} = 15*(10/30) + 10 * (20/30) = 350/30
+    $$
+
+  - 同理，我们关注联盟（$x=5$），我们需要根据节点 $4,5$ 的子叶子节点（$8,9,10,11$），求得联盟的预测值：
+    $$
+    Prediction_{\{x=5\}} = 10 * (15/60) + 20 * (5/60) + 5*(30/60) + 8*(10/60) = 480/60
+    $$
+
+  - 最后，我们关注联盟（$x=5,z=10$），我们会直接得到一个叶子节点（$9$），并且我们还需要根据节点 $5$ 的子叶子节点（$10, 11$），求得联盟的预测值：
+    $$
+    Prediction_{\{x=5,z=10\}} = 20 * (5/45) + 5 * (30/45) + 8*(10/45) = 330/45
+    $$
+
+- 有了联盟的预测值后，我们就可以 **计算边缘贡献**：
+  $$
+  MC_{z=10,\{x=5,z=10\}} = Prediction_{\{x=5,z=10\}} - Prediction_{\{x=5\}} = 480/60-330/45
+  $$
+  
+
+- 
 
 ### Links
 
