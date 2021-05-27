@@ -295,7 +295,7 @@
 
 ## SHAP - SHapley Additive exPlanation
 
-> SHAP 提出的是一种特征重要性的度量方式，在具体的使用上它可以结合已有的可解释性方法（LIME、GRAD 等）一起运行，所以该部分不仅仅只关注其中某篇论文，而是关注 SHAP 这个方法；
+> SHAP 提出的是一种特征重要性的度量方式，在具体的使用上它可以结合已有的可解释性方法（LIME、GRAD 、DeepLIFT等）一起运行，所以该部分不仅仅只关注其中某篇论文，而是关注 SHAP 这个方法；
 >
 > 因为 SHAP 实在是太难理解了，纯靠论文我实在是无法理解，所以下面我参考了大量网上的博客，如果有什么不清楚的地方，还是建议去读一读博客的原文和论文；
 
@@ -313,7 +313,7 @@
 
 ##### Game Theory and Machine Learning
 
-- Shapley Values，是一个博弈论的概念；
+- Shapley Values，是一个博弈论的概念，**SHAP 方法本质上还是算这个值**；
 
 - 博弈论中，涉及到 “Game”（游戏） 和 “Players”（玩家） 两个概念。这两个概念和我们要解决的“**模型可解释性**”问题的对应关系为：
 
@@ -475,11 +475,11 @@
 
 - 理解 SHAP Kernel
 
-  为了理解这个核函数，博客作者首先画了一下它的取值，如下图所示：
+  为了理解 SHAP Kernel 这个核函数，我们对比一下其和 LIME 原先使用的启发式核函数的区别，如下图所示：
 
-  ![1_TqxlGgfg7Zx4K5CW3fvvjw](images/1_TqxlGgfg7Zx4K5CW3fvvjw.png)
+  <img src="images/image-20210524150840780.png" alt="image-20210524150840780" style="zoom: 26%;" />
 
-  可以看到，联盟中的特征很多或者很少时，联盟的权重相对更高；这造成的影响是，最后的回归模型对于小联盟或者大联盟的拟合想过更好；给出这一段的博客原文描述：
+  可以看到，**原先的启发式核函数保持的联盟特征越多，其权重越大**；而 SHAP Kernel 中，**联盟中的特征很多或者很少时，联盟的权重相对更高**；这造成的影响是，最后的回归模型对于小联盟或者大联盟的拟合想过更好；给出这一段的博客原文描述：
 
   <img src="images/image-20210522152922044.png" alt="image-20210522152922044" style="zoom: 33%;" />
 
@@ -488,13 +488,14 @@
   1. <u>Kernel SHAP 可解释方法，可以简单地认为是 LIME 方法的一个变种，因为我们是在 LIME 方法上对目标函数和样本权重公式做了相应的修改，最后还是拟合了一个线性回归模型；</u>
   2. <u>但是，我认为这种方法可能并没有 LIME 方法来的好，因为**我可能更希望通过样本间的距离来赋值我的样本权重**；</u>
   3. <u>Kernel SHAP 运行还是比较耗时，另外 Tree SHAP 在效率上得到了提高；</u>
-  4. :warning: <u>再讨论前面提到的是否训练了一个独立模型的问题，这边我觉得：如果这里采用的是一对多的映射函数的话，可以认为它训练了一个独立的模型（求期望）；如果这里采用的是一对一的映射函数的话，应该是没有训练独立的模型的；</u>
+  4. :question: <u>再讨论前面提到的是否训练了一个独立模型的问题，这边我觉得：这边用的是线性模型，直接求平均值；</u>
+  5. :question: <font color=red><u>Kernel SHAP 和已有的 Shapley Values 算法的区别是什么？</u></font>
 
 #### Tree SHAP
 
 > 参考博客：[Complete SHAP tutorial for model explanation Part 4. TreeSHAP](https://summer-hu-92978.medium.com/complete-shap-tutorial-for-model-explanation-part-4-treeshap-322897c0462d)
 >
-> 
+> 参考博客：[SHAP 知识点全汇总](https://zhuanlan.zhihu.com/p/85791430) （<u>因为不太看得懂，故仅参考了 TREE SHAP 算法复杂度一段</u>）
 
 ##### Tree Prediction on Feature Missing Instance
 
@@ -524,8 +525,15 @@
   MC_{z=10,\{x=5,z=10\}} = Prediction_{\{x=5,z=10\}} - Prediction_{\{x=5\}} = 480/60-330/45
   $$
   
+- 算法复杂度
 
-- 
+  如果采用上述方法来 **查询联盟的预测值** 的话，显然时间复杂度为树的深度 $O(L)$，因为这里我们可能会用到随机森林等算法，所以时间复杂度 $O(TL)$，其中 $T$ 为树的数量；集合中共有 $2^M$ 个联盟，所以**计算 SHAP 值的时间复杂度**为 $O(TL\cdot 2^M)$，可以看到这个复杂度和特征的数量指数相关；
+
+  ⭐ 为了解决算法复杂度问题，论文 ”[Consistent Individualized Feature Attribution for Tree Ensembles](Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.)“ 提出算法使得该时间复杂度降低到 $O(TLD^2)$，当树为一颗平衡二叉树时 $D=\log L$；
+
+#### Evaluation
+
+#### Implementation
 
 ### Links
 
@@ -533,7 +541,7 @@
 - 论文链接：[Consistent Individualized Feature Attribution for Tree Ensembles](Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.)
 - 论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
 - API 文档：https://shap.readthedocs.io/en/latest/
-- SHAP 简单入门博客：[SHAP：Python的可解释机器学习库](https://zhuanlan.zhihu.com/p/83412330)
+- SHAP 简单入门博客：[SHAP：Python 的可解释机器学习库](https://zhuanlan.zhihu.com/p/83412330)
 
 
 

@@ -53,6 +53,7 @@
 24. K. Rajaratnam, K. Shah, and J. Kalita, “Isolated and ensemble audio preprocessing methods for detecting adversarial examples against automatic speech recognition,” in Conference on Computational Linguistics and Speech Processing (ROCLING), 2018
 25. Universal adversarial perturbations for speech recognition systems
 26. On evaluating adversarial robustness. 
+27. Towards Query-Efficient Adversarial Attacks Against Automatic Speech Recognition Systems
 
 
 

@@ -616,6 +616,97 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
+## Spatially Transformed Adversarial Examples
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Xiao C, Zhu J Y, Li B, et al. Spatially transformed adversarial examples[J]. arXiv preprint arXiv:1801.02612, 2018.](https://arxiv.org/abs/1801.02612)
+
+
+
+
+
+## Constructing Unrestricted Adversarial Examples with Generative Models
+
+### Contribution
+
+1. 使用 AC-GAN 来生成对抗样本；
+2. 方法比较简单，生成的对抗样本中可能存在不太自然的样本，并且作者只在比较简单的数据集上面进行测试，可能在更加复杂的数据集上面并不能实现这样的效果；
+
+### Notes
+
+1. Unrestricted Adversarial Examples：首先看一下什么是 ”**无限制的对抗样本**“（<u>这个不能缩写成 UAE，因为 UAE 是通用对抗样本的简称；</u>）；
+
+   - Perturbation-based Adversarial Examples：传统的对抗样本的生成，都是在一张已有图片的基础上，添加一个小于 $||\epsilon||_p$ 的扰动，使得图片被网络错误识别，原文描述如下；
+
+     <img src="pictures/image-20210527101211704.png" alt="image-20210527101211704" style="zoom: 43%;" />
+
+   - ⭐ **Unrestricted Adversarial Examples**：”无限制的对抗样本“在这篇文章中的表现形式是，没有原始图片作为基础，直接生成对抗样本，即没有 $||\epsilon||_p$ 来比较扰动的大小，原文描述如下；
+
+     <img src="pictures/image-20210527101439951.png" alt="image-20210527101439951" style="zoom:50%;" />
+
+2. 论文核心方法：使用一个 **AC-GAN** ，先学习目标分类样本的分布，然后在学习到的样本分布中寻找对抗样本；
+
+   - Auxiliary Classifier GAN（AC-GAN）：是一个条件 GAN，他的生成器的优化目标如下所示
+
+     <img src="pictures/image-20210527102033177.png" alt="image-20210527102033177" style="zoom:40%;" />
+
+     它的判别器的优化目标如下所示
+
+     <img src="pictures/image-20210527102102973.png" alt="image-20210527102102973" style="zoom:40%;" />
+
+     模型逻辑架构图如下所述
+
+     <img src="pictures/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zNzk5MzI1MQ==,size_16,color_FFFFFF,t_70" alt="img" style="zoom: 25%;" />
+
+   - Basic Attack：目标攻击的 Loss 函数如下（<u>除了第一项，我觉得剩下的两项有一些多余，可能起的作用并不大</u>）
+
+     <img src="pictures/image-20210527102318558.png" alt="image-20210527102318558" style="zoom: 15%;" />
+
+     其中 $\mathcal{L_0}$ 保证对抗样本被错误分类为目标类
+
+     <img src="pictures/image-20210527102432954.png" alt="image-20210527102432954" style="zoom: 18%;" />
+
+     $\mathcal{L}_1$ 作为随机算子 $z$ 的正则化约束
+
+     <img src="pictures/image-20210527102535161.png" alt="image-20210527102535161" style="zoom:18%;" />
+
+     $\mathcal{L}_2$ 保证对抗样本被 AC-GAN 正确分类为目标类
+
+     <img src="pictures/image-20210527102646132.png" alt="image-20210527102646132" style="zoom:19%;" />
+
+   - Noise-augmented Attack：即在 Basic Attack 的基础上加上传统的 Perturbation Attack；（<u>有些多余，因为本身没什么创新型</u>）
+     $$
+     g_\theta(z,\tau,y;\ \epsilon_{attack}) \triangleq g_\theta (z,y) + \epsilon_{attack} \tanh(\tau)
+     $$
+
+3. 实验
+
+   - 有目标攻击的结果：存在不自然的样本；
+
+     ![image-20210527104410733](pictures/image-20210527104410733.png)
+
+   - 针对对抗训练后的模型的成功率：<u>我感觉像是生成模型放大了目标模型的梯度，从而使得能够更好地生成对抗样本</u>；
+
+     ![image-20210527104455906](pictures/image-20210527104455906.png)
+
+   - 对抗样本的迁移能力：
+
+     ![image-20210527104809146](pictures/image-20210527104809146.png)
+
+### Links
+
+- 论文链接：[Song Y, Shu R, Kushman N, et al. Constructing unrestricted adversarial examples with generative models[J]. arXiv preprint arXiv:1805.07894, 2018.](https://arxiv.org/abs/1805.07894?source=techstories.org)
+- 参考博客：[[生成对抗网络GAN入门指南]（9）ACGAN: Conditional Image Synthesis with Auxiliary Classifier GANs](https://blog.csdn.net/weixin_37993251/article/details/87260372)
+
+
+
+
+
 ## * Prior Convictions: Black-Box Adversarial Attacks with Bandits and Priors
 
 ### Contribution
@@ -890,6 +981,30 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Ilyas A, Santurkar S, Tsipras D, et al. Adversarial examples are not bugs, they are features[J]. arXiv preprint arXiv:1905.02175, 2019.](https://arxiv.org/abs/1905.02175)
 - 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>真的是翻译得很烂，看完不懂系列</u>）
+
+
+
+
+
+## Unrestricted Adversarial Examples via Semantic Manipulation
+
+### Contribution
+
+1. 文章提出两种比较自然的对抗样本生成算法：一种修改图片的颜色，另一种修改图片的纹理；
+2. 相较于[上一篇文章](#Constructing Unrestricted Adversarial Examples with Generative Models)，该文章针对的数据集更加复杂；
+
+### Notes
+
+1. 文章效果
+
+   <img src="pictures/image-20210526172447991.png" alt="image-20210526172447991" style="zoom: 50%;" />
+
+2. :question: <u>文章的原理不是特别好懂，有空从代码层面来分析一下</u>；
+
+### Links
+
+- 论文链接：[Bhattad A, Chong M J, Liang K, et al. Unrestricted adversarial examples via semantic manipulation[J]. arXiv preprint arXiv:1904.06347, 2019.](https://arxiv.org/abs/1904.06347)
+- 论文代码：[Unrestricted Adversarial Perturbations via Semantic Manipulation.](https://github.com/AI-secure/Big-but-Invisible-Adversarial-Attack)
 
 
 
