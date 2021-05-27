@@ -235,7 +235,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
    (7) 重要像素点优先迭代：作者虽然缩小了查询的特征空间（$32*32*3 \text{ for example}$），但是在这个空间中生成对抗样本还是需要花费大量的 Query 次数，并且不一定能够生成成功的对抗样本。大致的思想是**将图像切块，分块定义像素点被随机采样的概率，概率的大小和区域中像素值的变化大小成正相关**。作者给出了大致的采样概率变化示意图：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20201231105134731.png" alt="image-20201231105134731" style="zoom:55%;" />
+   ![image-20210527123510515](pictures/image-20210527123510515.png)
 
    作者指出在小的扰动空间时，并不采用这种优先采样算法；
 
@@ -376,7 +376,22 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
-## *Semantic Adversarial Examples
+## * Unrestricted Adversarial Examples
+
+### Contribution
+
+1. 和 [文章](#Constructing Unrestricted Adversarial Examples with Generative Models) 同时期提出了 Unrestricted Adversarial Examples 的概念，该文章没有投稿，只是提出了一个挑战，这之后出现了大量的（自然的）无限制的对抗样本生成方法；
+
+### Links
+
+- 论文链接：[Brown T B, Carlini N, Zhang C, et al. Unrestricted adversarial examples[J]. arXiv preprint arXiv:1809.08352, 2018.](https://arxiv.org/abs/1809.08352)
+- 项目链接：[Unrestricted Adversarial Examples Challenge](https://github.com/openphilanthropy/unrestricted-adversarial-examples)
+
+
+
+
+
+## * Semantic Adversarial Examples
 
 ### Contribution
 
@@ -409,13 +424,11 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
-## GENERATING NATURAL ADVERSARIAL EXAMPLES
+## Generating Natural Adversarial Examples
 
 ### Contribution
 
 ### Notes
-
-
 
 ### Links
 
@@ -569,11 +582,11 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
-## LaVAN: Localized and Visible Adversarial Noise
+## * LaVAN: Localized and Visible Adversarial Noise
 
 ### Contribution
 
-1. 相对于 Adversarial Patch 那篇文章，我觉得没有什么创新，只不过可能对实验部分做了更多的细化；
+1. 相比于 [Adversarial Patch 文章](#Adversarial Patch)，我觉得没有什么创新，只不过可能对实验部分做了更多的细化；
 
 ### Notes
 
@@ -634,8 +647,9 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 ### Contribution
 
-1. 使用 AC-GAN 来生成对抗样本；
-2. 方法比较简单，生成的对抗样本中可能存在不太自然的样本，并且作者只在比较简单的数据集上面进行测试，可能在更加复杂的数据集上面并不能实现这样的效果；
+1. 和 [文章](#Unrestricted Adversarial Examples) 几乎同时提出了 Unrestricted Adversarial Examples 这个概念；
+2. **使用 AC-GAN 来生成 Unrestricted Adversarial Examples**；
+3. 方法比较简单，生成的对抗样本中可能存在不太自然的样本，并且作者只在比较简单的数据集上面进行测试，可能在更加复杂的数据集上面并不能实现这样的效果；
 
 ### Notes
 
@@ -702,6 +716,7 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Song Y, Shu R, Kushman N, et al. Constructing unrestricted adversarial examples with generative models[J]. arXiv preprint arXiv:1805.07894, 2018.](https://arxiv.org/abs/1805.07894?source=techstories.org)
 - 参考博客：[[生成对抗网络GAN入门指南]（9）ACGAN: Conditional Image Synthesis with Auxiliary Classifier GANs](https://blog.csdn.net/weixin_37993251/article/details/87260372)
+- 代码链接：[Constructing Unrestricted Adversarial Examples with Generative Models](https://github.com/ermongroup/generative_adversary)
 
 
 
@@ -781,6 +796,93 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 > 公式上面，你看这个公式里面，$g_t$ 有个啥用啊？**离谱**！再看这个公式的错误，那个第 **6** 行？**离谱**！然后你看这个有目标攻击配合上loss梯度上升法（它的程序里面是对的）？**离谱**！关键是这个错误你再和 NES 文章的那个错误（有目标攻击配合上目标概率梯度下降法）对比一下，就完全是同样的错误啊？**离谱**（我看了半天没看懂，回 NES 发现是同样的错误，就在想不会是同一个作者吧，结果一看真的是同一个作者）！审稿意见一致好评通过？**离谱**！
 >
 > 以上就是一时生气，因为这几个问题，我把两篇文章的源码都去看了一遍，感觉很浪费读者的时间。
+
+
+
+
+
+## An Alternative Surrogate Loss for PGD-based Adversarial Testing
+
+### Contribution
+
+1. 提出了一种新的 MultiTargeted 攻击方法；
+
+### Notes
+
+1. 形式化 PGD 算法：
+
+   <img src="pictures/image-20210314101242146.png" alt="image-20210314101242146" style="zoom:50%;" />
+
+   这边可能影响 PGD 算法攻击性的 **因素** 有：重复执行的次数 $N_r$ ，计算梯度时使用的损失函数 $\hat{L}^{(r)}$，迭代优化器 $Opt$，噪声生成器 $SampleForm$，每轮的迭代次数 $K$，迭代的学习率 $a^{(k)}$。其中，$L$ 是用来判断对抗攻击是否成功的判别函数，对最终的结果没什么影响，可以用来控制迭代的次数，实现提早停止迭代的功能；
+
+2. MultiTargeted Attack：即在保证目标分类 $y$ 的概率上升的同时，让其他 $top-k$ 个分类的概率下降；
+
+   为了有比较作用，首先看一下 PGD 中常用的 `cross-entropy loss` 和 `margin loss`：
+
+   <img src="pictures/image-20210519212053856.png" alt="image-20210519212053856" style="zoom: 45%;" />
+
+   而作者使用的损失函数的公式如下：
+
+   <img src="pictures/image-20210314105144910.png" alt="image-20210314105144910" style="zoom: 24%;" />
+
+   对上面伪代码的 $2\sim3$ 行进行修改：
+
+   <img src="pictures/image-20210314105450355.png" alt="image-20210314105450355" style="zoom: 48%;" />
+
+   为了减小复杂性，可以把多目标限定在 $Top-K$ 中：
+
+   <img src="pictures/image-20210314110257234.png" alt="image-20210314110257234" style="zoom: 25%;" />
+
+3. 实验：
+
+   ![image-20210314111319387](pictures/image-20210314111319387.png)
+
+   - 首先可以看到，MultiTargeted 方法相比于 PGD（带有 restarts）是有效的，实验中当多目标 $K=5$ 时达到了最优状态；
+   - 过多的 restarts 次数对于 PGD 算法来说并不是特别有效（不过我理解的可能是每次 restart 时的随机噪声可能效果都相似，限制了 restarts 的发挥）；
+   - 每一个 restart 迭代更多的次数确实能够增强 PGD 的攻击性，但是可以看到这个增加的效果并不是特别明显；
+
+### Links
+
+- 论文链接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
+
+
+
+
+
+## Adversarial Examples Are Not Bugs, They Are Features
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Ilyas A, Santurkar S, Tsipras D, et al. Adversarial examples are not bugs, they are features[J]. arXiv preprint arXiv:1905.02175, 2019.](https://arxiv.org/abs/1905.02175)
+- 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>真的是翻译得很烂，看完不懂系列</u>）
+
+
+
+
+
+## Unrestricted Adversarial Examples via Semantic Manipulation
+
+### Contribution
+
+1. 文章提出两种比较自然的对抗样本生成算法：一种修改图片的颜色，另一种修改图片的纹理；
+2. 相较于[上一篇文章](#Constructing Unrestricted Adversarial Examples with Generative Models)，该文章针对的数据集更加复杂；
+
+### Notes
+
+1. 文章效果
+
+   <img src="pictures/image-20210526172447991.png" alt="image-20210526172447991" style="zoom: 50%;" />
+
+2. :question: <u>文章的原理不是特别好懂，有空从代码层面来分析一下</u>；
+
+### Links
+
+- 论文链接：[Bhattad A, Chong M J, Liang K, et al. Unrestricted adversarial examples via semantic manipulation[J]. arXiv preprint arXiv:1904.06347, 2019.](https://arxiv.org/abs/1904.06347)
+- 论文代码：[Unrestricted Adversarial Perturbations via Semantic Manipulation.](https://github.com/AI-secure/Big-but-Invisible-Adversarial-Attack)
 
 
 
@@ -918,93 +1020,6 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 ### Links
 
 - 论文链接：[Chiang P Y, Geiping J, Goldblum M, et al. Witchcraft: Efficient pgd attacks with random step size[C]//ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020: 3747-3751.](https://arxiv.org/abs/1911.07989)
-
-
-
-
-
-## An Alternative Surrogate Loss for PGD-based Adversarial Testing
-
-### Contribution
-
-1. 提出了一种新的 MultiTargeted 攻击方法；
-
-### Notes
-
-1. 形式化 PGD 算法：
-
-   <img src="pictures/image-20210314101242146.png" alt="image-20210314101242146" style="zoom:50%;" />
-
-   这边可能影响 PGD 算法攻击性的 **因素** 有：重复执行的次数 $N_r$ ，计算梯度时使用的损失函数 $\hat{L}^{(r)}$，迭代优化器 $Opt$，噪声生成器 $SampleForm$，每轮的迭代次数 $K$，迭代的学习率 $a^{(k)}$。其中，$L$ 是用来判断对抗攻击是否成功的判别函数，对最终的结果没什么影响，可以用来控制迭代的次数，实现提早停止迭代的功能；
-
-2. MultiTargeted Attack：即在保证目标分类 $y$ 的概率上升的同时，让其他 $top-k$ 个分类的概率下降；
-
-   为了有比较作用，首先看一下 PGD 中常用的 `cross-entropy loss` 和 `margin loss`：
-
-   <img src="pictures/image-20210519212053856.png" alt="image-20210519212053856" style="zoom: 45%;" />
-
-   而作者使用的损失函数的公式如下：
-
-   <img src="pictures/image-20210314105144910.png" alt="image-20210314105144910" style="zoom: 24%;" />
-
-   对上面伪代码的 $2\sim3$ 行进行修改：
-
-   <img src="pictures/image-20210314105450355.png" alt="image-20210314105450355" style="zoom: 48%;" />
-
-   为了减小复杂性，可以把多目标限定在 $Top-K$ 中：
-
-   <img src="pictures/image-20210314110257234.png" alt="image-20210314110257234" style="zoom: 25%;" />
-
-3. 实验：
-
-   ![image-20210314111319387](pictures/image-20210314111319387.png)
-
-   - 首先可以看到，MultiTargeted 方法相比于 PGD（带有 restarts）是有效的，实验中当多目标 $K=5$ 时达到了最优状态；
-   - 过多的 restarts 次数对于 PGD 算法来说并不是特别有效（不过我理解的可能是每次 restart 时的随机噪声可能效果都相似，限制了 restarts 的发挥）；
-   - 每一个 restart 迭代更多的次数确实能够增强 PGD 的攻击性，但是可以看到这个增加的效果并不是特别明显；
-
-### Links
-
-- 论文链接：[Gowal S, Uesato J, Qin C, et al. An alternative surrogate loss for pgd-based adversarial testing[J]. arXiv preprint arXiv:1910.09338, 2019.](https://arxiv.org/abs/1910.09338)
-
-
-
-
-
-## Adversarial Examples Are Not Bugs, They Are Features
-
-### Contribution
-
-### Notes
-
-### Links
-
-- 论文链接：[Ilyas A, Santurkar S, Tsipras D, et al. Adversarial examples are not bugs, they are features[J]. arXiv preprint arXiv:1905.02175, 2019.](https://arxiv.org/abs/1905.02175)
-- 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>真的是翻译得很烂，看完不懂系列</u>）
-
-
-
-
-
-## Unrestricted Adversarial Examples via Semantic Manipulation
-
-### Contribution
-
-1. 文章提出两种比较自然的对抗样本生成算法：一种修改图片的颜色，另一种修改图片的纹理；
-2. 相较于[上一篇文章](#Constructing Unrestricted Adversarial Examples with Generative Models)，该文章针对的数据集更加复杂；
-
-### Notes
-
-1. 文章效果
-
-   <img src="pictures/image-20210526172447991.png" alt="image-20210526172447991" style="zoom: 50%;" />
-
-2. :question: <u>文章的原理不是特别好懂，有空从代码层面来分析一下</u>；
-
-### Links
-
-- 论文链接：[Bhattad A, Chong M J, Liang K, et al. Unrestricted adversarial examples via semantic manipulation[J]. arXiv preprint arXiv:1904.06347, 2019.](https://arxiv.org/abs/1904.06347)
-- 论文代码：[Unrestricted Adversarial Perturbations via Semantic Manipulation.](https://github.com/AI-secure/Big-but-Invisible-Adversarial-Attack)
 
 
 

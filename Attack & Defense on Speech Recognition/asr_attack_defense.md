@@ -51,9 +51,8 @@
 22. Z. Yang, P. Y. Chen, B. Li, and D. Song, “Characterizing audio adversarial examples using temporal dependency,” in 7th International Conference on Learning Representations, ICLR, 2019.
 23. F. Tramer, N. Carlini, W. Brendel, and A. Madry, “On adaptive attacks to adversarial example defenses,” 2020
 24. K. Rajaratnam, K. Shah, and J. Kalita, “Isolated and ensemble audio preprocessing methods for detecting adversarial examples against automatic speech recognition,” in Conference on Computational Linguistics and Speech Processing (ROCLING), 2018
-25. Universal adversarial perturbations for speech recognition systems
 26. On evaluating adversarial robustness. 
-27. Towards Query-Efficient Adversarial Attacks Against Automatic Speech Recognition Systems
+26. Towards Query-Efficient Adversarial Attacks Against Automatic Speech Recognition Systems
 
 
 
