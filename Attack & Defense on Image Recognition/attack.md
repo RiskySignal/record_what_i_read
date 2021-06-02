@@ -853,12 +853,17 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 ### Contribution
 
-### Notes
+1. 为对抗样本的存在提供了一种合理的解释；
+2. Adversarial Vulnerability 是因为模型学到了数据当中有利于泛化，却十分敏感的特征所导致的；
+
+2. Useful Robust Feature 通常是我们常见的具有一定可解释性的特征，而 Useful Non-robust Feature 通常是那些范数很小，人眼难以识别的特征；
+3. 不同的分类器为学到相似的 Useful Non-robust Feature，从而使得对抗攻击具有迁移性；
 
 ### Links
 
 - 论文链接：[Ilyas A, Santurkar S, Tsipras D, et al. Adversarial examples are not bugs, they are features[J]. arXiv preprint arXiv:1905.02175, 2019.](https://arxiv.org/abs/1905.02175)
-- 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>真的是翻译得很烂，看完不懂系列</u>）
+- 参考链接：[Reddit 热议 MIT 新发现：对抗样本不是 bug，而是有意义的数据特征！](https://zhuanlan.zhihu.com/p/65225360)（👎 <u>看完不懂系列</u>）
+- 参考链接：[Adversarial Example Are Not Bug,They are Feature.](https://zhuanlan.zhihu.com/p/325632538)
 
 
 
