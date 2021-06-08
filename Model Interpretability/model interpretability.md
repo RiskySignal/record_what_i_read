@@ -159,11 +159,11 @@
 
 ### Contributes
 
-1. 在一定程度上去除 Grad 方法中的噪声;
+1. 尝试解决梯度可解释性方法中存在的 **梯度饱和问题**，在一定程度上去除 Grad 方法中的噪声;
 
 ### Notes
 
-1. 已有的基于梯度的算法能够得到一个重要性关联的图, 但是带有很多的噪点, 即直接计算梯度, 会出现梯度饱和的问题 (在当前图中, 羊的特征对当前的分类概率影响不大, 因为它的分类结果可能已经是0.999了)
+1. 已有的基于梯度的算法能够得到一个重要性关联的图, 但是带有很多的噪点, 即直接计算梯度, 会出现 **梯度饱和的问题** (在当前图中, 羊的特征对当前的分类概率影响不大, 因为它的分类结果可能已经是0.999了)
 
    <img src="images/image-20201210234923895.png" alt="image-20201210234923895" style="zoom: 22%;" />
 
@@ -198,6 +198,61 @@
 - 论文主页: https://pair-code.github.io/saliency/
 - Pytorch 实现: [pytorch-smoothgrad](https://github.com/hs2k/pytorch-smoothgrad)
 - Tensorflow 实现 (论文源码): [saliency](https://github.com/PAIR-code/saliency)
+
+
+
+
+
+## Axiomatic Attribution for Deep Networks
+
+### Contribution
+
+1. 提出了一种基于梯度积分的可解释性方法；
+2. 从效果上来看可以在一定程度上解决部分噪点（<u>我认为是一种 **梯度饱和问题**</u>）；
+
+### Notes
+
+1. 首先简单看下文章在图像分类模型上的效果：
+
+   <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608204800590.png" alt="image-20210608204800590" style="zoom: 67%;" />
+
+   <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608204917615.png" alt="image-20210608204917615" style="zoom:67%;" />
+
+   <u>可以看到，作者的方法能够在一定程度上更好地标出更加具体的特征</u>；
+
+2. 两条公理（Axioms）：作者希望正确的可解释性方法应该至少满足这两条公理
+
+   - **Sensitivity**：如果目标样本和基线样本（Baseline，使得目标分类概率为 $0$ 的样本，本文中用的是全 $0$ 向量），如果只有一个特征不一样，导致了两个样本的分类不同，那么这个特征应该被赋予权重；（<u>梯度和反卷积的方法不满足这一点</u>）
+   - **Implementation Invariance**：可解释性方法不应该受到网络内部结构的影响；（<u>LRP 和 DeepLift 方法不满足这一点</u>）
+
+3. Integrated Gradients：梯度积分可解释性方法
+
+   - 理论公式：
+
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608210829960.png" alt="image-20210608210829960" style="zoom: 33%;" />
+
+     这里，后半个公式比较好理解，即为对梯度值的积分；而前面这一项，主要是为了使得公式满足 Completeness：
+
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213350675.png" alt="image-20210608213350675" style="zoom: 33%;" />
+
+     用数学公式表达：
+
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213509140.png" alt="image-20210608213509140" style="zoom:33%;" />
+
+     对于上式的数学证明（参考链接中的博客）：
+
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213915929.png" alt="image-20210608213915929" style="zoom: 50%;" />
+
+   - 具体实现：用等分来近似计算积分
+
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608214019402.png" alt="image-20210608214019402" style="zoom: 25%;" />
+
+### Links
+
+- 论文链接：[Sundararajan M, Taly A, Yan Q. Axiomatic attribution for deep networks[C]//International Conference on Machine Learning. PMLR, 2017: 3319-3328.](https://arxiv.org/pdf/1703.01365.pdf)
+
+- 参考博客：[论文笔记：Axiomatic Attribution for Deep Networks](http://weichengan.com/2020/12/05/paper_notes/Axiomatic_Attribution_for_Deep_Networks/)
+- 论文代码：[Integrated Gradients](https://github.com/ankurtaly/Integrated-Gradients)
 
 
 
@@ -301,6 +356,7 @@
 
 ### Contribution
 
+- 给出了一种具有理论保证的黑盒模型可解释性方法；
 
 
 ### Notes
@@ -337,16 +393,16 @@
 
   其中，每个节点代表一个 **特征联盟**（A coalition of features），每一条边表示（上面的特征联盟中）**不存在的特征**。$f$ 指的是某个特征联盟中特征的数量，$F$ 指的是全部特征的数量。
 
-  ⭐**SHAP 在解释模型时，需要为每个特征联盟训练一个独立的预测模型**，即在这里，SHAP 需要训练 $2^F=8$ 个模型（这些模型的架构、超参数的设定和他们的训练数据都是一致的，唯一不同的是他们考虑的特征是不一样的）。作者举例，我们已经训练得到了 $8$ 个独立的预测模型，他们对某个输入 $x_0$ 在模型中的输出值都做了相应的预测，如下图所示：
+  ⭐**SHAP 在解释模型时，需要为每个特征联盟训练一个 <font color=red>独立的预测模型</font>**，即在这里，SHAP 需要训练 $2^F=8$ 个模型（这些模型的架构、超参数的设定和他们的训练数据都是一致的，唯一不同的是他们考虑的特征是不一样的）。作者举例，我们已经训练得到了 $8$ 个独立的预测模型，他们对某个输入 $x_0$ 在模型中的输出值都做了相应的预测，如下图所示：
 
   <img src="images/1_9oHGJ9kAMaUUEYtnfKKKEA.png" alt="1_9oHGJ9kAMaUUEYtnfKKKEA" style="zoom:80%;" />
 
-  :warning: 一个可能存在的误区，先列出我们存在的两种不同的观点：
+  :warning: 针对上面的 <font color=red>独立的预测模型</font>，列出可能存在的两种不同观点：
 
-  - <font color=red>（错误）对于每个节点，采用的是原始的我们要解释的模型，而不需要对每个节点训练一个模型</font>；
-  - <font color=green>（正确）对于每个节点，需要用相同的方法训练一个独立的模型</font>；
+  - 对于每个节点，采用的是原始的我们要解释的模型，而不需要对每个节点训练一个模型；
+  - **对于每个节点，需要用相同的方法训练一个独立的模型**；
 
-  这里正确的是第二个观点，之所以会产生第一种错误的观点，是把 $Predict_{\varnothing}$ 当成了把所有特征取 $0$，而正确的理解应该是 $Predict_{\varnothing}$ 指的是每个特征都可以取任何值；
+  <u>以上两种观点，我认为第二个是正确的；但是当 SHAP 和其他可解释方法相结合时，可以简化这个过程（即可以不再单独训练每个模型）；</u>
 
 ##### Marginal Contributions of a Feature
 
@@ -488,8 +544,62 @@
   1. <u>Kernel SHAP 可解释方法，可以简单地认为是 LIME 方法的一个变种，因为我们是在 LIME 方法上对目标函数和样本权重公式做了相应的修改，最后还是拟合了一个线性回归模型；</u>
   2. <u>但是，我认为这种方法可能并没有 LIME 方法来的好，因为**我可能更希望通过样本间的距离来赋值我的样本权重**；</u>
   3. <u>Kernel SHAP 运行还是比较耗时，另外 Tree SHAP 在效率上得到了提高；</u>
-  4. :question: <u>再讨论前面提到的是否训练了一个独立模型的问题，这边我觉得：这边用的是线性模型，直接求平均值；</u>
-  5. :question: <font color=red><u>Kernel SHAP 和已有的 Shapley Values 算法的区别是什么？</u></font>
+  4. :question: <font color=red><u>Kernel SHAP 和已有的 Shapley Values 算法的区别是什么？是可以不再独立计算每一个联盟模型了吗？</u></font>
+
+- 代码理解：
+
+  代码库：https://github.com/slundberg/shap
+
+  Debug 的脚本：[ImageNet VGG16 Model with Keras](https://slundberg.github.io/shap/notebooks/ImageNet%20VGG16%20Model%20with%20Keras.html)
+
+  首先，简单讲一下这个脚本的逻辑：
+
+  ```python
+  # 首先，我们获取一张图片
+  file = "dataset/ILSVRC2012_val_00001419.JPEG"
+  img = image.load_img(file, target_size=(224, 224))
+  img_orig = image.img_to_array(img)
+  # 然后，我们用 skimage.segmentation 库对图片进行像素块划分
+  segments_slic = slic(img, n_segments=50, compactness=30, sigma=3)
+  # 加载一个 keras 中预训练的 VGG16 模型
+  model = VGG16()
+  # 对模型的预测进行简单的包装，即我们在解释模型结果的过程中，是针对像素块的0/1问题，如果是0，那就像素全部置为白色255；如果是1，就保留原来的像素值
+  def mask_image(zs, segmentation, image, background=None):
+      if background is None:
+          background = image.mean((0, 1))
+      out = np.zeros((zs.shape[0], image.shape[0], image.shape[1], image.shape[2]))
+      for i in range(zs.shape[0]):
+          out[i, :, :, :] = image
+          for j in range(zs.shape[1]):
+              if zs[i, j] == 0:
+                  out[i][segmentation == j, :] = background
+      return out
+  def f(z):
+      return model.predict(preprocess_input(mask_image(z, segments_slic, img_orig, 255)))
+  # 使用可解释方法对其进行解释
+  explainer = shap.KernelExplainer(f, np.zeros((1, 50)))
+  shap_values = explainer.shap_values(np.ones((1, 50)), nsamples=1000)  # runs VGG16 1000 times
+  ```
+
+  然后，讲一下 `KernelExplainer` 部分的核心代码，在文件 `_kernel.py` 中：
+
+  ```python
+  # 主要看 explain 函数
+  # 首先确定每个样本的权重，即 SHAP Kernel
+  num_subset_sizes = np.int(np.ceil((self.M - 1) / 2.0))
+  num_paired_subset_sizes = np.int(np.floor((self.M - 1) / 2.0))
+  weight_vector = np.array([(self.M - 1.0) / (i * (self.M - i)) for i in range(1, num_subset_sizes + 1)])
+  weight_vector[:num_paired_subset_sizes] *= 2
+  weight_vector /= np.sum(weight_vector)
+  # 然后如果足够采样一对对称（特征110和001为对称）的联盟样本时，则根据上面的概率进行全采样
+  for subset_size in range(1, num_subset_sizes + 1):
+      ... ...
+  # 当无法进行全采样时，则根据相同的概率对样本进行采样
+  while samples_left > 0 and ind_set_pos < len(ind_set):
+      ... ...
+  # 然后调用 LIME 算法
+  self.run()
+  ```
 
 #### Tree SHAP
 
@@ -533,12 +643,10 @@
 
 #### Evaluation
 
-#### Implementation
-
 ### Links
 
 - 论文链接：[Lundberg S, Lee S I. A unified approach to interpreting model predictions[J]. arXiv preprint arXiv:1705.07874, 2017.](https://proceedings.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html)
-- 论文链接：[Consistent Individualized Feature Attribution for Tree Ensembles](Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.)
+- 论文链接：[Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.](https://arxiv.org/abs/1802.03888)
 - 论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
 - API 文档：https://shap.readthedocs.io/en/latest/
 - SHAP 简单入门博客：[SHAP：Python 的可解释机器学习库](https://zhuanlan.zhihu.com/p/83412330)
