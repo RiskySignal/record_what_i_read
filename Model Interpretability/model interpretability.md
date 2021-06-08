@@ -231,7 +231,7 @@
 
      <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608210829960.png" alt="image-20210608210829960" style="zoom: 33%;" />
 
-     这里，后半个公式比较好理解，即为对梯度值的积分；而前面这一项，主要是为了使得公式满足 Completeness：
+     该公式满足 Completeness：
 
      <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213350675.png" alt="image-20210608213350675" style="zoom: 33%;" />
 
@@ -241,7 +241,7 @@
 
      对于上式的数学证明（参考链接中的博客）：
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213915929.png" alt="image-20210608213915929" style="zoom: 50%;" />
+     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213915929.png" alt="image-20210608213915929" style="zoom: 40%;" />
 
    - 具体实现：用等分来近似计算积分
 
@@ -356,7 +356,8 @@
 
 ### Contribution
 
-- 给出了一种具有理论保证的黑盒模型可解释性方法；
+- 给出了一种具有理论（Shapley）保证的黑盒模型可解释性方法；
+- 统一了已有的集中可解释性方法；
 
 
 ### Notes
@@ -601,6 +602,76 @@
   self.run()
   ```
 
+#### Gradient SHAP
+
+- 原论文中，作者并没有提到 Gradient SHAP 这种方法，但是在代码中有这个方法，我们从[ Captum 库中的介绍](https://captum.ai/api/gradient_shap.html)中来大概理解一下这个方法：
+
+  <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608215929465.png" alt="image-20210608215929465" style="zoom:50%;" />
+
+  再看看 [Shap 库中的介绍](https://github.com/slundberg/shap)：
+
+  <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608220130266.png" alt="image-20210608220130266" style="zoom:50%;" />
+
+  <u>大概可以理解为：**用 [Integrated Gradients](#Axiomatic Attribution for Deep Networks) 和 [SmoothGrad](#SmoothGrad: removing noise by adding noise) 方法结合，通过拟合梯度的期望值来近似计算 Shapley Value**.</u>
+
+- 代码理解：
+
+  代码库：https://github.com/slundberg/shap
+
+  Debug 的脚本：[Explain an Intermediate Layer of VGG16 on ImageNet](https://slundberg.github.io/shap/notebooks/gradient_explainer/Explain%20an%20Intermediate%20Layer%20of%20VGG16%20on%20ImageNet.html)
+
+  同样，看一下这个脚本的逻辑：
+
+  ```python
+  # 加载VGG16模型
+  model = VGG16(weights='imagenet', include_top=True)
+  # 加载一个background数据集，这个数据集要被用来进行随机采样
+  X,y = shap.datasets.imagenet50()
+  # 选择要进行解释的两个样本
+  to_explain = X[[39,41]]
+  # 定义了一个获取第layer层输入的函数
+  def map2layer(x, layer):
+      feed_dict = dict(zip([model.layers[0].input], [preprocess_input(x.copy())]))
+      return K.get_session().run(model.layers[layer].input, feed_dict)
+  # 实例化一个解释器
+  e = shap.GradientExplainer(
+      model=(model.layers[7].input, model.layers[-1].output),  # 因为这里是keras模型，所以用这种形式传入模型，这里是想解释第7层的特征重要性
+      data=map2layer(preprocess_input(X.copy()), 7)  # 可以看到，这里把background数据集的第7层的输入全部传入了解释其中，供后面进行采样
+  )
+  # 对两个样本进行解释
+  shap_values,indexes = e.shap_values(map2layer(to_explain, 7), ranked_outputs=2)
+  ```
+
+  然后，讲一下 `GradientExplainer` 的核心代码，在 `_gradient.py` 文件中：
+
+  ```python
+  # 主要看 _TFGradient.shap_values 方法，代码从250行开始是关键
+  # 采样n个样本点
+  for k in range(nsamples):
+      rind = np.random.choice(self.data[0].shape[0])
+      t = np.random.uniform()
+      for l in range(len(X)):
+          if self.local_smoothing > 0:
+              x = X[l][j] + np.random.randn(*X[l][j].shape) * self.local_smoothing  # 可以看到 SmoothGrad 的影子，在原样本点上添加扰动
+          else:
+              x = X[l][j]
+          samples_input[l][k] = t * x + (1 - t) * self.data[l][rind]  # 可以看到 Integrated Gradient 的影子，在background数据集中随机找一个点，然后在两个样本点之间随机选择一个点作为采样点
+          samples_delta[l][k] = x - self.data[l][rind]  # 这里，可以说是权重，也可以说是 integrated Gradient 方法积分公式的第一项
+  
+  # 针对要解释的目标分类计算梯度值
+  find = model_output_ranks[j,i]
+  grads = []
+  for b in range(0, nsamples, self.batch_size):
+      batch = [samples_input[l][b:min(b+self.batch_size,nsamples)] for l in range(len(X))]
+      grads.append(self.run(self.gradient(find), self.model_inputs, batch))
+  grad = [np.concatenate([g[l] for g in grads], 0) for l in range(len(X))]
+  # 相乘求期望即可
+  for l in range(len(X)):
+      samples = grad[l] * samples_delta[l]
+      phis[l][j] = samples.mean(0)
+      phi_vars[l][j] = samples.var(0) / np.sqrt(samples.shape[0]) # estimate variance of means
+  ```
+
 #### Tree SHAP
 
 > 参考博客：[Complete SHAP tutorial for model explanation Part 4. TreeSHAP](https://summer-hu-92978.medium.com/complete-shap-tutorial-for-model-explanation-part-4-treeshap-322897c0462d)
@@ -641,13 +712,12 @@
 
   ⭐ 为了解决算法复杂度问题，论文 ”[Consistent Individualized Feature Attribution for Tree Ensembles](Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.)“ 提出算法使得该时间复杂度降低到 $O(TLD^2)$，当树为一颗平衡二叉树时 $D=\log L$；
 
-#### Evaluation
-
 ### Links
 
 - 论文链接：[Lundberg S, Lee S I. A unified approach to interpreting model predictions[J]. arXiv preprint arXiv:1705.07874, 2017.](https://proceedings.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html)
 - 论文链接：[Lundberg S M, Erion G G, Lee S I. Consistent individualized feature attribution for tree ensembles[J]. arXiv preprint arXiv:1802.03888, 2018.](https://arxiv.org/abs/1802.03888)
-- 论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
+- 原作者论文代码：[slundberg/shap: A game theoretic approach to explain the output of any machine learning model. (github.com)](https://github.com/slundberg/shap)
+- Pytorch-Captum 库代码：https://github.com/pytorch/captum
 - API 文档：https://shap.readthedocs.io/en/latest/
 - SHAP 简单入门博客：[SHAP：Python 的可解释机器学习库](https://zhuanlan.zhihu.com/p/83412330)
 
