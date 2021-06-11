@@ -892,6 +892,48 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
+## On Physical Adversarial Patches for Object Detection
+
+### Contribution
+
+1. 实现了在物理世界上，在目标之外添加 Patch 使得目标无法被识别的针对目标检测系统的对抗攻击；
+
+### Notes
+
+1. 作者攻击的模型是 $YOLO-V3$，最终生成的 Patch：
+
+   <img src="pictures/image-20210612001229134.png" alt="image-20210612001229134" style="zoom: 25%;" />
+
+2. 最终实现的效果：可以看到，patch 占据的空间大概为图像的 $1/4$ ，能够让模型无法识别相应的实体，甚至作者还在运动的过程中进行了测试；
+
+   <img src="pictures/image-20210612001744535.png" alt="image-20210612001744535" style="zoom:50%;" />
+
+3. 文章方法：主要目的是生成一个通用的不覆盖目标的对抗扰动，所以目标函数如下
+
+   <img src="pictures/image-20210612003456219.png" alt="image-20210612003456219" style="zoom: 20%;" />
+
+   其中，$h_\theta()$ 表示模型预测函数，$\mathcal{D}$ 为模型的输入样本分布，$\mathcal{T}$ 为各种图像转换函数（文章中提到的，用了旋转、平移、放缩、修改亮度），$\delta$ 为要打上去的 patch，$A()$ 表示把 patch 经过 $t$  转换函数后打在图片上；
+
+   为了进行比较，作者列出了 DPatch 工作的迭代算法，如下：
+
+   <img src="pictures/image-20210612004538269.png" alt="image-20210612004538269" style="zoom: 15%;" />
+
+   可以看到 DPatch 实现的是一种有目标对抗攻击，并且它是在数字世界进行攻击的，所以效果比较差，也无法实现真实的物理攻击；
+
+   作者给出了他们的迭代算法，如下：
+
+   <img src="pictures/image-20210612004743535.png" alt="image-20210612004743535" style="zoom:25%;" />
+
+   即为一种采取截断的无目标攻击算法；
+
+### Links
+
+- 论文链接：[Lee M, Kolter Z. On physical adversarial patches for object detection[J]. arXiv preprint arXiv:1906.11897, 2019.](https://arxiv.org/abs/1906.11897)
+
+
+
+
+
 ## Hybrid Batch Attacks: Finding Black-box Adversarial Examples with Limited Queries
 
 ### Contribution
