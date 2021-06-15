@@ -903,6 +903,65 @@
 
 
 
+## Deep Learning for Case-Based Reasoning through Prototypes: A Neural Network that Explains Its Predictions
+
+### Contribution
+
+1. 通过原型（Prototypes）学习，来实现可自解释的模型；
+
+### Notes
+
+1. 文章方法
+
+   首先看一下整个 **模型的框架图**：可以看到这个模型可以分为编码器（用来把图像编码到低维超平面）、解码器（用来把低维超平面向量解码为图像）和原型分类网络（在低维超平面上进行自解释和分类任务）
+
+   <img src="images/image-20210615164352683.png" alt="image-20210615164352683" style="zoom: 50%;" />
+
+   **编码器** $f:\mathbb{R}^p \rightarrow \mathbb{R}^q$，把高维的图片向量编码为低维的超平面向量，主要是为了减少原型分类网络的输入维度，利于网络收敛；（:question: <u>这里是否应该讨论一下不同的低维空间对最后结果的影响？</u>）
+
+   **解码器** $g:\mathbb{R}^q \rightarrow \mathbb{R}^p$，把低维的超平面向量解码为高维的图片向量，主要是为了可以可视化原型分类网络学到的各个原型；
+
+   **原型分类网络** $h:\mathbb{R}^q \rightarrow \mathbb{R}^K$，把低维的超平面向量分类为目标的 $K$ 类；这里比较特殊的是其中的原型层（Prototypes Layer），原型层中包含 $m$ 个原型向量 $p_1,p_2,\dots,p_m \in \mathbb{R}^q$，模型学习完后通过可视化层后可以看到每个原型都可能学习到了其中一类分类的特征，原型层的输出是一个 $L_2$ 距离向量，具体公式如下：
+
+   <img src="images/image-20210615171725435.png" alt="image-20210615171725435" style="zoom: 27%;" />
+
+   **损失函数** 的设计：
+
+   - **保证模型分类的准确性**，使用交叉熵损失函数：
+
+     <img src="images/image-20210615173129123.png" alt="image-20210615173129123" style="zoom: 25%;" />
+
+   - **保证编码器解码器的重构误差**，使用 $L_2$ 距离损失函数：
+
+     <img src="images/image-20210615174233936.png" alt="image-20210615174233936" style="zoom:20%;" />
+
+   - **保证模型的自解释性**，使用两个 $L_2$ 正则化项：
+
+     <img src="images/image-20210615174416126.png" alt="image-20210615174416126" style="zoom:25%;" />
+
+     其中，第一项用来 **保证每个输入都能和至少一个原型对应**；第二项用来 **保证每个原型都能和至少一个输入对应**。
+
+   - 整体损失函数如下：
+
+     <img src="images/image-20210615174704948.png" alt="image-20210615174704948" style="zoom:25%;" />
+
+2. 实验：Handwritten Digits
+
+   - 原任务的精度：在 MNIST 测试集上的精度为 $99.22%$；（:question: <u>作者直接用了 $15$ 个原型进行训练，并没有讨论原型个数对最后结果的影响</u>）
+
+   - 可视化学习到的原型：可以看到和真实的手写数字非常的相近；
+
+     <img src="images/image-20210615175627428.png" alt="image-20210615175627428" style="zoom: 25%;" />
+
+### Links
+
+- 论文链接：[Li O, Liu H, Chen C, et al. Deep learning for case-based reasoning through prototypes: A neural network that explains its predictions[C]//Proceedings of the AAAI Conference on Artificial Intelligence. 2018, 32(1).](https://arxiv.org/abs/1710.04806)
+- 论文代码：[PrototypeDNN]([OscarcarLi/PrototypeDL: Codebase for "Deep Learning for Case-based Reasoning through Prototypes: A Neural Network that Explains Its Predictions" (to appear in AAAI 2018) (github.com)](https://github.com/OscarcarLi/PrototypeDL))
+
+
+
+
+
 ## 机器学习模型可解释性方法、应用与安全研究综述
 
 ### Notes
