@@ -903,6 +903,20 @@
 
 
 
+## Robust Classification with Convolutional Prototype Learning
+
+### Contribution
+
+- 提出了基于原型学习的图像分类网络，是 [文章](#Deep Learning for Case-Based Reasoning through Prototypes: A Neural Network that Explains Its Predictions) 的前身；
+
+### Links
+
+- 论文链接：[Yang H M, Zhang X Y, Yin F, et al. Robust classification with convolutional prototype learning[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2018: 3474-3482.](https://arxiv.org/pdf/1805.03438.pdf)
+
+
+
+
+
 ## Deep Learning for Case-Based Reasoning through Prototypes: A Neural Network that Explains Its Predictions
 
 ### Contribution
