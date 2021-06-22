@@ -73,3 +73,16 @@ RuntimeError: one of the variables needed for gradient computation has been modi
 **RELU 单元**：Relu 单元中存在 In-place 操作，但是我的问题并不是出现在这个地方，参考链接 https://blog.csdn.net/manmanking/article/details/104830822；
 
 我在自定义 RNN 前向后向传播的过程中，对于 `hidden_state` 做了一个 In-place 操作，所以导致了错误；
+
+#### Pytorch 模型中的 Parameter 和 Buffer 问题
+
+主要参考知乎大佬 [Pytorch模型中的parameter与buffer](https://zhuanlan.zhihu.com/p/89442276)，总结如下：
+
+- 模型中需要进行更新的参数注册为 Parameter，不需要进行更新的参数注册为 Buffer；
+- 以上两种方式注册的参数，均会出现在 `model.state_dict()` 返回的 `OrderDict` 中；
+- 训练模型时，`Optimizer` 只会对 Parameter 参数进行更新；
+- 使用 `Buffer` 的形式存储部分参数，有利于代码的可阅读性，不需要过多思考 `tensor.require_grads` 问题，并且在模型的保存和读取过程中、设备的转移（`.cpu()`）过程中自动进行转换、读取和保存；
+
+#### Pytorch 数据加载时间分析
+
+主要参考知乎大佬 [Pytorch数据加载的分析](https://zhuanlan.zhihu.com/p/100762487)，总结：明显耗时的操作主要发生在数据读取和数据增强部分；

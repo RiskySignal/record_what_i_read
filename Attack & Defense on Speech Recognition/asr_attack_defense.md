@@ -76,9 +76,9 @@
 
    (1) 声压变化：**麦克风采集空气的声压变化，将声音转换成数字信号**。[【文章】](#Laser-Based Audio Injection on Voice-Controllable Systems)通过 **激光** 攻击麦克风的采集过程；
 
-   (2) 振动：虽然理论上麦克风采集的时空气的声压变化，但实际上**它对于振动也是敏感的**。[【文章】](#Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations)通过 **振动** 来攻击麦克风的采集过程;
+   (2) 振动：虽然理论上麦克风采集的时空气的声压变化，但实际上**它对于振动也是敏感的**。[【文章】](#Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations)通过 **振动** 来攻击麦克风的采集过程；
 
-   (3) 调制/解调: 麦克风存在非线性的特点, 采集过程中会将高频信号中携带的低频信号给解调出来, 现有工作通过 高频信号调制解调的方法 来进行攻击, 后有工作在它的基础上增强了攻击的鲁棒性;
+   (3) 调制/解调: 麦克风存在非线性的特点, 采集过程中会将高频信号中携带的低频信号给解调出来, 先有 [工作](#DolphinAttack: Inaudible voice commands) 通过 高频信号调制解调的方法 来进行攻击，后有 [工作](#Inaudible Voice Commands: The Long-Range Attack and Defense) 在它的基础上增强了攻击的鲁棒性；
 
 3. 针对 "**降噪过程**" ④ 的攻击:
 
@@ -360,7 +360,7 @@
 
 ### Links
 
-- 论文链接：[Yuan X, Chen Y, Zhao Y, et al. Commandersong: A systematic approach for practical adversarial voice recognition[C]//27th {USENIX} Security Symposium ({USENIX} Security 18). 2018: 49-64.]()
+- 论文链接：[Yuan X, Chen Y, Zhao Y, et al. Commandersong: A systematic approach for practical adversarial voice recognition[C]//27th {USENIX} Security Symposium ({USENIX} Security 18). 2018: 49-64.](https://arxiv.org/abs/1801.08535)
 
 
 
@@ -411,8 +411,22 @@
 
 ### Links
 
-- 论文链接：[Roy, Nirupam, et al. "Inaudible voice commands: The long-range attack and defense." *15th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 18)*. 2018.](https://arxiv.org/abs/1708.09537)
+- 论文链接：[Zhang G, Yan C, Ji X, et al. Dolphinattack: Inaudible voice commands[C]//Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security. 2017: 103-117.](https://arxiv.org/abs/1708.09537)
 - Github 主页：[USSLab/DolphinAttack: Inaudible Voice Commands (github.com)](https://github.com/USSLab/DolphinAttack)
+
+
+
+
+
+## Inaudible Voice Commands: The Long-Range Attack and Defense
+
+### Contribution
+
+1. 增加了超声波攻击的距离
+
+### Links
+
+- 论文链接：[Roy N, Shen S, Hassanieh H, et al. Inaudible voice commands: The long-range attack and defense[C]//15th {USENIX} Symposium on Networked Systems Design and Implementation ({NSDI} 18). 2018: 547-560.](https://www.usenix.org/conference/nsdi18/presentation/roy)
 
 
 
@@ -727,7 +741,7 @@
 ### Contribution
 
 1. 白盒、有目标的、针对端到端 LAS 模型的对抗攻击算法；
-2. 心理掩蔽效应；
+2. 心理声学掩蔽效应；
 3. 模拟房间声学响应；
 
 ### Notes
@@ -1473,7 +1487,7 @@
    | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
    | [Carlini](#Audio Adversarial Examples: Targeted Attacks on Speech-to-Text) | [Qin-I](#Imperceptible, Robust, and Targeted Adversarial Examples for Automatic Speech Recognition) | [Qin-R](#Imperceptible, Robust, and Targeted Adversarial Examples for Automatic Speech Recognition) | [Universal](#Universal adversarial perturbations for speech recognition systems) |
 
-   (2) shiyan结果
+   (2) 实验结果
 
    - 不同的转换函数参数对实验的影响：
 
