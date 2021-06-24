@@ -1115,3 +1115,19 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Mao X, Chen Y, Wang S, et al. Composite Adversarial Attacks[J]. arXiv preprint arXiv:2012.05434, 2020.](https://arxiv.org/abs/2012.05434)
 - 论文代码：https://github.com/vtddggg/CAA
+
+
+
+
+
+## Invisible for both Camera and LiDAR: Security of Multi-Sensor Fusion based Perception in Autonomous Driving Under Physical-World Attacks
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Fang J, Yang R, Chen Q A, et al. Invisible for both Camera and LiDAR: Security of Multi-Sensor Fusion based Perception in Autonomous Driving Under Physical-World Attacks[J]. arXiv preprint arXiv:2106.09249, 2021.](https://arxiv.org/abs/2106.09249)
+- 论文主页：[AD & CV Systems Security - MSF-ADV (google.com)](https://sites.google.com/view/cav-sec/msf-adv)
+- 论文公众号文章：[看不见的障碍物：首个针对自动驾驶多传感器融合感知的漏洞攻击 (qq.com)](https://mp.weixin.qq.com/s/QuwEmFc5zKDPUvzwaIsuqg)
