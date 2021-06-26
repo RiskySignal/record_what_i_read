@@ -1124,10 +1124,109 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 ### Contribution
 
+1. 首个同时针对**摄像头**和**激光雷达**实现了**白盒对抗攻击**；
+
 ### Notes
+
+> 我的看法：看了这么多领域的对抗攻击工作，它们之间共同的模式，都需要将中间的模型计算过程变得可导，从而可以通过梯度下降算法来生成对抗样本。而其后需要关心的事情，那就是：提高对抗样本隐藏性；提高对抗样本鲁棒性；验证对抗样本迁移性；验证物理对抗样本；实现黑盒攻击等。我们现在应该静下心来，把每个领域的对抗攻击工作都合并成一个共同的攻击面，让这样的工作更加有意义。
+
+1. Multi-Sensor Fusion (MSF) 系统概览
+
+   <img src="pictures/image-20210626000401444.png" alt="image-20210626000401444" style="zoom: 40%;" />
+
+   其中 LiDAR perception networks 和 Camera perception networks 两者的结合方式有两种：DNNs 和 hard-corded matching and prioritization。
+
+2. MSF-ADV 攻击方法
+
+   ![image-20210626005616688](pictures/image-20210626005616688.png)
+
+   - Problem formulation：该攻击方法可以转化成一个优化问题，具体的公式如下所示
+
+     <img src="pictures/image-20210626005747509.png" alt="image-20210626005747509" style="zoom: 28%;" />
+
+   - $\mathcal{R}^l(\cdot)$ 和 $\mathcal{R}^c(\cdot)$ 分别是可导的 LIDAR 和图像布局（rendering）算法：即通过**近似计算**的方法，将 3D 模型转换成 2D 平面图和雷达上的点云图；
+
+   - $PC$ 和 $IMG$ 是分别是背景环境的点云图和 2D 图像，他们与生成的对抗 3D 样本结合，经过 $\mathcal{R}^c(\cdot)$ 和 $\mathcal{R}^l(\cdot)$ 变换后得到 $PC^a$ 和 $IMG^a$；
+
+   - $\mathcal{P}(\cdot)$ 对 $PC^a$ 和 $IMG^a$ 两个特征进行预处理，得到 MSF 系统的输入 $F^a$；
+
+   - $t(\cdot)$ 对 3D 对抗样本进行变换（文章中主要用的是 Yaw rotation 和 Shifting），主要的目标是用来提高对抗样本的鲁棒性； 
 
 ### Links
 
 - 论文链接：[Fang J, Yang R, Chen Q A, et al. Invisible for both Camera and LiDAR: Security of Multi-Sensor Fusion based Perception in Autonomous Driving Under Physical-World Attacks[J]. arXiv preprint arXiv:2106.09249, 2021.](https://arxiv.org/abs/2106.09249)
 - 论文主页：[AD & CV Systems Security - MSF-ADV (google.com)](https://sites.google.com/view/cav-sec/msf-adv)
-- 论文公众号文章：[看不见的障碍物：首个针对自动驾驶多传感器融合感知的漏洞攻击 (qq.com)](https://mp.weixin.qq.com/s/QuwEmFc5zKDPUvzwaIsuqg)
+- 论文动态：[看不见的障碍物：首个针对自动驾驶多传感器融合感知的漏洞攻击 (qq.com)](https://mp.weixin.qq.com/s/QuwEmFc5zKDPUvzwaIsuqg)
+
+
+
+
+
+## RPATTACK: Refined Patch Attack on General Object Detectors
+
+> 该工作是从天池比赛中来的，可能创新型不会太高，但是适合看他们的具体实现，某些小的 trick 可以在一定程度上增强对抗样本生成算法，重在积累；
+>
+> 这里也暴露出来一个对抗攻击领域的问题：其实我们一直在追求生成更好的物理对抗样本，但是如果是通过这种线上比赛，我们大概率智能进行数字世界对抗攻击的比较，很难对物理对抗攻击方法有所推进；
+
+### Contribution
+
+1. 数字对抗样本，在物体上进行修改，只修改关键像素点，同时攻击 Yolo-V4 和 Faster RCNN；
+
+### Notes
+
+1. 算法主要流程
+
+   ![image-20210626111926625](pictures/image-20210626111926625.png)
+
+   可以看到，算法的主要过程是，首先初始化挑选一些比较重要的像素点，然后使用 **I-FGSM** 算法叠加扰动生成对抗样本，生成完以后为了减少扰动量，所以就尝试着把一些无关紧要的扰动进行剔除，得到最后的扰动量较小的对抗样本。
+
+   这个过程中，作者的主要目标是，用最小的扰动量来掩盖目标，是一个优化问题，用公式表达如下：
+
+   <img src="pictures/image-20210626112732812.png" alt="image-20210626112732812" style="zoom: 15%;" />
+
+2. 初始化关键像素点算法
+
+   <img src="pictures/image-20210626113204972.png" alt="image-20210626113204972" style="zoom: 40%;" />
+
+   先在全部像素上面生成对抗扰动，然后用 $m*m$ 大小的小框分别计算每个框中扰动量的大小，保留 $top-k$ 个小框中的像素点左后初始化的关键像素点。
+
+3. 减少扰动量算法（<u>单纯从论文来看，写得是啥呀</u>）
+
+   <img src="pictures/image-20210626145224571.png" alt="image-20210626145224571" style="zoom: 38.5%;" />
+
+4. 稳定攻击算法（<u>单纯从论文来看，写得是啥呀</u>）
+
+   由于需要同时攻击 Yolo-V4 和 Faster RCNN 两个网络，所以在 Loss 函数中会将两个网络的梯度进行并联。这里会存在一个问题，如果已经成功攻击了 Yolo-V4，那么正常情况下我们将不再考虑 Yolo-V4 的梯度，而只是考虑 Faster RCNN 的梯度，这样做的话，很可能迭代几轮后，对抗样本又无法成功攻击 Yolo-V4 了，这就是作者所说的目标网络对抗样本过拟合现象。所有他们采用了如下公式更新梯度（<u>我觉得这一块的公式写错了，也挺离谱的，关键的两个算法上面都有很多错误的地方，对自己的工作不太负责任</u>）：
+   $$
+   x^*_{k+1} = x^*_k + \sum_{i1}^N w_i \cdot \alpha \cdot \text{sign}(\Delta_xJ_i(x_k^*,y))\\
+   w_i = \max(1, D_i(x) - D_i(x^*))
+   $$
+   
+
+5. 实验结果
+
+   - 参考示例：
+
+     <img src="pictures/image-20210626151137242.png" alt="image-20210626151137242" style="zoom: 50%;" />
+
+   - 评价指标：
+
+     <img src="pictures/image-20210626151237709.png" alt="image-20210626151237709" style="zoom: 20%;" />
+
+     其中，$AS$ 指标主要是用来评估修改的比例，只有修改的比例 $P_j^{rate}$ 小于一个阈值 $P_{limit}$ 时才能得分；$BS$ 指标用来评估有多少个对象被成功隐藏了；$OS$ 用来综合评价这两个指标，是天池比赛时使用的指标。
+
+   - 实验结果：
+
+     - 效率：
+
+       <img src="pictures/image-20210626151622014.png" alt="image-20210626151622014" style="zoom: 33%;" />
+
+     - 与其他工作对比：
+
+       <img src="pictures/image-20210626151647872.png" alt="image-20210626151647872" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Huang H, Wang Y, Chen Z, et al. Rpattack: Refined Patch Attack on General Object Detectors[C]//2021 IEEE International Conference on Multimedia and Expo (ICME). IEEE, 2021: 1-6.](https://arxiv.org/abs/2103.12469)
+- 论文代码：[RPAttack](https://github.com/VDIGPKU/RPAttack)
+- 论文动态：[【源头活水】ICME21 你的检测器还安全吗? RPATTACK：YOLO和Faster R-CNN的攻击利器 (qq.com)](https://mp.weixin.qq.com/s/X8IEXsiEdiYsvXl-TVtgtg)
