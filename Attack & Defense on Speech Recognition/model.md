@@ -528,7 +528,7 @@ I-Vector 的提取过程中，我们需要首先估计全局差异空间矩阵 $
    \end{bmatrix}, \ \ \ \ \ \ \ \ \ \ 
    \tilde{S}(s) = 
    \begin{bmatrix}
-\tilde{S}_1(s) & \ & 0 \\
+   \tilde{S}_1(s) & \ & 0 \\
    \ & \dots \ & \ \\
    \ & \  & \tilde{S}_C(s)
    \end{bmatrix}
@@ -990,7 +990,6 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 ## Lingvo: a modular and scalable framework for sequence-to-sequence modeling
 
 > 谷歌开源的基于tensorflow的序列模型框架。
->
 
 ### Notes
 
@@ -1007,9 +1006,11 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 ### Notes
 
+1. 研究了一种新的端到端的降噪算法；
+
 #### 研究背景
 
-低码率的语音编码器由于基于神经网络的声码器的发展音质得到巨大提高。当输入的语音存有噪声的时候，语音编码器的音质将会下降，因此本文实验如何来处理该噪声，使合成的音质更高
+低码率的语音编码器由于基于神经网络的声码器的发展音质得到巨大提高。当输入的语音存有噪声的时候，语音编码器的音质将会下降，因此本文实验如何来处理该噪声，使合成的音质更高。
 
 #### 详细设计
 
@@ -1043,3 +1044,23 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 - 论文链接：[Denton T, Luebs A, Lim F S C, et al. Handling Background Noise in Neural Speech Generation[J]. arXiv preprint arXiv:2102.11906, 2021.](https://arxiv.org/pdf/2102.11906.pdf)
 - 参考链接：[语音信号处理论文优选：Handling Background Noise in Neural Speech Generation](https://mp.weixin.qq.com/s/5H6m4oQgYxQkgOIXt0JrnA)
+
+
+
+
+
+## ASRT: A Deep-Learning-Based Chinese Speech Recognition System
+
+### Contribution
+
+1. 开源中文智能语音识别系统；
+2. 是一个不错的工程化项目，但是在中文语音识别的准确率（80%）上面还是和一些前言工作相差太多；
+
+### Notes
+
+
+
+### Links
+
+- 项目代码：https://github.com/nl8590687/ASRT_SpeechRecognition
+- 项目demo：https://asrt.ailemon.net/demo
