@@ -38,6 +38,18 @@
 
 
 
+## 华为 AI 安全
+
+一起看一下，华为对 AI 安全的整体布局：
+
+![AI安全防御架构](pictures/ai-security-1.jpg)
+
+### 链接
+
+- 华为官网：https://www.huawei.com/cn/trust-center/ai-section
+
+
+
 
 
 ## 智能客服
