@@ -762,7 +762,7 @@ $cmd JOB=1:$nj_full $dir/log/gselect.JOB.log \
 ### Links
 
 - 论文链接：[Hannun A, Case C, Casper J, et al. Deep speech: Scaling up end-to-end speech recognition[J]. arXiv preprint arXiv:1412.5567, 2014.](https://arxiv.org/abs/1412.5567)
-- 
+- 论文代码：https://github.com/mozilla/DeepSpeech （mozilla 开源）
 
 
 
@@ -977,11 +977,106 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 ### Links
 
-- 论文链接：[Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)
+- 论文链接：[Chan W, Jaitly N, Le Q V, et al. Listen, attend and spell[J]. arXiv preprint arXiv:1508.01211, 2015.](https://arxiv.org/abs/1508.01211)
 - LAS 模型缺点参考链接：[LAS 语音识别框架发展简述](https://blog.csdn.net/weixin_39529413/article/details/103570831)
 - Tensorflow 2 （Keras）实现：[Listen, attend and spell](https://github.com/hgstudent/las)
 - Pytorch 实现：[End-to-end-ASR-Pytorch](https://github.com/Alexander-H-Liu/End-to-end-ASR-Pytorch) ( <u>**暂未阅读代码**</u> )
 - LSTM 详解：[Understanding LSTM Networks](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
+
+
+
+
+
+## Deep Speech 2: End-to-End Speech Recognition in English and Mandarin
+
+> 前辈们的潜心钻研实在是了不起，多向他们学习
+>
+> 建议看原文，每个细节都讲得非常细致，措辞也十分清楚，不需要额外翻译
+
+### Contribution
+
+1. 从 **模型网络** 到 **代码实现** 再到 **工程部署** ，完整地讲述了该 ASR 系统的全部细节，在中文上的字错率为 6.1%，非常了不起，简直就是工程的奇迹；
+
+### Notes
+
+> 论文很长，包含很多开发部署的细节，不在该笔记的讨论范围内，就记录一些我比较关注的细节
+
+1. 模型整体架构：
+
+   <img src="pictures/image-20210630155852548.png" alt="image-20210630155852548" style="zoom: 39%;" />
+
+   如上图所示，模型的输入是频谱（文章中会在输入前进行 normalization），底层连接多层卷积神经网络，然后接多层循环神经网络，最后接全连接层和 `softmax` 层，使用 `CTC` 进行解码。
+
+2. Batch Normalization
+
+   <img src="pictures/image-20210630160450112.png" alt="image-20210630160450112" style="zoom: 50%;" />
+
+   如上表所示，使用 Batch Normalization 可以提高模型的准确率，其中，对于循环神经网络层的 Batch Norm 操作只作用在上一层的输入上，具体公式如下所示：
+
+   <img src="pictures/image-20210630160537353.png" alt="image-20210630160537353" style="zoom: 17%;" />
+
+   并且，实验发现 Batch Normalization 可以提高模型的收敛速率：
+
+   <img src="pictures/image-20210630160747620.png" alt="image-20210630160747620" style="zoom: 50%;" />
+
+3. SortaGrad
+
+   因为不同的音频的时长不同，所以给训练带来了一定的难度。文章采用的方法是，第一个 epoch 的时候按照音频从短到长进行排序，后续的训练按照随机顺序进行排序，得到了不错的结果：
+
+   <img src="pictures/image-20210630161246698.png" alt="image-20210630161246698" style="zoom: 43%;" />
+
+   作者分析认为，长音频容易导致模型的参数在早期的时候发生剧烈变化。
+
+4. Frequency Convolutions
+
+   这里讨论用多少卷积层是最优的，作者实验发现使用 3 层二维卷积效果最好：
+
+   <img src="pictures/image-20210630161557799.png" alt="image-20210630161557799" style="zoom:47%;" />
+
+5. Striding
+
+   在卷积的时候，使用比较大的 Striding 可以有效地减小输出的维度，从而减小网络的计算复杂度。该方法在中文上对精度的影响不大，但是对英文的精度产生了影响，很可能是因为英文的输出是一个字符，本身发音时长就短，当使用比较大的 Striding 时，网络很可能会直接忽略它的特征。所以作者尝试使用双字符解码表，如将 "the cat sat" 标记为 `[th, e, space, ca, t, space, sa, t]`。
+
+   实验结果如下：
+
+   <img src="pictures/image-20210630162450389.png" alt="image-20210630162450389" style="zoom:50%;" />
+
+6. Row Convolution and Unidirectional Models
+
+   该部分主要服务于线上的流式解码，因为双向循环神经网络的存在，网络无法进行流式解码，所以作者改为采用单向循环神经网络 + 少跨度的前向卷积操作，在最后一个循环神经网络层和全连接层直接添加如下卷积层：
+
+   <img src="pictures/image-20210630162257099.png" alt="image-20210630162257099" style="zoom: 37%;" />
+
+7. Language Model
+
+   该部分讨论语言模型的作用，实验结果如下：
+
+   <img src="pictures/image-20210630162546311.png" alt="image-20210630162546311" style="zoom:50%;" />
+
+   具体的结合方式，主要是将前端模型和语言模型的概率，以及解码结果的长度在 CTC 解码端进行整合：
+
+   <img src="pictures/image-20210630162732115.png" alt="image-20210630162732115" style="zoom:50%;" />
+
+8. Data Augmentation
+
+   数据增强，这一块作者只是添加随机的扰动，实验发现对 40% 的数据添加扰动时效果是比较好的；
+
+9. Model Size and RNN Type
+
+   这一块，作者比较了模型大小和 RNN 类型对实验结果的影响，可以看到更大的模型确实能够得到更好的实验结果，而普通的 RNN 模型也能和 GRU 模型达到相同的水平：
+
+   <img src="pictures/image-20210630163638409.png" alt="image-20210630163638409" style="zoom:50%;" />
+
+10. Result on Mandarin Chinese
+
+    不同模型结构下，网络在中文语料上的实验结果：
+
+    <img src="pictures/image-20210630163852357.png" alt="image-20210630163852357" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Amodei D, Ananthanarayanan S, Anubhai R, et al. Deep speech 2: End-to-end speech recognition in english and mandarin[C]//International conference on machine learning. PMLR, 2016: 173-182.](https://dl.acm.org/doi/10.5555/3045390.3045410)
+- 论文代码：
 
 
 
