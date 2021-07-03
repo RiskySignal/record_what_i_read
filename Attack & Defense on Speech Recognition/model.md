@@ -1076,7 +1076,9 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 ### Links
 
 - 论文链接：[Amodei D, Ananthanarayanan S, Anubhai R, et al. Deep speech 2: End-to-end speech recognition in english and mandarin[C]//International conference on machine learning. PMLR, 2016: 173-182.](https://dl.acm.org/doi/10.5555/3045390.3045410)
-- 论文代码：
+- 论文代码：https://github.com/tensorflow/models/tree/master/research/deep_speech （tensorflow）
+- 论文代码：https://github.com/SeanNaren/deepspeech.pytorch （pytorch）
+- 论文代码：https://github.com/PaddlePaddle/models#PaddleSpeech （PaddlePaddle）
 
 
 
@@ -1092,6 +1094,21 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 - 论文链接：[Lingvo: a modular and scalable framework for sequence-to-sequence modeling](https://arxiv.org/abs/1902.08295)
 - Github：[Lingvo](https://github.com/tensorflow/lingvo)
+
+
+
+
+
+## GANSYNTH: ADVERSARIAL NEURAL AUDIO SYNTHESIS
+
+### Contributions
+
+### Notes
+
+### Links
+
+- 论文链接：
+- 论文代码：http://goo.gl/magenta/gansynth-code
 
 
 
@@ -1153,9 +1170,159 @@ x = tf.keras.layers.Dense(no_tokens, activation="softmax")(x) # (..., seq_len, n
 
 ### Notes
 
+1. 模型采用 频谱 +CNN + CTC + 输出拼音 + 语言模型 的整体架构实现；
 
 
 ### Links
 
 - 项目代码：https://github.com/nl8590687/ASRT_SpeechRecognition
 - 项目demo：https://asrt.ailemon.net/demo
+
+
+
+
+
+## Kaldi AIDataTang_ASR
+
+### 调试技巧
+
+**C++ 编译过程**
+
+> 参考链接：https://www.jinhang.work/tech/cpp-building-process/
+
+首先简单了解一下 C++ 的整个编译过程：
+
+<img src="pictures/63SJVkP9e14XLAG.png" alt="产生可执行文件的过程" style="zoom: 50%;" />
+
+**C++ 调试原理**
+
+> 参考链接：https://zhuanlan.zhihu.com/p/336922639
+>
+> 参考链接：https://blog.csdn.net/syzcch/article/details/8350189 （看第三部分）
+
+GDB 调试程序是通过父进程捕获子进程中的所以系统消息，通过系统中断的方式来实现的。
+
+`g++` 在编译的时候保留了调试信息，而 `gdb` 就是依靠这些调试信息来关联源代码和二进制代码：`g++ -g ...`。
+
+**Kaldi 编译配置**
+
+> 参考链接：http://fancyerii.github.io/kaldidoc/build/
+
+修改 `kaldi.mk` 文件（该文件需要运行指令 `./configure` 才会存在）：
+
+```shell
+DEBUG_LEVEL = 2  # 解决部分变量的GDB查看问题
+DOUBLE_PRECISION = 0  # 上面李理前辈的博客中指出可以把这一项改为1，但是我改成1以后会编译不通过，所以暂时不修改这个配置
+```
+
+**VSCode 远程调试**
+
+下面简单罗列一下需要完成的步骤：
+
+- 安装 VSCode；
+
+- 配置 Remote SSH 插件；
+
+- 安装 C/C++ 插件；
+
+- 配置 `task.json` 如下：
+
+  ```json
+  "tasks": [  // 为了在调试之前对你的改动重新编译
+      {
+          "label": "make",
+          "type": "shell",
+          "command": "make -j 8",
+          "options": {
+              "cwd": "${workspaceRoot}/src"
+          }
+      }
+  ]
+  ```
+
+- 配置 `launch.json` 如下：
+
+  ```json
+  "configurations": [
+      {
+          "name": "debug_compute_mfcc_feats_with_make",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/src/featbin/compute-mfcc-feats",
+          "args": [
+              "--verbose=2",
+              "--config=conf/mfcc_hires.conf",
+              "scp,p:exp/make_mfcc/wav_offline_test_hires.JOB.scp",
+              "ark:-"
+          ],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}/egs/aidatatang_asr",
+          "environment": [],
+          "externalConsole": false,
+          "MIMode": "gdb",
+          "setupCommands": [
+              {
+                  "description": "为 gdb 启用整齐打印",
+                  "text": "-enable-pretty-printing",
+                  "ignoreFailures": true
+              }
+          ],
+          "preLaunchTask": "make"
+      }
+  ]
+  ```
+
+- 成功运行截图：
+
+  ![image-20210703183117568](pictures/image-20210703183117568.png)
+
+### 运行逻辑解析
+
+#### `prepare_data.sh`
+
+**调用逻辑**
+
+```shell
+> run.sh
+> local/prepare_all.sh ${wav_dir}
+> local/prepare_data.sh ${wav_dir} data/local/offline_test data/offline_test
+```
+
+**工作原理**
+
+该脚本主要完成数据的准备工作，具体的，是为了生成 `wav.scp` 、`spk2utt` 和 `utt2spk` 这三个文件，这三个文件的格式为：
+
+- `wav.scp`：`<uttrance_name> <uttrance_path>`；
+- `spk2utt`：`<speaker_name> <uttrance_name>`；
+- `utt2spk`：`<uttrance_name> <speaker_name>`；
+
+#### `make_mfcc.sh`
+
+**调用逻辑**
+
+```shell
+> run.sh
+> local/decode.sh exp/chain/tdnn_1a_sp exp/chain/tdnn_1a_sp/decode_offline_test_$vdate 1
+> steps/make_mfcc.sh --write-utt2dur false --mfcc-config conf/mfcc_hires.conf --nj 1 --cmd "run.pl" data/offline_test_hires          exp/make_mfcc/ mfcc_hires
+```
+
+**工作原理**
+
+该脚本主要用来计算 MFCC 特征，关键的脚本调用如下：
+
+```shell
+$cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主要是 kaldi 用来实现并行计算的代码
+	compute-mfcc-feats --verbose=2 --config=conf/mfcc_hires.conf \ 
+		scp,p:$logdir/wav_offline_test_hires.JOB.scp ark:- \| \  # 通过管道符连接两个脚本
+    copy-feats --write-num-frames=ark.t:$logdir/utt2num_frames.jOB --compress=true ark:- \
+    	ark,scp:$mfccdir/raw_mfcc_offline_test_hires.JOB.ark,$mfccdir/raw_mfcc_offline_test_hires.JOB.scp
+```
+
+#### `compute-mfcc-feats`
+
+
+
+### Links
+
+- Kaldi 源码地址：https://github.com/kaldi-asr/kaldi
+- 模型下载地址：https://kaldi-asr.org/models/m10
