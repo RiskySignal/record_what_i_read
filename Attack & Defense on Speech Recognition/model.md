@@ -1252,7 +1252,7 @@ DOUBLE_PRECISION = 0  # 上面李理前辈的博客中指出可以把这一项�
           "args": [
               "--verbose=2",
               "--config=conf/mfcc_hires.conf",
-              "scp,p:exp/make_mfcc/wav_offline_test_hires.JOB.scp",
+              "scp,p:exp/make_mfcc/wav_offline_test_hires.1.scp",
               "ark:-"
           ],
           "stopAtEntry": false,
@@ -1320,7 +1320,9 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 
 #### `compute-mfcc-feats`
 
+整体的 C++ 调用逻辑如下：
 
+![未命名文件 (2)](pictures/%E6%9C%AA%E5%91%BD%E5%90%8D%E6%96%87%E4%BB%B6%20(2).png)
 
 ### Links
 
