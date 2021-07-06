@@ -1315,14 +1315,49 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 	compute-mfcc-feats --verbose=2 --config=conf/mfcc_hires.conf \ 
 		scp,p:$logdir/wav_offline_test_hires.JOB.scp ark:- \| \  # 通过管道符连接两个脚本
     copy-feats --write-num-frames=ark.t:$logdir/utt2num_frames.jOB --compress=true ark:- \
-    	ark,scp:$mfccdir/raw_mfcc_offline_test_hires.JOB.ark,$mfccdir/raw_mfcc_offline_test_hires.JOB.scp
+    	ark,scp:$mfccdir/raw_mfcc_offline_test_hires.JOB.ark,$mfccdir/raw_mfcc_offline_test_hires.JOB.scp  # 拷贝mfcc特征，生成scp和ark文件，其中ark文件中的数据经过了压缩
 ```
 
 #### `compute-mfcc-feats`
 
-整体的 C++ 调用逻辑如下：
+ **C++ 实现逻辑**
 
 ![未命名文件 (2)](pictures/%E6%9C%AA%E5%91%BD%E5%90%8D%E6%96%87%E4%BB%B6%20(2).png)
+
+⭐ 在使用 tensorflow 复现 MFCC 的计算过程中，kaldi 中存在 `Dither` 函数，**在信号中添加抖动，这可能给对抗样本的攻击带来困难**。
+
+#### nnet3-latgen-faster
+
+**调用逻辑**
+
+```shell
+> run.sh
+> local/decode.sh exp/chain/tdnn_1a_sp exp/chain/tdnn_1a_sp/decode_offline_test_$vdate 1
+> steps/nnet3/decode.sh --acwt 1.0 --post-decode-acwt 10.0 --nj 1 --cmd "run.pl" --skip-scoring true \
+	exp/chain/tdnn_1a_sp data/offline_test_hires exp/chain/tdnn_1a_sp/decode_offline_test_$vdate
+> nnet3-latgen-faster --frame-subsampling-factor=3 --frames-per-chunk=50 \
+	--extra-left-context=0 --extra-right-context=0 \
+	--extra-left-context-initial=-1 --extra-right-context-final=-1 \
+	--minimize=false \ 
+	--max-active=7000 --min-active=200 \
+	--beam=15.0 --lattice-beam=8.0 \
+	--acoustic-scale=1.0  -allow-partial=true \
+	--word-symbol-table=exp/chain/tdnn_1a_sp/graph/words.txt \ 
+	exp/chain/tdnn_1a_sp/final.mdl \
+	exp/chain/tdnn_1a_sp/graph/HCLG.fst \
+	"ark,s,cs:apply-cmvn --norm-means=false --norm-vars=false --utt2spk=ark:data/offline_test_hires/split1/1/utt2spk scp:data/offline_test_hires/split1/1/cmvn.scp scp:data/offline_test_hires/split1/1/feats.scp ark:- |" \ 
+	"ark:|lattice-scale --acoustic-scale=10.0 ark:- ark:- | gzip -c > exp/chain/tdnn_1a_sp/decode_offline_test_{${vdate}}/lat.1.gz"
+```
+
+**C++ 实现逻辑**
+
+
+
+**TDNN 网络结构**
+
+自己根据 `final.mdl` 文件画了一下 TDNN 的网络结构，如下图所示，有助于学习 TDNN 网络：
+
+<img src="pictures/AIDataTang_TDNN.png" alt="AIDataTang_TDNN" style="zoom:80%;" />
 
 ### Links
 
