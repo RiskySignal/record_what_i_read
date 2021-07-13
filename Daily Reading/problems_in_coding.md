@@ -14,7 +14,25 @@
 
 #### Keras  和 Multiprocessing 组合 Bug
 
-我在` windows` 上面运行的很好，但是放到 Linux 服务器上面后，子进程中的 `keras.models.load_model()` 就卡住不动了。Bug 原理和解决方法参考博客 “[keras使用多进程](https://www.cnblogs.com/zongfa/p/12193561.html)”，写的非常棒，体会到了进程拷贝的问题。Bug 在 github 上面的链接参考 [Keras is not multi-processing safe](https://github.com/keras-team/keras/issues/9964) ；
+我在 ` windows` 上面运行的很好，但是放到 Linux 服务器上面后，子进程中的 `keras.models.load_model()` 就卡住不动了。Bug 原理和解决方法参考博客 “[keras使用多进程](https://www.cnblogs.com/zongfa/p/12193561.html)”，写的非常棒，体会到了进程拷贝的问题。Bug 在 github 上面的链接参考 [Keras is not multi-processing safe](https://github.com/keras-team/keras/issues/9964) ；
+
+#### 混合精度训练
+
+Tensorflow 中（其他框架同样也支持混合精度训练）可以开启混合精度训练来加速 GPU 训练过程，具体的代码如下：
+
+```python
+opt = tf.train.AdamOptimizer()
+opt = tf.train.experimental.enable_mixed_precision_graph_rewrite(opt)
+train_op = opt.minimize(loss)
+```
+
+通俗理解：[GPU加速实战——混合精度训练](https://blog.csdn.net/zyy617532750/article/details/104219708)
+
+原理精通与实践 tensorflow 版本：[浅谈混合精度训练](https://blog.csdn.net/zyy617532750/article/details/104219708)
+
+原理精通与时间 pytorch 版本：[【PyTorch】唯快不破：基于Apex的混合精度加速](https://zhuanlan.zhihu.com/p/79887894)
+
+论文链接：[Mixed Precision Training](https://arxiv.org/abs/1710.03740)
 
 
 
