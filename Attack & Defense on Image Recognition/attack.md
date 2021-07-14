@@ -1202,7 +1202,6 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
    w_i = \max(1, D_i(x) - D_i(x^*))
    $$
    
-
 5. 实验结果
 
    - 参考示例：
@@ -1230,3 +1229,100 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 - 论文链接：[Huang H, Wang Y, Chen Z, et al. Rpattack: Refined Patch Attack on General Object Detectors[C]//2021 IEEE International Conference on Multimedia and Expo (ICME). IEEE, 2021: 1-6.](https://arxiv.org/abs/2103.12469)
 - 论文代码：[RPAttack](https://github.com/VDIGPKU/RPAttack)
 - 论文动态：[【源头活水】ICME21 你的检测器还安全吗? RPATTACK：YOLO和Faster R-CNN的攻击利器 (qq.com)](https://mp.weixin.qq.com/s/X8IEXsiEdiYsvXl-TVtgtg)
+
+
+
+
+
+## SLAP: Improving Physical Adversarial Examples with Short-Lived Adversarial Perturbations
+
+### Contributions
+
+1. 实现了白盒的、物理的、针对目标检测和目标分类的投影攻击；
+
+### Notes
+
+1. Threat Model：
+
+   <img src="pictures/image-20210708010706713.png" alt="image-20210708010706713" style="zoom: 30%;" />
+
+   可以看到，作者是想用投影的方式，将对抗样本打在交通标志牌上，使得车辆识别系统出错；所以，这个过程中最关键的部分是：**如何将投影的这个过程添加到对抗样本的生成过程中去**；
+
+   > 所以还是离不了一样的套路，就是将对抗攻击运用到实际的物理世界中，而这中间会有一些流程需要我们自己来进行建模；
+
+2. Overview of the adversarial samples generation pipeline：
+
+   <img src="pictures/image-20210713102838824.png" alt="image-20210713102838824" style="zoom: 37%;" />
+
+   可以看到，关键在于 **对投影的建模**（即 “Projection Model”），建模以后，就可以用正常的对抗样本生成算法流程来实现剩下的工作；
+
+3. 投影过程的建模 ⭐
+
+   - 主要思路：收集数据，用神经网络进行拟合；
+   
+   - 收集数据：
+   
+      <img src="pictures/image-20210715004835709.png" alt="image-20210715004835709" style="zoom:40%;" />
+   
+   - 模型建模：使用一个双层全连接的 ReLU 神经网络；
+   
+      <img src="pictures/image-20210715005032093.png" alt="image-20210715005032093" style="zoom: 28%;" />
+   
+4. 对抗样本生成算法
+
+   - 目标损失函数：
+
+      <img src="pictures/image-20210715005416331.png" alt="image-20210715005416331" style="zoom: 33%;" />
+
+      其中，T 是不同的背景图像，M 是不同的图像变换函数（文章中主要是改变图形的明亮度、角度、距离和相机画幅），TV 应该是投影的 patch 本身的扰动量大小；
+
+   - 算法参数：
+
+   <img src="pictures/image-20210713111005774.png" alt="image-20210713111005774" style="zoom:50%;" />
+
+5. 实验（<u>从作者的实验上面，我是觉得这种攻击其实非常受到物理环境的制约，所以我觉得这不是一个好的研究点子</u>）
+
+   - Preliminary Results - 初步结果：
+
+     <img src="pictures/image-20210715010615090.png" alt="image-20210715010615090" style="zoom:50%;" />
+
+     <u>乍一看，我是觉得直接给一个 loss 的值并不直观</u>；但是从 $Loss_f$ 上面确实能够看出，随着光照强度增强，生成对抗样本的难度也随之增大；
+
+     另外，作者还给出了网络本身的出错概率，作为攻击的 baseline，如下图所示：
+
+     ![image-20210715011045551](pictures/image-20210715011045551.png)
+
+   
+
+   
+
+   - **Indoors Attack**：在室内，自定义多种不同的光照条件，并且**对于不同光照条件都需要对投影的结果进行一次建模**，建模完以后再生成对抗样本，结果如下所示；
+
+     ![image-20210715011321126](pictures/image-20210715011321126.png)
+
+     ![image-20210715011350293](pictures/image-20210715011350293.png)
+
+   
+
+   
+
+   - **Outdoors Attack**：在室外，只测试了一种特定的场景；
+
+     ![image-20210715011412762](pictures/image-20210715011412762.png)
+
+   
+
+   
+
+   - Defenses Bypass：作者尝试了对抗训练、随机扰动和 Sentinet 这三种防御方法，实验结果如下；
+
+     ![image-20210715011615187](pictures/image-20210715011615187.png)
+
+     <u>这个结果中，能够扰动 Sentinet 并不是很奇怪，因为作者添加的 Patch 是全图的，检测不出来很正常；但是输入添加随机扰动的方法也不能进行防御让我感到十分困惑？</u> :question:
+
+   > 文章中提到：现在对于目标检测的对抗防御算法研究还不多，这一点是否属实? :question:
+
+### Links
+
+- 论文链接：[Lovisotto G, Turner H, Sluganovic I, et al. {SLAP}: Improving Physical Adversarial Examples with Short-Lived Adversarial Perturbations[C]//30th {USENIX} Security Symposium ({USENIX} Security 21). 2021.](https://arxiv.org/abs/2007.04137)
+- 论文代码：[SLAP: Improving Physical Adversarial Examples with Short-Lived Adversarial Perturbations](https://github.com/ssloxford/short-lived-adversarial-perturbations)

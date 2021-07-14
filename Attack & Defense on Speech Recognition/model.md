@@ -1341,7 +1341,7 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 	--minimize=false \ 
 	--max-active=7000 --min-active=200 \
 	--beam=15.0 --lattice-beam=8.0 \
-	--acoustic-scale=1.0  -allow-partial=true \
+	--acoustic-scale=1.0  --allow-partial=true \
 	--word-symbol-table=exp/chain/tdnn_1a_sp/graph/words.txt \ 
 	exp/chain/tdnn_1a_sp/final.mdl \
 	exp/chain/tdnn_1a_sp/graph/HCLG.fst \
@@ -1349,7 +1349,7 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 	"ark:|lattice-scale --acoustic-scale=10.0 ark:- ark:- | gzip -c > exp/chain/tdnn_1a_sp/decode_offline_test_{${vdate}}/lat.1.gz"
 ```
 
-**C++ 实现逻辑**
+**TDNN 网络 C++ 实现逻辑**
 
 
 

@@ -795,7 +795,7 @@
 - 论文链接：[Qin, Yao, et al. "Imperceptible, robust, and targeted adversarial examples for automatic speech recognition." International Conference on Machine Learning. PMLR, 2019](https://arxiv.org/abs/1903.10346).
 
 - 论文主页：[Imperceptible, Robust and Targeted Adversarial Examples for Automatic Speech Recognition (ucsd.edu)](http://cseweb.ucsd.edu/~yaq007/imperceptible-robust-adv.html)
-- 论文代码：[cleverhans/examples/adversarial_asr at master · tensorflow/cleverhans (github.com)](https://github.com/tensorflow/cleverhans/tree/master/examples/adversarial_asr)
+- 论文代码：[cleverhans/examples/adversarial_asr at master · tensorflow/cleverhans (github.com)](https://github.com/yaq007/cleverhans/blob/master/examples/adversarial_asr/generate_imperceptible_adv.py)
 
 
 
