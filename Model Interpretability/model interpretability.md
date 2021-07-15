@@ -725,6 +725,21 @@
 
 
 
+## * Beyond Sparsity: Tree Regularization of Deep Models for Interpretability
+
+### Contribution
+
+1. 提出了一个 Tree Regularization 的概念，即决策树的节点高度，希望神经网络能学得更像决策树一样；（<u>从整篇文章来看，好像不太靠谱的样子</u>）
+
+### Links
+
+- 论文链接：[Wu M, Hughes M, Parbhoo S, et al. Beyond sparsity: Tree-based regularization of deep models for interpretability[C]//In: Neural Information Processing Systems (NIPS) Conference. Transparent and Interpretable Machine Learning in Safety Critical Environments (TIML) Workshop. 2017.](https://arxiv.org/abs/1711.06178)
+- 论文代码：https://github.com/dtak/tree-regularization-public
+
+
+
+
+
 ## LEMNA: Explaining Deep Learning based Security Applications
 
 > 这篇文章，实际上我看了两遍：第一遍研一的时候看的，是文献阅读课，讲得很差，被老板批评了；第二遍研二项目中需要用到一系列的可解释性方法，和大佬一起又重新拜读了一下这篇文章，这次是结合代码来学习的，所以对 LEMNA 这种方法算是又有了新的认识；
