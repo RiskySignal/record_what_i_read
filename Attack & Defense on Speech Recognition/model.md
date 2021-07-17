@@ -1363,3 +1363,134 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 
 - Kaldi 源码地址：https://github.com/kaldi-asr/kaldi
 - 模型下载地址：https://kaldi-asr.org/models/m10
+
+
+
+
+
+## 中文语音识别调研
+
+### 数据集
+
+#### AISHELL-1
+
+![image-20210717141708869](pictures/image-20210717141708869.png)
+
+官网链接：http://www.aishelltech.com/kysjcp
+
+Kaldi Recipe：https://github.com/kaldi-asr/kaldi/tree/master/egs/aishell
+
+#### AISHELL-2
+
+![image-20210717141507455](pictures/image-20210717141507455.png)
+
+官网链接：http://www.aishelltech.com/aishell_2
+
+Kaldi Recipe：https://github.com/kaldi-asr/kaldi/tree/master/egs/aishell2
+
+#### AISHELL-3
+
+![image-20210717141830621](pictures/image-20210717141830621.png)
+
+主要用于 TTS
+
+官网链接：http://www.aishelltech.com/aishell_3
+
+#### AISHELL-4
+
+![image-20210717141106631](pictures/image-20210717141106631.png)
+
+官网链接：http://www.aishelltech.com/aishell_4
+
+Github 链接：https://github.com/felixfuyihui/AISHELL-4
+
+#### ZHVOICE
+
+![zhvoice](pictures/zhvoice.png)
+
+作者对 8 个中文数据集进行了清洗；
+
+Github 链接：https://github.com/KuangDD/zhvoice
+
+#### THCHS-30
+
+清华大学主办的、经典语音识别数据集，多为文章和诗句；
+
+链接：https://www.openslr.org/18/
+
+论文链接：https://arxiv.org/abs/1512.01882
+
+#### ST-CMDS
+
+数据内容多为平时的网上语音聊天和智能语音控制语句为主；
+
+链接：https://www.openslr.org/38/
+
+#### Primeword Chinese Corpus Set 1
+
+链接：https://www.openslr.org/47/
+
+#### AI Data Tang 200
+
+链接：http://www.openslr.org/62/
+
+#### AI Data Tang 1505
+
+数据官网：https://datatang.com/opensource
+
+Kaldi 模型：https://kaldi-asr.org/models/m10
+
+#### MAGICDATA Mandarin Chinese Read Speech Corpus
+
+链接：https://www.openslr.org/68/
+
+#### MADCAT Chinese data splits
+
+飞行员数据集
+
+链接：https://www.openslr.org/50/
+
+### 模型
+
+#### Kaldi Multi_CN Model
+
+在多个开源的语料库上面训练的模型；
+
+链接：https://github.com/kaldi-asr/kaldi/tree/master/egs/multi_cn/s5
+
+#### Kaldi CVTE Mandarin Model
+
+在商用语料库上训练的模型；
+
+链接：https://kaldi-asr.org/models/m2
+
+#### ASRT: A Deep-Learning-Based Chinese Speech Recognition System
+
+AI 柠檬开发的中文语音识别模型；
+
+链接：https://github.com/nl8590687/ASRT_SpeechRecognition
+
+#### Github Project: 中文语音识别
+
+基于 thchs30 数据集训练；
+
+链接：https://github.com/xxbb1234021/speech_recognition
+
+#### PaddlePaddle-DeepSpeech
+
+基于中文语料训练的 Deepspeech 2 模型；
+
+链接：https://github.com/yeyupiaoling/PaddlePaddle-DeepSpeech
+
+#### MASR 中文语音识别
+
+基于中文语料训练的 MASR 模型；
+
+链接：https://github.com/yeyupiaoling/MASR
+
+#### ASR-with-DFCNN-and-Transformer
+
+基于中文语料训练的 DFCNN 模型；
+
+链接：https://github.com/786440445/ASR-with-DFCNN-and-Transformer
+
