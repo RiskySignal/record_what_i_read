@@ -76,9 +76,7 @@
 
    (1) 声压变化：**麦克风采集空气的声压变化，将声音转换成数字信号**。[【文章】](#Laser-Based Audio Injection on Voice-Controllable Systems)通过 **激光** 攻击麦克风的采集过程；
 
-   (2) 振动：虽然理论上麦克风采集的时空气的声压变化，但实际上**它对于振动也是敏感的**。[【文章】](#Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations)通过 **振动** 来攻击麦克风的采集过程；
-
-   (3) 调制/解调: 麦克风存在非线性的特点, 采集过程中会将高频信号中携带的低频信号给解调出来, 先有 [工作](#DolphinAttack: Inaudible voice commands) 通过 高频信号调制解调的方法 来进行攻击，后有 [工作](#Inaudible Voice Commands: The Long-Range Attack and Defense) 在它的基础上增强了攻击的鲁棒性；
+   (2) 调制/解调: 麦克风存在非线性的特点, 采集过程中会将高频信号中携带的低频信号给解调出来, 先有 [【文章】](#DolphinAttack: Inaudible voice commands) 通过 高频信号调制解调的方法 来进行攻击，后有 [【文章】](#Inaudible Voice Commands: The Long-Range Attack and Defense) 在它的基础上增强了攻击的鲁棒性（攻击距离），还有 [【文章】](#SurfingAttack: Interactive Hidden Attack on Voice Assistants Using Ultrasonic Guided Waves) 通过固体介质来传播超声波信号来增强攻击的传播距离；
 
 3. 针对 "**降噪过程**" ④ 的攻击:
 
@@ -895,15 +893,15 @@
 
 
 
-## Defeating Hidden Audio Channel Attacks on Voice Assistants via Audio-Induced Surface Vibrations
+## SurfingAttack: Interactive Hidden Attack on Voice Assistants Using Ultrasonic Guided Waves
 
 ### Contribution
 
-### Notes
+1. 使用物理介质传播超声波信号（振动）；
 
 ### Links
 
-- 论文链接：[Wang C, Anand S A, Liu J, et al. Defeating hidden audio channel attacks on voice assistants via audio-induced surface vibrations[C]//Proceedings of the 35th Annual Computer Security Applications Conference. 2019: 42-56.](https://dl.acm.org/doi/10.1145/3359789.3359830)
+- 论文链接：[Yan Q, Liu K, Zhou Q, et al. Surfingattack: Interactive hidden attack on voice assistants using ultrasonic guided waves[C]//Network and Distributed Systems Security (NDSS) Symposium. 2020.](https://www.ndss-symposium.org/wp-content/uploads/2020/02/24068-paper.pdf)
 
 
 
