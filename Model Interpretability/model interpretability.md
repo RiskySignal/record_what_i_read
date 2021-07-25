@@ -725,11 +725,12 @@
 
 
 
-## * Beyond Sparsity: Tree Regularization of Deep Models for Interpretability
+## Beyond Sparsity: Tree Regularization of Deep Models for Interpretability
 
 ### Contribution
 
 1. 提出了一个 Tree Regularization 的概念，即决策树的节点高度，希望神经网络能学得更像决策树一样；（<u>从整篇文章来看，好像不太靠谱的样子</u>）
+2. 全局地用一个决策树模型来拟合目标神经网络，然后利用决策树模型本身优异地可解释性来解释目标神经网络；
 
 ### Links
 
@@ -1170,6 +1171,33 @@
 ### Links
 
 - 论文链接：[纪守领, et al. "机器学习模型可解释性方法, 应用与安全研究综述." *计算机研究与发展* 56.10 (2019).](https://nesa.zju.edu.cn/download/%E6%A8%A1%E5%9E%8B%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E3%80%81%E5%BA%94%E7%94%A8%E5%8F%8A%E5%85%B6%E5%AE%89%E5%85%A8%E6%80%A7%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0.pdf)
+
+
+
+
+
+## Regional Tree Regularization for Interpretability in Black Box Models
+
+### Contribution
+
+1. [文章](# Beyond Sparsity: Tree Regularization of Deep Models for Interpretability) 的延续工作；
+2. 是一个 Regional Explanation 方法：对每一个小的区域拟合一颗决策树。然后用决策树的复杂度作为惩罚项来优化网络的训练；
+
+### Notes
+
+<u>我觉得这种方法就挺离谱的，也没什么笔记值得记得，问题一大堆，就记一些我能直接想到地</u>：
+
+1. 两个方法的思想是：用决策树来拟合目标模型，然后用决策树的复杂度作为惩罚项来训练网络，希望网络的决策尽可能地简单。从这个思想上面，最后还是要用决策树来对网络进行解释的，那这个和我直接训练一个决策树有什么区别？这个可解释性方法有什么意义？
+2. 对整个网络拟合一个决策树，这样够嘛？对于复杂数据集，就用一个决策树，人能理解嘛？
+3. 为了拟合这个决策树，你怎么来采样数据呢？通过全部数据显然是不可能的啊，你怎么保证采样是合理的？
+4. 拟合了决策树以后，确实拿到了“采样的数据集”在树上的复杂度，结果作者因为它不可导，再去训练一个MLP，什么意思？嫌我方法还不够黑盒？
+5. 算法的速度怎么来保证？我要训练决策树，我要训练MLP？我还要训练我的黑盒网络？训练完了精度还不一定行，我再重新训练，世界末日了？
+6. 对于复杂的数据集，方法二怎么来定义 “Region”，定义了 “Region” 以采样的问题怎么来解决？
+7. 文章总得来说，是想实现全局的自解释模型，但是我觉得它的思路错了；
+
+### Links
+
+- 论文链接：[Wu M, Parbhoo S, Hughes M, et al. Regional tree regularization for interpretability in black box models[J]. arXiv preprint arXiv:1908.04494, 2019.](https://arxiv.org/abs/1908.04494)
 
 
 
