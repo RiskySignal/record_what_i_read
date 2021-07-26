@@ -199,3 +199,17 @@
 
 - 论文代码：[Meta Neural Trojan Detection]([AI-secure/Meta-Nerual-Trojan-Detection (github.com)](https://github.com/AI-secure/Meta-Nerual-Trojan-Detection))
 
+
+
+
+
+## BACKDOOR ATTACK AGAINST SPEAKER VERIFICATION
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Zhai T, Li Y, Zhang Z, et al. Backdoor attack against speaker verification[C]//ICASSP 2021-2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2021: 2560-2564.](https://arxiv.org/pdf/2010.11607.pdf)
+- 论文代码：https://github.com/zhaitongqing233/Backdoor-attack-against-speaker-verification
