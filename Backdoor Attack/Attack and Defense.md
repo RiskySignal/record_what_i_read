@@ -203,11 +203,34 @@
 
 
 
-## BACKDOOR ATTACK AGAINST SPEAKER VERIFICATION
+## Backdoor Attack Against Speaker Verification
 
 ### Contribution
 
+1. 针对基于 d-vector 和 x-vector 的说话人认证系统实现了后门攻击；
+
+> ⭐ 说话人认证任务，和我们平常看到的分类任务有非常大的不同，主要原因是目标说话人的语料可能很少，所以业界需要实现通过较少的目标说话人语料实现说话人认证任务。这一点是前面常见的后门攻击所没有涉及的，值得我们的进一步探讨。
+
 ### Notes
+
+1. 文章中使用的 Backdoor Trigger：
+
+   <img src="pictures/image-20210727144911153.png" alt="image-20210727144911153" style="zoom: 45%;" />
+
+2. 算法流程：
+
+   - Obtaining Speaker's Representation：训练神经网络来提取不同说话人片段的特征；
+   - Speaker Clustering：使用聚类算法将不同的说话人进行聚类；
+   - Trigger Injection：根据聚类的结果，对不同簇的说话人的语料插入不同的 Backdoor Trigger；
+   - Retrain and Obtain the Backdoored Speaker's Representation：用添加了后门的语料再次训练神经网络；
+   - Enroll the Target Speaker：用少料目标说话人的语料来获取该说话人的特征表示；
+   - Backdoor Attack：遍历使用上面的 Backdoor Trigger 来测试是否成功插入后门；
+
+> 思考：:question:
+>
+> 1. 为什么能够通过这种方式，来攻击说话人认证模型？
+> 2. 能够攻击说话人识别模型？
+> 3. 文章提到的说话人认证模型是否是当前业界的主流？
 
 ### Links
 
