@@ -1208,11 +1208,17 @@ GDB 调试程序是通过父进程捕获子进程中的所以系统消息，通�
 
 > 参考链接：http://fancyerii.github.io/kaldidoc/build/
 
-修改 `kaldi.mk` 文件（该文件需要运行指令 `./configure` 才会存在）：
+利用 `configure` 脚本进行配置，在 `src` 目录下运行如下指令：
 
 ```shell
-DEBUG_LEVEL = 2  # 解决部分变量的GDB查看问题
-DOUBLE_PRECISION = 0  # 上面李理前辈的博客中指出可以把这一项改为1，但是我改成1以后会编译不通过，所以暂时不修改这个配置
+./configure --debug-level=2
+```
+
+然后重新编译一下
+
+```shell
+make -j clean depend
+make -j 8
 ```
 
 **VSCode 远程调试**
@@ -1240,7 +1246,7 @@ DOUBLE_PRECISION = 0  # 上面李理前辈的博客中指出可以把这一项�
   ]
   ```
 
-- 配置 `launch.json` 如下：
+- 为 mfcc 过程，配置 `launch.json` 如下：
 
   ```json
   "configurations": [
@@ -1272,6 +1278,55 @@ DOUBLE_PRECISION = 0  # 上面李理前辈的博客中指出可以把这一项�
   ]
   ```
 
+- 为 nnet3_latgen_faster 过程，配置 `task.json` 如下：
+
+  ```json
+  {
+    "name": "debug_nnet3_latgen_faster_with_make",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/src/nnet3bin/nnet3-latgen-faster",
+    "args": [
+      "--frame-subsampling-factor=3",
+      "--frames-per-chunk=50",
+      "--extra-left-context=0",
+      "--extra-right-context=0",
+      "--extra-left-context-initial=-1",
+      "--extra-right-context-final=-1",
+      "--minimize=false",
+      "--max-active=7000",
+      "--min-active=200",
+      "--beam=15.0",
+      "--lattice-beam=8.0",
+      "--acoustic-scale=1.0",
+      "--allow-partial=true",
+      "--word-symbol-table=exp/chain/tdnn_1a_sp/graph/words.txt",
+      "exp/chain/tdnn_1a_sp/final.mdl",
+      "exp/chain/tdnn_1a_sp/graph/HCLG.fst",
+      "\"ark,s,cs:apply-cmvn --norm-means=false --norm-vars=false --utt2spk=ark:data/offline_test_hires/split1/1/utt2spk scp:data/offline_test_hires/split1/1/cmvn.scp scp:data/offline_test_hires/split1/1/feats.scp ark:- |\"",
+      "\"ark:|lattice-scale --acoustic-scale=10.0 ark:- ark:- | gzip -c > exp/chain/tdnn_1a_sp/decode_offline_test_20210706/lat.1.gz\""
+    ],
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}/egs/aidatatang_asr",
+    "environment": [
+      {
+        "name": "PATH",
+        "value": "/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/chainbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/featbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/fgmmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/fstbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/gmmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/ivectorbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/kwsbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/latbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/lmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/nnet2bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/nnet3bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/nnetbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/online2bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/onlinebin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/rnnlmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/sgmm2bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/sgmmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/tfrnnlmbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src/cudadecoderbin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/utils/:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../tools/openfst/bin:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr/../../src:/home/yxj/Desktop/zjs/kaldi/egs/aidatatang_asr:/home/yxj/Desktop/zjs/kaldi/tools/python:/usr/local/cuda-9.0/bin:/home/yxj/Downloads/clang/bin:/bin/sh:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/yxj/Desktop/yxj/guetzli/bin/Release:/usr/local/cuda/bin:/home/yxj/visqol/bazel-bin"
+      }
+    ],
+    "externalConsole": false,
+    "MIMode": "gdb",
+    "setupCommands": [
+      {
+        "description": "为 gdb 启用整齐打印",
+        "text": "-enable-pretty-printing",
+        "ignoreFailures": true
+      }
+    ],
+    "preLaunchTask": "make"
+  }
+  ```
+  
 - 成功运行截图：
 
   ![image-20210703183117568](pictures/image-20210703183117568.png)
@@ -1351,7 +1406,7 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 
 **TDNN 网络 C++ 实现逻辑**
 
-
+![tdnn_model_calculation](pictures/tdnn_model_calculation.png)
 
 **TDNN 网络结构**
 

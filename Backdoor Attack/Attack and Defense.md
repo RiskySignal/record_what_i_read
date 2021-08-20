@@ -236,3 +236,26 @@
 
 - 论文链接：[Zhai T, Li Y, Zhang Z, et al. Backdoor attack against speaker verification[C]//ICASSP 2021-2021 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2021: 2560-2564.](https://arxiv.org/pdf/2010.11607.pdf)
 - 论文代码：https://github.com/zhaitongqing233/Backdoor-attack-against-speaker-verification
+
+
+
+
+
+## T-Miner : A Generative Approach to Defend Against Trojan Attacks on DNN-based Text Classification
+
+### Contribution
+
+1. 通过生成文本序列的方法来发掘文本分类模型中的后门；
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Azizi A, Tahmid I A, Waheed A, et al. T-Miner: A Generative Approach to Defend Against Trojan Attacks on DNN-based Text Classification[C]//30th {USENIX} Security Symposium ({USENIX} Security 21). 2021.](https://www.usenix.org/system/files/sec21fall-azizi.pdf)
+- Trojan AI Program：https://www.iarpa.gov/index.php/research-programs/trojai
+- 论文代码：https://github.com/reza321/T-Miner
+
+
+
