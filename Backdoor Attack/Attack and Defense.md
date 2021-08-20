@@ -259,3 +259,87 @@
 
 
 
+
+
+## Invisible Backdoor Attack with Sample-Specific Triggers
+
+> 思考：
+>
+> - 未来会使用什么手段，来保证后门攻击的成功率和隐藏性；从这篇文章来看，其中一个发展方向是**添加样本相关的后门 pattern**；
+> - 无论是对抗攻击，还是后门攻击，大家都会提到 **”隐藏性“** 这个概念，能不能在这个概念上取得重大突破；
+> - 如何来**防御 ”后门攻击“**；
+> - 如何实现**非数据相关的 ”后门攻击“**；
+> - 这篇文章提出的方法，相比于现在的方法有什么优势？解决了什么问题？是否对后门攻击这个研究领域有大的推动效果；
+
+### Contribution
+
+1. 简单分析了后门攻击领域现有的攻击方法和防御方法，分析了防御方法基于的假设和存在的问题；(<u>这一块在下面没有具体介绍，包含很多作者的主观猜测，但是还是推荐看一下原文中的描述，说得是有几分道理的</u>)
+
+### Notes
+
+1. 文章攻击方法：
+
+   ![image-20210820174634769](pictures/image-20210820174634769.png)
+
+   整个攻击流程分为三个过程：
+
+   - **Attack Stage**： 首先，利用一个深度图像隐写神经网络（Decoder-Encoder网络）在样本中嵌入 ”不可感知的“后门；
+   - **Training Stage**： 然后，使用带有后门的数据进行正常的训练，得到一个带有后门的深度神经网络；
+   - **Inference Stage**： 最后，用后门数据对网络进行攻击；
+
+2. 深度图像隐写神经网络的训练：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210820175716565.png" alt="image-20210820175716565" style="zoom: 39%;" />
+
+   该网络的输入是一张原始图片和一个目标标签，经过一个Encoder（<u>和图片样式转换的作用相同</u>）添加后门扰动，再用一个Decoder进行解码。整个网路**希望最终解码出来的标签和目标标签是一致的，并且添加后门扰动后的图片和原始图片的差距应该尽可能得小**。
+
+   <u>我的理解：相当于我们训练原任务模型时，原始模型中就会携带有一个 Decoder 一样的解码逻辑；</u>
+
+3. 实验：
+
+   (1) 污染的样本占整个数据集的 10%，添加后门 trigger 的样本如下：（<u>像上面说得一样，就像是经过了一个风格转换器一样</u>）
+
+   ![image-20210820235905109](pictures/image-20210820235905109.png)
+
+   (2) 深度图像隐写网络结构：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821000425391.png" alt="image-20210821000425391" style="zoom: 33%;" />
+
+   ​	整体上用的时一个 **StegaStamp 网络**；
+
+   (3) **Attack Effectiveness & Attack Stealthiness**：
+
+   ![image-20210821001115813](pictures/image-20210821001115813.png)
+
+   ​	本文的工作**能够在保证成功率的情况下，大大减小添加的后门扰动**；
+
+   (4) **Attack with Different Target Label**：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821001822746.png" alt="image-20210821001822746" style="zoom: 37%;" />
+
+   ​	**攻击多个标签的成功率**；
+
+   (5) **The Effect of Poisoning Rate**：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821002300062.png" alt="image-20210821002300062" style="zoom: 33%;" />
+
+   ​		**投毒率对攻击成功率的影响**；
+
+   (6) Out-of-dataset Generalization
+
+   - **Out-of-dataset Generalization in the Attack Stage**：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821003601456.png" alt="image-20210821003601456" style="zoom: 33%;" />
+
+     Encoder 在其他数据集上面进行训练，然后迁移到另一个数据集上面的效率；
+
+   - **Out-of-dataset Generalization in the Inference Stage**：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821003711681.png" alt="image-20210821003711681" style="zoom:33%;" />
+
+     样式后门在不同数据上面的迁移性；
+
+### Links
+
+- 论文链接：[Li Y, Li Y, Wu B, et al. Backdoor attack with sample-specific triggers[J]. arXiv preprint arXiv:2012.03816, 2020.](https://arxiv.org/pdf/2012.03816.pdf)
+- 论文代码：https://github.com/yuezunli/ISSBA
