@@ -1311,3 +1311,133 @@
 
 - 论文代码：https://git.tu-berlin.de/gmontavon/lrp-tutorial
 
+
+
+
+
+## Benchmarking Deep Learning Interpretability in Time Series Predictions
+
+### Contribution
+
+> 综合我的理解和 NIPS 的 Reviews，这篇文章的含金量不高；
+
+1. 对时序分类模型做了可解释性分析，其中观察到的一些现象值得我们仔细思考；
+2. 尽管文章使用的是自制的 Toy Dataset 和比较简单的 LSTM 网络，但是文章提出的 TSR 的方法（我更愿意称它为一直分步的思想）值得我们借鉴；
+3. <u>对于复杂数据集，没有太大的借鉴意义</u>；
+
+### Notes
+
+1. 作者关注的问题：
+
+   (1) 用原文来解释：
+
+   - **Time Series Classification Problem**： All time steps contribute to making the final ouput, labels are available after the last time step；
+   - **Interpretability Problem**： Given a target class $c$, the saliency method finds the relevance $R(X)\in \mathbb{R}^{N\times T}$ which assigns relevance scores $R_{i,t}(X)$ for input feature $i$ at time $t$ ;
+
+   (2) 个人理解：
+
+   - <u>作者对于整个数据集的解释是比较模糊的，反正我是没怎么看懂，因为这篇文章只能给我一些启发，所以不再具体从代码层面去分析这个数据集</u>；（**TODO：查看具体的数据集生成代码**）
+   - **那为什么要看懂这些数据集**：<u>这些数据集是作者自己构造的，可以成为 Toy Dataset，这样构造的数据可以在一定程度上验证可解释性方法的有效性，所以有必要理解作者如何构造自定义数据集的，未来可能用得上；</u>⭐
+   - 首先，我们来看其中一个数据集的样例：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825171444861.png" alt="image-20210825171444861" style="zoom:50%;" />
+
+   - 然后，整体上来看作者生成了哪些数据集：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825172116215.png" alt="image-20210825172116215" style="zoom:50%;" />
+
+2. 作者实验中用的可解释性方法
+
+   下面的这些方法作者用的都是 [Python-Captum](https://captum.ai/) 库中已经集成的算法
+
+   - Gradient-based：
+     - Gradient (GRAD)
+     - Integrated Gradients (IG)
+     - SmoothGrad (SG)
+     - DeepLIFT (DL)
+     - Gradient SHAP (GS)
+     - Deep SHAP (DeepLIFT + Shapley values) (DLS)
+   - Perturbation-based：
+     - Feature Occlusion (FO)
+     - Feature Ablation (FA)
+     - Feature Permutation (FP)
+   - Other：
+     - Shapley Value Sampling (SVS)
+
+3. 作者如何度量可解释性方法的效率：⭐
+
+   (1) 针对可解释问题，作者期望度量的两个要点：
+
+   - **Precision**： Are all features identified as salient informative? (<u>度量的准不准</u>)
+   - **Recall**： Was the saliency method able to identify all informative features? (<u>度量的全不全</u>)
+
+   (2) 度量的思路：Modification-based Evaluation Methods
+
+   - 原文：Applying saliency method, ranking features according to the saliency values, recursively eliminating higher ranked features an measure degradation to the trained model accuracy；
+   - 理解：即首先用可解释性方法对（测试集上的数据）不同时间维度上面的特征进行排序，然后把 $top-k$ 的特征抹除，观察模型对扰动后的测试集的分类精度变化；
+
+   (3) 度量的指标：
+
+   - Area under the Precision Curve (AUP)
+   - Area under the Recall Curve (AUR)
+   - Area under Precision and Recall Curve (AUPR)
+
+   (4) 度量过程中存在的问题：因为文章采用的是 Modification-based Evaluation Methods，所以需要对特征进行 Mask，所以会存在两个问题
+
+   - 原文
+     - Features that are closely ranked might have substantially different saliency values;
+     - Eliminating features changes the test data distribution violating the assumption that both training and testing data are independent and identically distributed. Model accuracy degradation may be a result of changing data distribution rather than removing salient features.
+   - 理解
+     - 不同排名的特征之间，有的得分差异很大，有的得分差异很小；
+     - Mask $top-k$ 的特征很可能是改变了数据集的分布，才导致的模型分类准确率下降，并不是因为可解释方法好；（这一点，我觉得很难去解决，而且如果可解释性方法A能比可解释性方法B让模型精度下降得更多，也还是能反映出来A找到了一些关键特征的——即使这是一些让模型 Out-of-distribution 的特征）;
+   - 尝试解决
+     - 不再固定 $top-k$ 的值，而是固定前 $k$ 个特征累加的权重超过某个阈值 $d$；
+     - 不再用空白代替原有特征，而是从原数据集中随机采样对目标掩蔽位置进行替换；
+     - 具体的原文描述如下：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825185322643.png" alt="image-20210825185322643" style="zoom: 43%;" />
+
+4. 已有方法存在的问题：
+
+   - 现象 1：从可解释性结果上来看，可以发现解释的结果上面有非常多的噪声；
+
+     ![image-20210825224551791](images/image-20210825224551791.png)
+
+   - 现象 2：从作者提出的 Modification-based Evaluation Methods 来看模型准确率的变化，可以发现根据可解释性方法选择特征和随机选择特征相比并没有优势；
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225333408.png" alt="image-20210825225333408" style="zoom: 50%;" />
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225417672.png" alt="image-20210825225417672" style="zoom: 50%;" />
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225509213.png" alt="image-20210825225509213" style="zoom: 50%;" />
+
+5. 作者提出的方法：⭐
+
+   - 方法思想：
+     - 原文：The key idea is to decouple the (time, feature) importance scores to time and feature relevance scores using a two-step procedure  called  **Temporal Saliency Rescaling (TSR)**；
+     - 理解：总结前面的问题，即为可解释性方法能够准确定位时间维度上不同时间片的权重，但是不能准确定位不同特征的权重；所以作者就想着将时间维度和特征维度两个维度的权重分开进行计算；
+   - 具体实现步骤：
+     - In the first step, we calculate **the time-relevance score** for each time by computing the total change in saliency values if that time step is masked；
+     - In the second step, in each time-step whose time-relevance score is **above a certain threshold $\alpha$**, we compute the **feature-relevance score** for each feature by computing the total change in saliency values if that feature is masked.
+   - 伪代码：
+
+   ![image-20210825232004505](images/image-20210825232004505.png)
+
+   - 可解释性结果：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825234906953.png" alt="image-20210825234906953" style="zoom: 50%;" />
+
+   - 统计结果：
+
+     <u>这里吐槽一下（纯属个人吐槽，没有其他意思），我找遍了整个文章，作者对改进的方法的结果统计就只有这一张表</u> :sweat:
+
+     - 首先，这个结果的数据全不全啊，就只给了 “TSR+Grad” 的数据啊，其他的数据去哪里了？
+     - 这数据不全，就直接能够得到你这个方法好的结论了，真的很奇妙啊？
+     - 前面那个实验的数据在附录列了一大堆，这个主要的实验，什么都不列，真的很水，这也能过 NIPS？
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825233011636.png" alt="image-20210825233011636" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Ismail A A, Gunady M, Bravo H C, et al. Benchmarking deep learning interpretability in time series predictions[J]. (NIPS 2020)](https://arxiv.org/abs/2010.13924)
+- 论文代码：https://github.com/ayaabdelsalam91/TS-Interpretability-Benchmark
