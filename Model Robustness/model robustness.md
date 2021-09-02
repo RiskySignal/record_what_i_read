@@ -447,3 +447,42 @@ $$
 
 - 论文链接：[Li L, Qi X, Xie T, et al. SoK: Certified Robustness for Deep Neural Networks[J]. arXiv preprint arXiv:2009.04131, 2020.](https://arxiv.org/abs/2009.04131)
 - 论文代码：[VeriGauge](https://github.com/AI-secure/VeriGauge)
+
+
+
+
+
+## TensorFuzz: Debugging Neural Networks with Coverage-Guided Fuzzing
+
+### Contribution
+
+1. 提供了一种结合 CGF 进行模型鲁棒性验证的思路；
+
+### Notes
+
+1. CGF with Network 整体框架：
+
+   ![image-20210902004217303](images/image-20210902004217303.png)
+
+   (1) Input Chooser：从 “Seed Corpus” 中筛选输入样本，可以采用随机采样，也可以使用时间相关采样；
+   $$
+   p(c_k, t) = \frac{e^{t_k - t}}{\sum{e^{t_k-t}}}
+   $$
+   ​	其中，$t_k$ 为样本 $k$ 加入的时间，$t$ 为采样的时间；
+
+   (2) Objective Functon：对 metadata 数组做处理，判断网络是否出现了异常值；
+
+   > 这边就非常值得思考，我们怎么来定义，我们的网络出现了异常值呢？对于神经网络来说是非常难以定义的一个问题；如何来解决这个问题？
+
+   (3) Coverage Analyzer：采用 **approximate nearest neighbor algorithm** 对神经网络的激活值进行判断，判断是否出现了额外的激活分支；
+   
+2. 实验：
+
+   (1) 用来检查 NAN 值；
+
+   (2) 用来检查量化模型和原模型之间的差异大小；
+
+### Links
+
+- 论文链接：[Odena A, Olsson C, Andersen D, et al. Tensorfuzz: Debugging neural networks with coverage-guided fuzzing[C]//International Conference on Machine Learning. PMLR, 2019: 4901-4911.](https://arxiv.org/pdf/1807.10875.pdf)
+- 论文代码：[TensorFuzz: Coverage Guided Fuzzing for Neural Networks](https://github.com/brain-research/tensorfuzz)
