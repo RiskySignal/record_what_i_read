@@ -482,7 +482,30 @@ $$
 
    (2) 用来检查量化模型和原模型之间的差异大小；
 
+> 思考：
+>
+> 在 NN Fuzzing 的工作中，我们应该如何来衡量工作的好坏？
+
 ### Links
 
 - 论文链接：[Odena A, Olsson C, Andersen D, et al. Tensorfuzz: Debugging neural networks with coverage-guided fuzzing[C]//International Conference on Machine Learning. PMLR, 2019: 4901-4911.](https://arxiv.org/pdf/1807.10875.pdf)
 - 论文代码：[TensorFuzz: Coverage Guided Fuzzing for Neural Networks](https://github.com/brain-research/tensorfuzz)
+
+
+
+
+
+## DeepHunter: a coverage-guided fuzz testing framework for deep neural networks
+
+### Contribution
+
+
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Xie X, Ma L, Juefei-Xu F, et al. Deephunter: a coverage-guided fuzz testing framework for deep neural networks[C]//Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis. 2019: 146-157.](https://dl.acm.org/doi/10.1145/3293882.3330579)
+- 

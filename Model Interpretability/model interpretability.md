@@ -246,13 +246,28 @@
    - 具体实现：用等分来近似计算积分
 
      <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608214019402.png" alt="image-20210608214019402" style="zoom: 25%;" />
+   
+4. Captum 代码详解：
+
+   主要看 Layer Integrated Gradients 这个算法的实现，因为它不仅包含 Integrated Gradients，同时它还能针对不同的层进行单独地可解释，这个对于 NLP 领域的可解释实验是十分有帮助的；
+
+   - 使用 `Gauss Legendre` 算法进行定积分的近似计算，具体的文档如下：
+
+     ![image-20210904143741459](../My_Work/2021/pictures/image-20210904143741459.png)
+
+   - 具体在计算过程中，主要利用 pytorch hook 来取得中间层的梯度结果，具体的代码实现如下：
+
+     ![image-20210904143915153](../My_Work/2021/pictures/image-20210904143915153.png)
+
+     - `register_forward_hook` 将钩子函数挂载到目标层的输入上；
+     - `register_forward_pre_hook` 将钩子函数挂载到目标层的输出上；
 
 ### Links
 
 - 论文链接：[Sundararajan M, Taly A, Yan Q. Axiomatic attribution for deep networks[C]//International Conference on Machine Learning. PMLR, 2017: 3319-3328.](https://arxiv.org/pdf/1703.01365.pdf)
-
 - 参考博客：[论文笔记：Axiomatic Attribution for Deep Networks](http://weichengan.com/2020/12/05/paper_notes/Axiomatic_Attribution_for_Deep_Networks/)
 - 论文代码：[Integrated Gradients](https://github.com/ankurtaly/Integrated-Gradients)
+- Captum 复现代码：[Integrated Gradients](https://captum.ai/api/integrated_gradients.html) ，[Layer Integrated Gradients](https://captum.ai/api/layer.html#captum.attr.LayerIntegratedGradients)
 
 
 
@@ -736,6 +751,48 @@
 
 - 论文链接：[Wu M, Hughes M, Parbhoo S, et al. Beyond sparsity: Tree-based regularization of deep models for interpretability[C]//In: Neural Information Processing Systems (NIPS) Conference. Transparent and Interpretable Machine Learning in Safety Critical Environments (TIML) Workshop. 2017.](https://arxiv.org/abs/1711.06178)
 - 论文代码：https://github.com/dtak/tree-regularization-public
+
+
+
+
+
+## * Computationally efficient measures of internal neuron importance
+
+### Contribution
+
+1. 研究的问题是：度量神经元的重要性；
+2. 作者将上述问题（Total Conductance Problem）转换用等价的 Integrated Gradients 算法来计算，命名为 Neuron Integrated Gradients 算法；
+
+### Notes
+
+1. 度量神经元重要性（Total Conductance）问题描述：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908093957394.png" alt="image-20210908093957394" style="zoom:50%;" />
+
+2. Total Conductance 和 Path Integrated Gradients 问题的等价性：
+
+   - Path Integrated Gradients 问题：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908094706471.png" alt="image-20210908094706471" style="zoom:33%;" />
+
+     其中 $x_i$ 表示输入 $x$ 的第 $i$ 个元素；
+
+   - Total Conductance 问题：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908095006541.png" alt="image-20210908095006541" style="zoom: 33%;" />
+
+   我的理解：我感觉这两个问题，Path Integrated Gradients 是针对输入层的某个元素进行梯度积分，Total Conductance 是针对中间层的某个神经元进行梯度积分（仍然是对输入 $x$ 进行改变）；原理上来说应该属于同一个问题，实现上可能会存在差异，这个差异来自于 Integrated Gradients 对中间层进行解释时是从中间层的两个点之间进行分段积分，而 Total Conductance 在处理相同问题时，则是在输入层的两个点之间对中间层的导数进行分段积分；
+
+3. Deep LIFT 和 Neuron Integrated Gradients 的比较：
+
+   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908100123012.png" alt="image-20210908100123012" style="zoom: 50%;" />
+
+   这段话，我读下来的感觉就是，**<u>DeepLIFT 解释结果又好，速度也快</u>**；
+
+### Links
+
+- 论文链接：[Shrikumar A, Su J, Kundaje A. Computationally efficient measures of internal neuron importance[J]. arXiv preprint arXiv:1807.09946, 2018.](https://arxiv.org/pdf/1807.09946.pdf)
+- 论文代码：https://colab.research.google.com/drive/1IBzFmePk11_2Z71Urgv4Vei4vp8wGjBk
 
 
 
