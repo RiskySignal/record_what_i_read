@@ -194,10 +194,10 @@
 
 ### Links
 
-- 论文链接: [Smilkov, Daniel, et al. "Smoothgrad: removing noise by adding noise." *ICML* (2017).](https://arxiv.org/abs/1706.03825)
-- 论文主页: https://pair-code.github.io/saliency/
-- Pytorch 实现: [pytorch-smoothgrad](https://github.com/hs2k/pytorch-smoothgrad)
-- Tensorflow 实现 (论文源码): [saliency](https://github.com/PAIR-code/saliency)
+- 论文链接： [Smilkov, Daniel, et al. "Smoothgrad: removing noise by adding noise." *ICML* (2017).](https://arxiv.org/abs/1706.03825)
+- 论文主页： https://pair-code.github.io/saliency/
+- Pytorch 实现： [pytorch-smoothgrad](https://github.com/hs2k/pytorch-smoothgrad)
+- Tensorflow 实现 (论文源码)： [saliency](https://github.com/PAIR-code/saliency)
 
 
 
@@ -793,6 +793,91 @@
 
 - 论文链接：[Shrikumar A, Su J, Kundaje A. Computationally efficient measures of internal neuron importance[J]. arXiv preprint arXiv:1807.09946, 2018.](https://arxiv.org/pdf/1807.09946.pdf)
 - 论文代码：https://colab.research.google.com/drive/1IBzFmePk11_2Z71Urgv4Vei4vp8wGjBk
+
+
+
+
+
+## Towards better understanding of gradient-based attribution methods for Deep Neural Networks
+
+> 我的想法：
+>
+> 1. 有的文章不需要完全把每个细节都给读明白，我们可以先看文章的 Abstract 去了解文章做了什么，然后看 Attributions 去思考我们主要关心文章的哪些细节，然后带着问题去看，可能更容易读懂一篇文章；
+> 2. 如果我们同样要做一篇度量的文章，或者是一篇 SOK，那么，我们的工作和他们的差别是什么？比他们的文章好在哪里？
+
+### Contribution
+
+1. 作者证明了 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法在一定情况下是等价的；
+2. 作者提出了一个 Sensitivity-n 的度量标准，来度量不同可解释性方法的好坏；
+
+### Notes
+
+1. 比较 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法的公式：
+
+   - $\epsilon$-LRP 公式：
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210909212647932.png" alt="image-20210909212647932" style="zoom: 25%;" />
+
+   - DeepLIFT(Rescale) 公式：
+
+     <img src="images/image-20210909212930892.png" alt="image-20210909212930892" style="zoom: 25%;" />
+
+   - 可解释性方法的等价：
+
+     ![image-20210909213255591](images/image-20210909213255591.png)
+
+     原文如上，我的理解是：每个神经元的激活函数都能够使得 $f(0)=0$，并且每一项都没有 bias 项，这样的话，对于 `zero baseline` 它每层的激活值都应该等于 0，那么显然，$\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法应该是相等的；
+
+2. Local or Global Attribution Methods
+
+   - 首先，提到 **Local** 和 **Global** 这两个词的时候我很困惑，对于我来说，Local 和 Global 让我想到的是“局部解释性方法”还是“全局解释性方法”；
+
+   - 抛开前面这种固有思想，我们注意作者用的是 "**Attribution**"，也就是说作者其实讨论的是“**特征的贡献大小**”，然后我们来看看作者文章中的解释；
+
+   - 原文的定义如下：（这边还是读原文比较通俗，所以不给我的理解了）
+
+     ![image-20210909214056023](images/image-20210909214056023.png)
+
+   - 原文给的解释：（这边还是读原文比较通俗，所以不给我的理解了）
+
+     ![image-20210909214300063](images/image-20210909214300063.png)
+
+     ![image-20210909214346658](images/image-20210909214346658.png)
+
+   - 我的疑问：:question:
+
+     <u>作者把 local 和 global 的概念放到线性模型中当然是成立的，但是对于复杂的非线性模型，这个同样成立吗？这样做对于 LRP 和 DeepLIFT 算法同样成立吗？</u>
+
+3. Sensitivity-n 度量指标 ⭐
+
+   1. 原文定义：An attribution method satisfies `Sensitivity-n` when the sum of the attributions for any subset of features of cardinality $n$ is equal to the variation of the output $S_c$ caused removing the features in the subset. Mathematically when, for all subsets of features $x_S =[x_1, x_2, \dots,x_n] \in x$, it holds 
+      $$
+      \sum_{i=1}^n R_i^c(x) = S_c(x) - S_c(x_{[x_S=0]})
+      $$
+
+   2. 理解：即我们把输入的其中 $n$ 个特征删除后（这里用的 baseline 是 0），那么目标类的 confidence 的变化应该等于这些特征重要性之和；
+
+   3. 这个特性，在正常情况下，上述的可解释性方法都是没有办法满足的，所以**作者的目标是测量这之间的差值（在文章中的用的是 PCC——Pearson Correlation Coefficient 指标）**；
+
+4. 实验分析：
+
+   - **Input might contain negative evidence**：如下图，删除负相关的特征后，预测的概率可能增加；
+
+     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210910005101318.png" alt="image-20210910005101318" style="zoom:50%;" />
+
+   - 其他实验结果
+
+     ![image-20210910005617876](images/image-20210910005617876.png)
+
+     - **Occlusion-1 better identifies the few most important features**；
+     - **In some cases, like in MNIST-MLP w/ Tanh, Gradient * Input approximates the behavior of Occlusion-1 better than other gradient-based methods**；
+     - **Integrated Gradients and DeepLIFT have very high correlation, suggesting that the latter is a good (and faster) approximation of the former in practice**；
+     - **$\epsilon$-LRP is equivalent to Gradient * Input when all nonlinearities are ReLUs, while it fails when these are Sigmoid or Softplus**；
+     - **All methods are equivalent when the model behaves linearly**；
+
+### Links
+
+- 论文链接：[Ancona M, Ceolini E, Öztireli C, et al. Towards better understanding of gradient-based attribution methods for deep neural networks[J]. ICLR 2018](https://arxiv.org/pdf/1711.06104.pdf)
 
 
 
