@@ -801,25 +801,25 @@
 
 1. 度量神经元重要性（Total Conductance）问题描述：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908093957394.png" alt="image-20210908093957394" style="zoom:50%;" />
+   <img src="images/image-20210908093957394.png" alt="image-20210908093957394" style="zoom:50%;" />
 
 2. Total Conductance 和 Path Integrated Gradients 问题的等价性：
 
    - Path Integrated Gradients 问题：
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908094706471.png" alt="image-20210908094706471" style="zoom:33%;" />
+     <img src="images/image-20210908094706471.png" alt="image-20210908094706471" style="zoom:33%;" />
 
      其中 $x_i$ 表示输入 $x$ 的第 $i$ 个元素；
 
    - Total Conductance 问题：
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908095006541.png" alt="image-20210908095006541" style="zoom: 33%;" />
+     <img src="images/image-20210908095006541.png" alt="image-20210908095006541" style="zoom: 33%;" />
 
    我的理解：我感觉这两个问题，Path Integrated Gradients 是针对输入层的某个元素进行梯度积分，Total Conductance 是针对中间层的某个神经元进行梯度积分（仍然是对输入 $x$ 进行改变）；原理上来说应该属于同一个问题，实现上可能会存在差异，这个差异来自于 Integrated Gradients 对中间层进行解释时是从中间层的两个点之间进行分段积分，而 Total Conductance 在处理相同问题时，则是在输入层的两个点之间对中间层的导数进行分段积分；
 
 3. Deep LIFT 和 Neuron Integrated Gradients 的比较：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210908100123012.png" alt="image-20210908100123012" style="zoom: 50%;" />
+   <img src="images/image-20210908100123012.png" alt="image-20210908100123012" style="zoom: 50%;" />
 
    这段话，我读下来的感觉就是，**<u>DeepLIFT 解释结果又好，速度也快</u>**；
 
@@ -857,7 +857,7 @@
 
    - $\epsilon$-LRP 公式：
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210909212647932.png" alt="image-20210909212647932" style="zoom: 25%;" />
+     <img src="images/image-20210909212647932.png" alt="image-20210909212647932" style="zoom: 25%;" />
 
    - DeepLIFT(Rescale) 公式：
 
@@ -904,7 +904,7 @@
 
    - **Input might contain negative evidence**：如下图，删除负相关的特征后，预测的概率可能增加；
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210910005101318.png" alt="image-20210910005101318" style="zoom:50%;" />
+     <img src="images/image-20210910005101318.png" alt="image-20210910005101318" style="zoom:50%;" />
 
    - 其他实验结果
 
@@ -1523,11 +1523,11 @@
    - **那为什么要看懂这些数据集**：<u>这些数据集是作者自己构造的，可以成为 Toy Dataset，这样构造的数据可以在一定程度上验证可解释性方法的有效性，所以有必要理解作者如何构造自定义数据集的，未来可能用得上；</u>⭐
    - 首先，我们来看其中一个数据集的样例：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825171444861.png" alt="image-20210825171444861" style="zoom:50%;" />
+   <img src="images/image-20210825171444861.png" alt="image-20210825171444861" style="zoom:50%;" />
 
    - 然后，整体上来看作者生成了哪些数据集：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825172116215.png" alt="image-20210825172116215" style="zoom:50%;" />
+   <img src="images/image-20210825172116215.png" alt="image-20210825172116215" style="zoom:50%;" />
 
 2. 作者实验中用的可解释性方法
 
@@ -1578,7 +1578,7 @@
      - 不再用空白代替原有特征，而是从原数据集中随机采样对目标掩蔽位置进行替换；
      - 具体的原文描述如下：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825185322643.png" alt="image-20210825185322643" style="zoom: 43%;" />
+   <img src="images/image-20210825185322643.png" alt="image-20210825185322643" style="zoom: 43%;" />
 
 4. 已有方法存在的问题：
 
@@ -1588,11 +1588,11 @@
 
    - 现象 2：从作者提出的 Modification-based Evaluation Methods 来看模型准确率的变化，可以发现根据可解释性方法选择特征和随机选择特征相比并没有优势；
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225333408.png" alt="image-20210825225333408" style="zoom: 50%;" />
+     <img src="images/image-20210825225333408.png" alt="image-20210825225333408" style="zoom: 50%;" />
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225417672.png" alt="image-20210825225417672" style="zoom: 50%;" />
+     <img src="images/image-20210825225417672.png" alt="image-20210825225417672" style="zoom: 50%;" />
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825225509213.png" alt="image-20210825225509213" style="zoom: 50%;" />
+     <img src="images/image-20210825225509213.png" alt="image-20210825225509213" style="zoom: 50%;" />
 
 5. 作者提出的方法：⭐
 
@@ -1608,7 +1608,7 @@
 
    - 可解释性结果：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825234906953.png" alt="image-20210825234906953" style="zoom: 50%;" />
+   <img src="images/image-20210825234906953.png" alt="image-20210825234906953" style="zoom: 50%;" />
 
    - 统计结果：
 
@@ -1618,7 +1618,7 @@
      - 这数据不全，就直接能够得到你这个方法好的结论了，真的很奇妙啊？
      - 前面那个实验的数据在附录列了一大堆，这个主要的实验，什么都不列，真的很水，这也能过 NIPS？
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210825233011636.png" alt="image-20210825233011636" style="zoom:50%;" />
+   <img src="images/image-20210825233011636.png" alt="image-20210825233011636" style="zoom:50%;" />
 
 ### Links
 

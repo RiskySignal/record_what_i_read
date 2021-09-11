@@ -302,7 +302,7 @@
 
 2. ⭐ 对抗攻击分类：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210105220056259.png" alt="image-20210105220056259" style="zoom: 40%;" />
+   <img src="images/image-20210105220056259.png" alt="image-20210105220056259" style="zoom: 40%;" />
 
    
 

@@ -1,4 +1,4 @@
-# Attack & Defense in Backdoor Attack
+# Attack & Defense in Poisoned & Backdoor Attack
 
 [TOC]
 
@@ -289,7 +289,7 @@
 
 2. 深度图像隐写神经网络的训练：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210820175716565.png" alt="image-20210820175716565" style="zoom: 39%;" />
+   <img src="pictures/image-20210820175716565.png" alt="image-20210820175716565" style="zoom: 39%;" />
 
    该网络的输入是一张原始图片和一个目标标签，经过一个Encoder（<u>和图片样式转换的作用相同</u>）添加后门扰动，再用一个Decoder进行解码。整个网路**希望最终解码出来的标签和目标标签是一致的，并且添加后门扰动后的图片和原始图片的差距应该尽可能得小**。
 
@@ -303,7 +303,7 @@
 
    (2) 深度图像隐写网络结构：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821000425391.png" alt="image-20210821000425391" style="zoom: 33%;" />
+   <img src="pictures/image-20210821000425391.png" alt="image-20210821000425391" style="zoom: 33%;" />
 
    ​	整体上用的时一个 **StegaStamp 网络**；
 
@@ -315,13 +315,13 @@
 
    (4) **Attack with Different Target Label**：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821001822746.png" alt="image-20210821001822746" style="zoom: 37%;" />
+   <img src="pictures/image-20210821001822746.png" alt="image-20210821001822746" style="zoom: 37%;" />
 
    ​	**攻击多个标签的成功率**；
 
    (5) **The Effect of Poisoning Rate**：
 
-   <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821002300062.png" alt="image-20210821002300062" style="zoom: 33%;" />
+   <img src="pictures/image-20210821002300062.png" alt="image-20210821002300062" style="zoom: 33%;" />
 
    ​		**投毒率对攻击成功率的影响**；
 
@@ -329,13 +329,13 @@
 
    - **Out-of-dataset Generalization in the Attack Stage**：
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821003601456.png" alt="image-20210821003601456" style="zoom: 33%;" />
+     <img src="pictures/image-20210821003601456.png" alt="image-20210821003601456" style="zoom: 33%;" />
 
      Encoder 在其他数据集上面进行训练，然后迁移到另一个数据集上面的效率；
 
    - **Out-of-dataset Generalization in the Inference Stage**：
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210821003711681.png" alt="image-20210821003711681" style="zoom:33%;" />
+     <img src="pictures/image-20210821003711681.png" alt="image-20210821003711681" style="zoom:33%;" />
 
      样式后门在不同数据上面的迁移性；
 
@@ -352,11 +352,185 @@
 
 ### Contribution
 
-1. 利用污染的
+1. 利用污染的数据来做用户照片的隐私保护；（<u>文章的书写、逻辑和讨论的问题都非常 Nice 👍</u>）
+2. 文章在本地模型的基础上，还另外讨论了对四个商业模型的攻击，都得到了不错的效果，实验上面非常的完善；
 
 ### Notes
 
+1. Background：保护用户脸部不被检测识别的两种手段
 
+   - Evasion Attack：使用对抗攻击，让已经训练好的模型无法检测到用户的人脸；
+   - Poisoning Attack：使用投毒攻击，让目标模型训练的时候出错，从而无法检测用户的正常人脸；
+     - **Clean Label Attack：投毒的图片 + 正确的标签；（这篇文章属于这一种 :heavy_check_mark:）**
+     - Model Corruption Attack：投毒的图片 + 错误的标签；
+
+2. 文章的目标：
+
+   - Imperceptible：添加的扰动是不可感知的；
+   - Low Accuracy：经过投毒训练后的模型，对于正常的用户的人脸，应该有很低的分类成功率；
+
+3. 算法框架：
+
+   ![image-20210911175607504](pictures/image-20210911175607504.png)
+
+   - 算法背景：
+
+     - 人脸识别的服务使用预训练的特征提取器；
+     - 用户有一些自己的照片 $x_U$；
+     - 用户有一些别人的照片；
+     - 用户能够得到一些特征提取器 $\Phi(\cdot)$；
+
+   - 算法原理：
+
+     - **Cloaking to Maximize Feature Deviation**：
+
+       原文描述如下图
+
+       <img src="pictures/image-20210911180257390.png" alt="image-20210911180257390" style="zoom: 30%;" />
+
+       即我们希望用户能将自己的照片做一些扰动，使得 **添加扰动后的图片** 通过特征提取器提取出来的特征和 **添加扰动前的图片** 的特征 相差尽可能的大。
+
+       数学表达式如下
+
+       <img src="pictures/image-20210911180419215.png" alt="image-20210911180419215" style="zoom:20%;" />
+
+     - **Image-specific Cloaking**：
+
+       为了 **简化** 上面的搜索过程，我们修改上式为，指定一张目标图片，使得 **添加扰动后的图片** 通过特征提取器提取出来的特征和 **目标图片** 的特征 尽可能得相近。
+
+       数学表达式如下
+
+       <img src="pictures/image-20210911181017524.png" alt="image-20210911181017524" style="zoom:20%;" />
+
+     - 为什么是期望目标分布相似，而不是像对抗攻击那样？
+
+       (1) 因为特征提取器提取得到的是目标的特征分布，而非一个类；
+
+       (2) 作者文章也提了，可能是为了不被检测器检测出来，原文描述如下图
+
+       <img src="pictures/image-20210911184329288.png" alt="image-20210911184329288" style="zoom:33%;" />
+
+   - 算法过程：
+
+     - 挑选目标图片的分类：
+
+       原文描述如下图
+
+       <img src="pictures/image-20210911181204216.png" alt="image-20210911181204216" style="zoom:33%;" />
+
+       即挑选一个目标分类，使得该分类中的图片和用户的图片之间的特征距离（**L2 距离**）最远。
+
+       数学表达式如下
+
+       <img src="pictures/image-20210911181422174.png" alt="image-20210911181422174" style="zoom:20%;" />
+
+     - 生成 Poisoned 样本：
+
+       原文描述如下图
+
+       <img src="pictures/image-20210911181551333.png" alt="image-20210911181551333" style="zoom:33%;" />
+
+       使用 DSSIM 来计算图像的扰动；
+
+       数学表达式如下
+
+       <img src="pictures/image-20210911182736488.png" alt="image-20210911182736488" style="zoom:33%;" />
+
+4. Experiment
+
+   - 原始任务：
+
+     使用两个预训练数据集、两种模型特征提取模型结构、两个目标训练数据集。
+
+     数据集如下
+
+     <img src="pictures/image-20210911183342605.png" alt="image-20210911183342605" style="zoom:33%;" />
+
+     原始任务精度如下
+
+     ![image-20210911183237955](pictures/image-20210911183237955.png)
+
+   - Cloaking Configuration
+
+     这里我觉得需要理解的是，用户的图像来自哪个数据集，而挑选的目标分类的图像又来自哪个数据集，原文描述如下：
+
+     <img src="pictures/image-20210911183735959.png" alt="image-20210911183735959" style="zoom:33%;" />
+
+   - User/Tracker Sharing a Feature Extractor：如果用户知道对方的特征提取模型
+
+     - 实验结果如下，扰动 DISSM 越大，攻击的效果越好
+
+     <img src="pictures/image-20210911183948492.png" alt="image-20210911183948492" style="zoom:33%;" />
+
+     - 产生的图片的样例，看不出扰动
+
+       <img src="pictures/image-20210911184104006.png" alt="image-20210911184104006" style="zoom: 33%;" />
+
+     - 特征空间展示
+
+       <img src="pictures/image-20210911212507202.png" alt="image-20210911212507202" style="zoom:40%;" />
+
+     - 模型分类数目对攻击的影响：**分类数目越多，越容易获得好的攻击结果**；
+
+       <img src="pictures/image-20210911212837549.png" alt="image-20210911212837549" style="zoom:33%;" />
+
+   - User/Tracker Using Different Feature Extractors：如果用户不知道对方的特征提取模型
+
+     - 特征空间展示
+
+       非常明显，这张情况下攻击的迁移效果比较差
+
+       <img src="pictures/image-20210911213442601.png" alt="image-20210911213442601" style="zoom:33%;" />
+
+     - Robust Feature Extractors Boost Transferability
+
+       原文描述如下
+
+       <img src="pictures/image-20210911213641675.png" alt="image-20210911213641675" style="zoom:33%;" />
+
+       即鲁棒的特征提取器中生成的 Poisoned 样本，更加具有迁移能力
+
+     - 改进
+
+       使用对抗训练（PGD）对模型进行训练，来增强模型的鲁棒性，然后利用对抗训练后的模型来生成 Poisoned 样本；
+
+     - 改进后的攻击效果
+
+       <img src="pictures/image-20210911214110004.png" alt="image-20210911214110004" style="zoom: 50%;" />
+
+     - 改进后的特征空间展示
+
+       <img src="pictures/image-20210911214239068.png" alt="image-20210911214239068" style="zoom: 33%;" />
+
+   - 攻击黑盒商业模型
+
+     <img src="pictures/image-20210911214425404.png" alt="image-20210911214425404" style="zoom: 33%;" />
+
+   - Trackers with Uncloaked Image Access：如果用户已经存在一部分照片被爬取用于训练集
+
+     - 已泄露的用户照片比例对攻击成功率的影响
+
+       <img src="pictures/image-20210911215237325.png" alt="image-20210911215237325" style="zoom:33%;" />
+
+     - 改进方法
+
+       重建一个僵尸账号，并且上传一些 Poisoned 样本（默认这个账号的样本也会被收集），这些样本的原始分类属于另外的分类，在生成样本时，希望样本的特征分布和用户图片的特征分布尽可能得相似；
+
+     - 改进后的结果
+
+       <img src="pictures/image-20210911221017348.png" alt="image-20210911221017348" style="zoom:33%;" />
+
+       其中 `Sybil (x2)` 指的是每张用户的图片都用僵尸账号生成两张 Poisoned 样本；
+
+     - 改进的原理
+
+       原文描述如下图
+
+       <img src="pictures/image-20210911221305860.png" alt="image-20210911221305860" style="zoom:33%;" />
+
+       从 **决策边界** 理解原理
+
+       <img src="pictures/image-20210911221413748.png" alt="image-20210911221413748" style="zoom:38%;" />
 
 ### Links
 
