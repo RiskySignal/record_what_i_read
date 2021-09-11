@@ -1089,25 +1089,6 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 
 
-## Fawkes: Protecting Privacy against Unauthorized Deep Learning Models
-
-### Contribution
-
-
-
-### Notes
-
-
-
-### Links
-
-- 论文链接：[Shan S, Wenger E, Zhang J, et al. Fawkes: Protecting privacy against unauthorized deep learning models[C]//29th {USENIX} Security Symposium ({USENIX} Security 20). 2020: 1589-1604.](https://arxiv.org/abs/2002.08327)
-- 论文代码：https://github.com/Shawn-Shan/fawkes
-
-
-
-
-
 ## Composite Adversarial Attacks
 
 ### Contribution

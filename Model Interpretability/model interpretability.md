@@ -657,7 +657,7 @@
   shap_values,indexes = e.shap_values(map2layer(to_explain, 7), ranked_outputs=2)
   ```
 
-  然后，讲一下 `GradientExplainer` 的核心代码，在 `_gradient.py` 文件中：
+  然后，看一下 `GradientExplainer` 的核心代码，在 `_gradient.py` 文件中：
 
   ```python
   # 主要看 _TFGradient.shap_values 方法，代码从250行开始是关键
@@ -686,6 +686,40 @@
       phis[l][j] = samples.mean(0)
       phi_vars[l][j] = samples.var(0) / np.sqrt(samples.shape[0]) # estimate variance of means
   ```
+
+#### Deep SHAP
+
+- Deep SHAP 在原文中的解释：（<u>属实是看不太懂</u>）
+
+  <img src="images/image-20210910165352448.png" alt="image-20210910165352448" style="zoom:50%;" />
+
+- 代码理解：
+
+  代码库：https://github.com/slundberg/shap
+
+  Debug 脚本 - MNIST：[Front Page DeepExplainer MNIST Example](https://slundberg.github.io/shap/notebooks/deep_explainer/Front%20Page%20DeepExplainer%20MNIST%20Example.html)
+
+  Debug 脚本 - IMDB：[Keras LSTM for IMDB Sentiment Classification](https://slundberg.github.io/shap/notebooks/deep_explainer/Keras%20LSTM%20for%20IMDB%20Sentiment%20Classification.html)
+
+  首先，分析 MNIST 脚本的逻辑结构：
+
+  ```python
+  # 定义模型
+  model = Sequential()
+  ... ...
+  # 关键：作者在这里用训练集作为background数据集，或者称为baseline数据集
+  background = x_train[
+      np.random.choice(x_train.shape[0], 100, replace=False)
+  ]
+  # 构建deep explainer，对4张图片进行可解释
+  deep_explainer = shap.DeepExplainer(model, background)
+  # deep_explainer = shap.DeepExlainer((model.layers[0].input, moel.layers[1].output), background)  # keras模型指定可解释的输入输出，和上面语句等同
+  shape_values = deep_explainer.shap_values(x_test[1: 5])
+  # 打印结果
+  shap.image_plot(shape_values, -x_test[1: 5])
+  ```
+
+  然后，看一下 `DeepExplainer` 的核心代码，
 
 #### Tree SHAP
 
@@ -807,12 +841,19 @@
 
 ### Contribution
 
-1. 作者证明了 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法在一定情况下是等价的；
-2. 作者提出了一个 Sensitivity-n 的度量标准，来度量不同可解释性方法的好坏；
+1. 作者证明了 DeepLIFT(Rescale) 和 Gradient $\times$ Input 两者是等价的；
+2. 作者证明了 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法在一定情况下是等价的；
+3. 作者提出了一个 Sensitivity-n 的度量标准，来度量不同可解释性方法的好坏；
 
 ### Notes
 
-1. 比较 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法的公式：
+1. DeepLIFT(Rescale) 和 Gradient $\times$ Input 的等价：（<u>无法给出具体的解释，这里只给出作者的结论</u>）
+
+   ![image-20210910195211781](images/image-20210910195211781.png)
+
+   ![image-20210910195620143](images/image-20210910195620143.png)
+
+2. 比较 $\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法的公式：
 
    - $\epsilon$-LRP 公式：
 
@@ -828,7 +869,7 @@
 
      原文如上，我的理解是：每个神经元的激活函数都能够使得 $f(0)=0$，并且每一项都没有 bias 项，这样的话，对于 `zero baseline` 它每层的激活值都应该等于 0，那么显然，$\epsilon$-LRP 和 DeepLIFT(Rescale) 两个可解释性方法应该是相等的；
 
-2. Local or Global Attribution Methods
+3. Local or Global Attribution Methods
 
    - 首先，提到 **Local** 和 **Global** 这两个词的时候我很困惑，对于我来说，Local 和 Global 让我想到的是“局部解释性方法”还是“全局解释性方法”；
 
@@ -848,7 +889,7 @@
 
      <u>作者把 local 和 global 的概念放到线性模型中当然是成立的，但是对于复杂的非线性模型，这个同样成立吗？这样做对于 LRP 和 DeepLIFT 算法同样成立吗？</u>
 
-3. Sensitivity-n 度量指标 ⭐
+4. Sensitivity-n 度量指标 ⭐
 
    1. 原文定义：An attribution method satisfies `Sensitivity-n` when the sum of the attributions for any subset of features of cardinality $n$ is equal to the variation of the output $S_c$ caused removing the features in the subset. Mathematically when, for all subsets of features $x_S =[x_1, x_2, \dots,x_n] \in x$, it holds 
       $$
@@ -859,7 +900,7 @@
 
    3. 这个特性，在正常情况下，上述的可解释性方法都是没有办法满足的，所以**作者的目标是测量这之间的差值（在文章中的用的是 PCC——Pearson Correlation Coefficient 指标）**；
 
-4. 实验分析：
+5. 实验分析：
 
    - **Input might contain negative evidence**：如下图，删除负相关的特征后，预测的概率可能增加；
 

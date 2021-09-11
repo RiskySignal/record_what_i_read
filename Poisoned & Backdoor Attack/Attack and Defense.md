@@ -343,3 +343,23 @@
 
 - 论文链接：[Li Y, Li Y, Wu B, et al. Backdoor attack with sample-specific triggers[J]. arXiv preprint arXiv:2012.03816, 2020.](https://arxiv.org/pdf/2012.03816.pdf)
 - 论文代码：https://github.com/yuezunli/ISSBA
+
+
+
+
+
+## Fawkes: Protecting Privacy against Unauthorized Deep Learning Models
+
+### Contribution
+
+1. 利用污染的
+
+### Notes
+
+
+
+### Links
+
+- 论文链接：[Shan S, Wenger E, Zhang J, et al. Fawkes: Protecting privacy against unauthorized deep learning models[C]//29th {USENIX} Security Symposium ({USENIX} Security 20). 2020: 1589-1604.](https://arxiv.org/abs/2002.08327)
+- 论文代码：https://github.com/Shawn-Shan/fawkes
+
