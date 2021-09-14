@@ -499,13 +499,76 @@ $$
 
 ### Contribution
 
-
+1. 在提出新的方法的同时，对现有的工作进行了度量；
+2. 和 TensorFuzz 工作相比，该工作对于图像领域的网络异常运行的检测有了更加清晰的定义；使得该方向的研究不再只停留在框架漏洞、NAN 值等的异常状态的检测，向异常输入（对抗样本、后门等）检测向前迈了一步；
+3. 整合出了一个更加清晰的框架（这个上面创新点并不强）；
 
 ### Notes
 
+1. DeepHunter 框架：
 
+   ![image-20210915012148315](images/image-20210915012148315.png)
+
+2. Metamorphic Mutation Strategy：⭐
+
+   对于神经网络的测试，变异种子的方法要尽可能地保证能够让变异后的样本具有足够的多样性，同时要满足种子的语义没有被改变。
+
+   所以文章提出了以下两类变异算法
+
+   <img src="images/image-20210915012520705.png" alt="image-20210915012520705" style="zoom:33%;" />
+
+   在变异种子的同时，我们需要计算变异后的样本和原始样本的距离（保证语义的相似性），关键的点如下
+
+   - 每个种子最多只进行一次 Affine transformation；
+
+   - 对于只经过 Pixel Value transformation 的样本是否满足语义相似性的判断如下
+
+     <img src="images/image-20210915012928883.png" alt="image-20210915012928883" style="zoom: 33%;" />
+
+   - 对于即经过 Pixel Value transformation，又经过 Affine transformation 的样本是否满足语义相似性的判断如下
+
+     <img src="images/image-20210915013102130.png" alt="image-20210915013102130" style="zoom:33%;" />
+
+   综上，整体的伪代码如下所示
+
+   <img src="images/image-20210915013151302.png" alt="image-20210915013151302" style="zoom: 60%;" />
+
+3. Seed Selection Strategy
+
+   文章希望尽可能挑选还没有被挑选过的种子，公式如下
+
+   <img src="images/image-20210915013357516.png" alt="image-20210915013357516" style="zoom: 33%;" />
+
+4. 实验
+
+   (1) 文章关心的四个问题：
+
+   <img src="images/image-20210915013548283.png" alt="image-20210915013548283" style="zoom:50%;" />
+
+   (2) 实验对比的网络：
+
+   <img src="images/image-20210915014049069.png" alt="image-20210915014049069" style="zoom:37%;" />
+
+   (3) 实验对比的方法：
+
+   - 5 Testing Criteria：
+
+     <img src="images/image-20210915014247123.png" alt="image-20210915014247123" style="zoom:50%;" />
+
+   - 4 Seed Selection Strategies：DeepHunter、DeepTest、TensorFuzz 和 Random；
+
+   (4) 实验重点关注的对比对照：
+
+   <img src="images/image-20210915014421864.png" alt="image-20210915014421864" style="zoom:50%;" />
+
+   (5) 实验结论
+
+   - <img src="images/image-20210915014527659.png" alt="image-20210915014527659" style="zoom: 33%;" />
+   - <img src="images/image-20210915014617639.png" alt="image-20210915014617639" style="zoom:33%;" />
+   - <img src="images/image-20210915014652645.png" alt="image-20210915014652645" style="zoom:33%;" />
+   - <img src="images/image-20210915014718380.png" alt="image-20210915014718380" style="zoom:33%;" />
 
 ### Links
 
 - 论文链接：[Xie X, Ma L, Juefei-Xu F, et al. Deephunter: a coverage-guided fuzz testing framework for deep neural networks[C]//Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis. 2019: 146-157.](https://dl.acm.org/doi/10.1145/3293882.3330579)
-- 
+- 论文代码：（非原作者）https://github.com/Interfish/deep_hunter

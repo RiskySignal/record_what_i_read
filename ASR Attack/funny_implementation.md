@@ -52,6 +52,16 @@
 
 
 
+## AI 实时声音克隆
+
+分享链接：[【有趣的项目分享】尝试用AI合成特朗普的语音](https://juejin.cn/post/6872260516966842382)
+
+Github 项目：[Real-Time Voice Cloning](https://github.com/CorentinJ/Real-Time-Voice-Cloning)
+
+
+
+
+
 ## 智能客服
 
 todo there
