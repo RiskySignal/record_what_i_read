@@ -572,3 +572,19 @@ $$
 
 - 论文链接：[Xie X, Ma L, Juefei-Xu F, et al. Deephunter: a coverage-guided fuzz testing framework for deep neural networks[C]//Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis. 2019: 146-157.](https://dl.acm.org/doi/10.1145/3293882.3330579)
 - 论文代码：（非原作者）https://github.com/Interfish/deep_hunter
+
+
+
+
+
+## * DeepSmartFuzzer: Reward Guided Test Generation For Deep Learning
+
+### Contribution
+
+1. 用了蒙特卡洛树搜索 (Monte Carlo Tree Search) 算法来指导 Coverage-Guided Fuzzing；
+2. 从实验来看并不完整，只做了 MNIST 上的实验，所以这篇论文可以直接忽略；
+
+### Links
+
+- 论文链接：[Demir S, Eniser H F, Sen A. DeepSmartFuzzer: Reward Guided Test Generation For Deep Learning[J]. arXiv preprint arXiv:1911.10621, 2019.](https://arxiv.org/abs/1911.10621)
+- 论文代码：https://github.com/hasanferit/DeepSmartFuzzer
