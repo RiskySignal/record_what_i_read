@@ -656,6 +656,17 @@
 
    <img src="pictures/image-20201201235718462.png" alt="image-20201201235718462" style="zoom: 21%;" />
 
+   在代码的实现中，我非常好奇如下代码段的实现：
+
+   ```python
+   # Convolve the impulse responses to the input
+   fft_length = tf.constant(np.array([nfft], dtype=np.int32))
+   ae_frequency = tf.spectral.rfft(self.ae_input, fft_length=[nfft]) * apply_filters
+   ae_convolved = tf.spectral.irfft(ae_frequency, fft_length=[nfft])[:, :conv_length]
+   ```
+
+   我一开始认为这样的实现是有问题的，但是后来查阅资料以后发现，这样实现的原因是傅里叶变换不仅可以用来时域变换，还可以用来加速卷积运算；参考链接：[卷积和快速傅里叶变换（FFT）的实现](https://whjkm.github.io/2018/08/22/%E5%8D%B7%E7%A7%AF%E5%92%8C%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2%EF%BC%88FFT%EF%BC%89%E7%9A%84%E5%AE%9E%E7%8E%B0/)
+
    (3) **高斯白噪声**。作者在生成对抗样本的过程中，添加高斯白噪声来增强对抗样本对背景白噪声的鲁棒性。形式化公式如下：
 
    <img src="pictures/image-20201202000105905.png" alt="image-20201202000105905" style="zoom: 27%;" />
