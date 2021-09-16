@@ -1326,3 +1326,39 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Lovisotto G, Turner H, Sluganovic I, et al. {SLAP}: Improving Physical Adversarial Examples with Short-Lived Adversarial Perturbations[C]//30th {USENIX} Security Symposium ({USENIX} Security 21). 2021.](https://arxiv.org/abs/2007.04137)
 - 论文代码：[SLAP: Improving Physical Adversarial Examples with Short-Lived Adversarial Perturbations](https://github.com/ssloxford/short-lived-adversarial-perturbations)
+
+
+
+
+
+## * On the Robustness of Vision Transformers to Adversarial Examples
+
+### Contribution
+
+1. 对 CV 的 Transformer 模型做了对抗攻击的评估，并没有太多的创新型；
+
+### Notes
+
+> 网络结构的异构，势必导致不同模型之间对抗样本的迁移性变差；
+>
+> :question: 作者为什么不用 cleverhans 这样的现有库呢？
+
+1. 和 CNN 相比，Transformer 模型在鲁棒性上基本相似，都容易受到白盒攻击；
+
+   ![image-20210916094002576](pictures/image-20210916094002576.png)
+
+2. CNN 和 Transformer 模型对抗样本之间的迁移性有所下降
+
+   <img src="pictures/image-20210916095630146.png" alt="image-20210916095630146" style="zoom:67%;" />
+
+   <img src="pictures/image-20210916095704114.png" alt="image-20210916095704114" style="zoom:67%;" />
+
+   <img src="pictures/image-20210916095739087.png" alt="image-20210916095739087" style="zoom:67%;" />
+
+3. 联合使用 CNN 网络和 Transformer 结构（文章中用的是ViT模型和BiT模型）能够增强模型对**黑盒攻击**（迁移攻击、query攻击）的鲁棒性；但是对于作者提出的 **SAGA 白盒对抗攻击**算法，并没有好的鲁棒性；
+
+   <img src="pictures/image-20210916100538216.png" alt="image-20210916100538216" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Mahmood K, Mahmood R, Van Dijk M. On the robustness of vision transformers to adversarial examples[J]. arXiv preprint arXiv:2104.02610, 2021.](https://arxiv.org/abs/2104.02610)

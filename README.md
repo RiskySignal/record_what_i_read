@@ -1,5 +1,7 @@
 # AI Model Security Reading Notes
 
+微笑，点头，记笔记 :sunflower::sunflower::sunflower::sunflower::sunflower::sunflower:
+
 <div align="center"><img src="pictures/840ad2d34eef686053fecac7eb743e1.jpg" height="200"/></div>
 
 <br/>
@@ -61,6 +63,7 @@
 - 你先不要只在这里想想法，去实现看看，很可能比你想象中的难实现多了，而且过程中你会有更多的想法；（By 何大佬）
 - 我们做防御工作，不能说一下子就把全部的攻击都给干掉了，那是不可能。我们只能说，我们提出的这个防御方法，针对怎样的攻击，能够取得不错的效果，这就达到我们的目的了；（By jifengzhu）
 - 感想：看了 jifengzhu（我的 Mentor）调研的 AI 安全报告，顿时眼前一亮，是一份能够直接给上层决策建议的好报告，看来我还有很多东西需要去学；
+- 承担过多的工程，容易陷入连轴转的怪圈，满负荷工作绝对不是最好的一个状态；（By viking）
 
 
 
