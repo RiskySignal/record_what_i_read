@@ -1616,3 +1616,18 @@
 - 论文链接：[Eisenhofer T, Schönherr L, Frank J, et al. Dompteur: Taming Audio Adversarial Examples[J]. arXiv preprint arXiv:2102.05431, 2021.](https://arxiv.org/abs/2102.05431)
 
 - 论文代码：[Dompteur: Taming Audio Adversarial Examples](https://github.com/dompteur/artifacts)
+
+
+
+
+
+## "Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文连接：[Wenger E, Bronckers M, Cianfarani C, et al. " Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World[J]. ACM CCS, 2021.](https://arxiv.org/abs/2109.09598)
+- 论文代码：

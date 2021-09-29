@@ -363,6 +363,35 @@
 
 
 
+## Interpretable Convolutional Neural Networks
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Zhang Q, Wu Y N, Zhu S C. Interpretable convolutional neural networks[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2018: 8827-8836.](https://arxiv.org/abs/1710.00935)
+- 论文代码：https://github.com/zqs1022/interpretableCNN
+
+
+
+
+
+## Explaining Neural Networks Semantically and Quantitatively
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Chen R, Chen H, Ren J, et al. Explaining neural networks semantically and quantitatively[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision. 2019: 9187-9196.](https://arxiv.org/abs/1812.07169)
+
+
+
+
+
 ## SHAP - SHapley Additive exPlanation
 
 > SHAP 提出的是一种特征重要性的度量方式，在具体的使用上它可以结合已有的可解释性方法（LIME、GRAD 、DeepLIFT等）一起运行，所以该部分不仅仅只关注其中某篇论文，而是关注 SHAP 这个方法；
@@ -1102,7 +1131,7 @@
 
 
 
-## Robust Classification with Convolutional Prototype Learning
+## * Robust Classification with Convolutional Prototype Learning
 
 ### Contribution
 

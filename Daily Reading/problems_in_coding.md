@@ -104,3 +104,6 @@ RuntimeError: one of the variables needed for gradient computation has been modi
 #### Pytorch 数据加载时间分析
 
 主要参考知乎大佬 [Pytorch数据加载的分析](https://zhuanlan.zhihu.com/p/100762487)，总结：明显耗时的操作主要发生在数据读取和数据增强部分；
+
+#### Pytorch 模块中存在 list 导致 to("device") 后模型出错问题
+
