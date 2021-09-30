@@ -1624,6 +1624,8 @@
 ## "Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World
 
 > 这篇文章虽然中了 CCS 2021，但其实工作的创新型上并不多，属于在已有工作上，做了相关评估实验，得出了一些研究人员感兴趣的实验结果；
+>
+> ⭐可以思考一下，为什么作者这样做就可以中顶会？作者一开始是怎么来设计整个对比实验的，我们会关心什么参数？我们又如何在有限时间内把这些实验做完？
 
 ### Contribution
 

@@ -1204,6 +1204,31 @@
 
 
 
+## * To Trust Or Not To Trust A Classifier
+
+### Contributions
+
+- 论文的思想：如果样本离目标类的距离，远大于离其他（某个）类的距离，那么这样的决策结果很可能是有问题的；
+- 我的理解是，这个方法本质上就是最近邻算法的变种，在实际工作中并没有什么价值；
+
+### Notes
+
+我认为这篇文章提出的方法有如下几个缺点：
+
+- 对数据集的大小和任务类型有非常大的限制；
+- 对特征空间和距离函数有要求；
+- 参数如何选择是个问题；
+- 对于特征分布的变化非常敏感；
+
+### Links
+
+- 论文链接：[Jiang H, Kim B, Guan M Y, et al. To trust or not to trust a classifier[J]. NIPS, 2018.](https://arxiv.org/abs/1805.11783)
+- 论文代码：https://github.com/google/TrustScore
+
+
+
+
+
 ## 机器学习模型可解释性方法、应用与安全研究综述
 
 ### Notes
