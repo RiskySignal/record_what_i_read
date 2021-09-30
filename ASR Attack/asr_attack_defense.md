@@ -1623,11 +1623,42 @@
 
 ## "Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World
 
+> 这篇文章虽然中了 CCS 2021，但其实工作的创新型上并不多，属于在已有工作上，做了相关评估实验，得出了一些研究人员感兴趣的实验结果；
+
 ### Contribution
 
+1. 该文章属于系统评测的文章，主要讨论现有的基于深度学习的语音片段生成算法对说话人认证系统的攻击效果；
+2. 该文章发现 WeChat 和 Alexa 都可以被成功攻击，因此，我们需要更加关心说话人认证系统的安全问题；
+
 ### Notes
+
+1. 基于深度学习的语音生成算法：
+
+   - SV2TTS：[链接](https://github.com/CorentinJ/Real-Time-Voice-Cloning)
+
+     <img src="pictures/image-20210930101830969.png" alt="image-20210930101830969" style="zoom: 40%;" />
+
+   - AutoVC：[链接](https://github.com/auspicious3000/autovc)
+
+     <img src="pictures/image-20210930102349560.png" alt="image-20210930102349560" style="zoom:40%;" />
+
+     <img src="pictures/image-20210930102421123.png" alt="image-20210930102421123" style="zoom:41%;" />
+
+2. 目标系统：
+
+   <img src="pictures/image-20210930102548488.png" alt="image-20210930102548488" style="zoom: 80%;" />
+
+3. 针对 Resemblyzer 的攻击效果：
+
+   - 使用传统的语音生成方法进行攻击：攻击效果并不好；
+
+     <img src="pictures/image-20210930103736626.png" alt="image-20210930103736626" style="zoom: 33%;" />
+
+   - 使用深度学习的语音生成方法的对比试验：
+
+     <img src="pictures/image-20210930103822535.png" alt="image-20210930103822535" style="zoom: 43%;" />
 
 ### Links
 
 - 论文连接：[Wenger E, Bronckers M, Cianfarani C, et al. " Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World[J]. ACM CCS, 2021.](https://arxiv.org/abs/2109.09598)
-- 论文代码：
+
