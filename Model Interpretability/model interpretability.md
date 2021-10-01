@@ -1552,6 +1552,40 @@
 
 
 
+## * On the (In)fidelity and Sensitivity for Explanations
+
+### Contributions
+
+1. 文章关注 Fidelity 和 Sensitivity 这两个指标做了相关的实验；
+2. 这两个度量方法，还是比较关注人对可解释性结果的感受，我认为这样的可解释性结果还是不太符合我对可解释性结果的预期；
+
+### Notes
+
+1. Fidelity：希望特征的可解释性权重应该等于在输入中去除这个特征时置信度的变化；
+
+   <img src="images/image-20211001092238050.png" alt="image-20211001092238050" style="zoom:50%;" />
+
+2. Sensitivity：希望可解释性方法对输入中的噪声是不敏感的；
+
+> 这一点我觉得是比较不合理的，因为对于对抗样本，网络的结果是不同的，但是我们却要求可解释性方法不受这样的对抗噪声的影响；
+
+<img src="images/image-20211001092428447.png" alt="image-20211001092428447" style="zoom:50%;" />
+
+3. 实验结果：
+
+   作者主要的做法，就是用 SmoothGrad 来代替 Grad，他认为这样的方法可以减小 INFD，同时减小 $SENS_{MAX}$。
+
+   <img src="images/image-20211001092829494.png" alt="image-20211001092829494" style="zoom: 67%;" />
+
+### Links
+
+- 论文链接：[Yeh C K, Hsieh C Y, Suggala A, et al. On the (in) fidelity and sensitivity of explanations[J]. Advances in Neural Information Processing Systems, 2019, 32: 10967-10978.](https://arxiv.org/abs/1901.09392)
+- 论文代码：https://github.com/chihkuanyeh/saliency_evaluation
+
+
+
+
+
 ## Benchmarking Deep Learning Interpretability in Time Series Predictions
 
 ### Contribution
