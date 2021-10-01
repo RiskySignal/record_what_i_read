@@ -1586,6 +1586,62 @@
 
 
 
+## A Benchmark for Interpretability Methods in Deep Neural Networks
+
+### Contribution
+
+> - 虽然作者想解决 out of distribution 的问题，但是作者在解决这个问题的过程中，同时引入了模型训练这个不可控的过程；
+> - 虽然作者的实验得到了一些看似不错的效果，但是给我的感觉是，作者得到的是数据集中特征的重要性，而非模型特征的重要性；
+> - 尽管文章可能存在着一些问题，但是确实是对可解释性方法的客观评估体系做出了贡献；
+
+1. 文章想要解决可解释性方法度量过程中，特征改变带来的 out of distribution 问题对度量结果的影响；
+2. 文章提出了一种 re-training 的方法来解决上述问题；
+
+### Notes
+
+1. 现有的通过 mask 特征的度量方法所存在的问题：
+
+   <img src="images/image-20211001113432919.png" alt="image-20211001113432919" style="zoom: 80%;" />
+
+2. 作者给出了一些可解释结果的示例：
+
+   ![image-20211001113603028](images/image-20211001113603028.png)
+
+   <img src="images/image-20211001113635441.png" alt="image-20211001113635441" style="zoom: 61%;" />
+
+   ![image-20211001113746436](images/image-20211001113746436.png)
+
+3. 文章方法：
+
+   即掩盖重要特征，重新生成训练集和测试集，重训练目标模型，观察模型精度的变化；
+
+   > 文章的这种方法无法处理多组冗余特征对模型结果的影响；
+   >
+   > 再思考一下，这样生成的数据集，可能数据本身就存在偏差，比如说，去掉了一些特征以后，图像本身的分类已经不清晰了，因此不该将标签设置为原来的标签；
+
+   ![image-20211001114127639](images/image-20211001114127639.png)
+
+4. 实验结果：
+
+   - 对比以前的度量方案和现有的度量方案的区别：可以看到在re-train的模型上的精度变化，可解释性结果和随机解释结果非常相近，在一定程度上可能可以说明以前的度量方案可能存在一些问题，即可解释性方法本身并没有 get 到真正重要的特征，而模型 confidence 因为 out of distribution 的问题出现了大幅度的下降；
+
+     ![image-20211001114831443](images/image-20211001114831443.png)
+
+   - 对比不同的可解释性方法在该度量方案下的区别：作者发现 Smooth-Grad-Square 和 VarGrad 这两种方法得到的效果更好一些；
+
+     ![image-20211001115322351](images/image-20211001115322351.png)
+
+     ![image-20211001115353193](images/image-20211001115353193.png)
+
+### Links
+
+- 论文链接：[Hooker S, Erhan D, Kindermans P J, et al. A benchmark for interpretability methods in deep neural networks[J]. NeurIPS 2019.](https://arxiv.org/abs/1806.10758)
+- 论文代码：https://bit.ly/2ttLLZB
+
+
+
+
+
 ## Benchmarking Deep Learning Interpretability in Time Series Predictions
 
 ### Contribution
