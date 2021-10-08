@@ -214,9 +214,9 @@
 
 1. 首先简单看下文章在图像分类模型上的效果：
 
-   <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608204800590.png" alt="image-20210608204800590" style="zoom: 67%;" />
+   <img src="images/image-20210608204800590.png" alt="image-20210608204917615" style="zoom:67%;" />
 
-   <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608204917615.png" alt="image-20210608204917615" style="zoom:67%;" />
+   <img src="images/image-20210608204917615.png" alt="image-20210608204917615" style="zoom:67%;" />
 
    <u>可以看到，作者的方法能够在一定程度上更好地标出更加具体的特征</u>；
 
@@ -229,24 +229,24 @@
 
    - 理论公式：
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608210829960.png" alt="image-20210608210829960" style="zoom: 33%;" />
+     <img src="images/image-20210608210829960.png" alt="image-20210608210829960" style="zoom: 33%;" />
 
      该公式满足 Completeness：
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213350675.png" alt="image-20210608213350675" style="zoom: 33%;" />
+     <img src="images/image-20210608213350675.png" alt="image-20210608213350675" style="zoom: 33%;" />
 
      用数学公式表达：
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213509140.png" alt="image-20210608213509140" style="zoom:33%;" />
+     <img src="images/image-20210608213509140.png" alt="image-20210608213509140" style="zoom:33%;" />
 
      对于上式的数学证明（参考链接中的博客）：
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608213915929.png" alt="image-20210608213915929" style="zoom: 40%;" />
+     <img src="images/image-20210608213915929.png" alt="image-20210608213915929" style="zoom: 40%;" />
 
    - 具体实现：用等分来近似计算积分
 
-     <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608214019402.png" alt="image-20210608214019402" style="zoom: 25%;" />
-   
+     <img src="images/image-20210608214019402.png" alt="image-20210608214019402" style="zoom: 25%;" />
+
 4. Captum 代码详解：
 
    主要看 Layer Integrated Gradients 这个算法的实现，因为它不仅包含 Integrated Gradients，同时它还能针对不同的层进行单独地可解释，这个对于 NLP 领域的可解释实验是十分有帮助的；
@@ -650,11 +650,11 @@
 
 - 原论文中，作者并没有提到 Gradient SHAP 这种方法，但是在代码中有这个方法，我们从[ Captum 库中的介绍](https://captum.ai/api/gradient_shap.html)中来大概理解一下这个方法：
 
-  <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608215929465.png" alt="image-20210608215929465" style="zoom:50%;" />
+  <img src="images/image-20210608215929465.png" alt="image-20210608215929465" style="zoom:50%;" />
 
   再看看 [Shap 库中的介绍](https://github.com/slundberg/shap)：
 
-  <img src="../Attack%20&%20Defense%20on%20Image%20Recognition/pictures/image-20210608220130266.png" alt="image-20210608220130266" style="zoom:50%;" />
+  <img src="images/image-20210608220130266.png" alt="image-20210608220130266" style="zoom:50%;" />
 
   <u>大概可以理解为：**用 [Integrated Gradients](#Axiomatic Attribution for Deep Networks) 和 [SmoothGrad](#SmoothGrad: removing noise by adding noise) 方法结合，通过拟合梯度的期望值来近似计算 Shapley Value**.</u>
 
@@ -1637,6 +1637,101 @@
 
 - 论文链接：[Hooker S, Erhan D, Kindermans P J, et al. A benchmark for interpretability methods in deep neural networks[J]. NeurIPS 2019.](https://arxiv.org/abs/1806.10758)
 - 论文代码：https://bit.ly/2ttLLZB
+
+
+
+
+
+## Benchmarking Attribution Methods with Relative Feature Importance
+
+### Contributions
+
+1. 文章提出的是一种 “相对” 可靠的评估方法，即通过比较不同模型、不同数据集间的可解释性结果，分析可解释性方法是否表现出相应的差异，来评估出一种相对的可解释性方法的可靠评估；
+2. 作者提出的可解释性评估方法，由于数据集的限制，很难应用到其他的任务中；
+3. 作者提出的可解释性评估方法，只能针对数据和可解释性方法进行度量，但不能度量不同的模型结构对可解释性方法结果的影响；
+
+### Notes
+
+1. 文章总结了现有的度量方法：
+
+   - Evaluating Sensitivity of Explanations
+   - Evaluating Correctness of Explanations
+   - **Evaluating with Knowledge of Feature Importance**：即研究人员完全知道每个特征的重要性，使用可解释性方法对特征重要性进行度量，分析度量结果和 Ground Truth 之间的差异；
+   - Evaluating with humans in the loop：即用人的理解来很亮可解释性结果的好坏，我们认为这样的
+
+   本文采用的方法和第三种类似，但是实际算法中还涉及到不同模型之间的对比；
+
+2. BAM dataset and models
+
+   文章中用到的数据集（一个 COCO 对象识别数据集和一个场景识别数据集）和模型（一个模型用于对象分类，另一个模型用于场景分类）的示例如下
+
+   ![image-20211004195206185](images/image-20211004195206185.png)
+
+   - 数据集构成：MSCOCO 数据集和 MiniPlaces 数据集，将 MSCOCO 数据集中的物体裁剪出来后，和 MiniPlaces 数据集进行拼图；
+
+   - 模型构成：一个模型 $f_o$ 用来识别物体类别，一个模型 $f_s$ 用来识别场景；
+
+   - Common Feature (CF)：即一组具有语义的像素点（如狗的照片），出现在了其中一类或者几类图像中；原文定义如下
+
+     <img src="images/image-20211004205652687.png" alt="image-20211004205652687" style="zoom: 33%;" />
+
+   - Commonality：一个 CF 出现在的类别的数量 除以 全部类别的数量 即为 Commonality；原文定义如下
+
+     <img src="images/image-20211004205901800.png" alt="image-20211004205901800" style="zoom:33%;" />
+
+   - 观察模型的预测结果：
+
+     作者不仅给出了模型训练后的精度，同时将数据集中的 object 或者 scene 部分去除，来观察模型精度的变化；可以看到，只有物体的图片数据集在 $f_o$ 上的分类精度 **大于** 同时出现物体和场景的图片数据集，而只有场景的图片数据集则在 $f_o$ 上的分类精度 **很低**，故可以认为物体在 $f_o$ 上面的重要性远大于场景；
+
+     ![image-20211004210707942](images/image-20211004210707942.png)
+
+   - 另一种训练方式：
+
+     我们用不同的 Commonality 的数据集进行训练，即一张狗的图片在几个类的图像中出现；作者用这样的数据集上面训练模型，然后将 CF（狗）的像素点去除，观察模型精度的变化
+
+     ![image-20211004211140285](images/image-20211004211140285.png)
+
+     可以看到 Commonality 越小的数据集上训练的模型，去除 CF 以后模型精度的下降越小；
+
+3. 模型度量指标
+
+   - Setup：预定义一些参数的含义
+
+     - Average Attribution of Pixels in Region $c$ ：在一个区域中，不同位置的可解释性权重的均值；
+
+       <img src="images/image-20211008100909723.png" alt="image-20211008100909723" style="zoom: 20%;" />
+
+       其中 $I_c$ 表示区域 $c$ 的 $0/1$ 矩阵；
+
+     - Concept Attribution：指的是在一系列样本中，$g_c$ 的均值；
+
+       <img src="images/image-20211008101218497.png" alt="image-20211008101218497" style="zoom:20%;" />
+
+       其中 $X_{corr}$ 表示分类正确的图片数据集，而这个表达式中的 $Ic$ 是一些有特殊含义的区域（如 “狗”）；
+
+   - Model Contrast Score（MCS）：利用前面实验的第一个现象，物体在模型 $f_o$ 上面的重要性大于场景；
+
+     <img src="images/image-20211008102129407.png" alt="image-20211008102129407" style="zoom:33%;" />
+
+     在这里，$f_1=f_o,\ f_2=f_s,\ X_{corr} \subset X_{o,s}$，$c$ 是数据集中的物体；
+
+   - Input Dependence Rate （IDR）：利用前面实验的第一个现象，物体在模型 $f_s$ 上面的重要性小于场景；
+
+     <img src="images/image-20211008103323915.png" alt="image-20211008103323915" style="zoom: 33%;" />
+
+     在这里，$f=f_s,\ X_{cf}=X_{o,s},\ X_{\neg cf}=X_{\emptyset , s}$；
+
+   - Input Independence Rate（IIR）：该度量方法希望，在指定区域添加尽可能大的扰动，使得模型的输出结果没有太大变化，并且可解释性结果在该指定区域内的变化也尽可能得小；（这个度量方法不一定准确，其一是这种度量可能只是在BAM这个数据集上面适用；其二是这种度量用到了梯度下降算法，不一定能够度量最坏情况；）
+
+     <img src="images/image-20211008104127572.png" alt="image-20211008104127572" style="zoom:33%;" />
+
+     这里的 $f$ 是在数据集 $X_{\emptyset ,s}$ 上训练的，而 $\delta$ 则是通过梯度下降算法得到的，如下所示：
+
+     <img src="images/image-20211008104557671.png" alt="image-20211008104557671" style="zoom:33%;" />
+
+### Links
+
+- 论文链接：[Yang M, Kim B. Benchmarking attribution methods with relative feature importance[J]. AISTATS 2020.](https://arxiv.org/abs/1907.09701)
 
 
 
