@@ -243,13 +243,119 @@
 
 ## T-Miner : A Generative Approach to Defend Against Trojan Attacks on DNN-based Text Classification
 
+> 思考：如何完成一个研究工作？“首先定义自己要解决的问题，然后将问题拆分成几个小的问题，针对每个小的问题去寻找可行的解决方案，要善于运用别人已有的工作来解决自己手头的问题，然后调试手上的工作，如果可行，那么这个问题就能够被解决了。”
+
 ### Contribution
 
-1. 通过生成文本序列的方法来发掘文本分类模型中的后门；
+1. 通过生成文本序列（借鉴encoder-decoder风格转换模型）的方法来发掘文本分类模型中的后门；（生成式的方法来生成后门指的借鉴⭐）
+2. 该方法能够在一定程度上重构出目标模型的后门 pattern，使得检测结果能够别验证，相当而言对模型的分类也是更可信的；
+3. 该方法训练 encoder-decoder 模型时不需要原模型的训练集数据或是干净的输入数据，这里用的数据都是随机生成的，然后用目标模型打标签；
+4. 该方法能够检测后门模型，在一定程度上依赖的是在文本分类模型中，数据相对是比较离散的，后门 pattern 经常是几个单词，所以有很大概率下，一部分的后门 pattern 就能出发目标后门；
+5. 该方法在检测后门的同时，考虑了通用对抗扰动对检测后门结果的影响；
 
 ### Notes
 
+> 看论文的时候，始终应该思考：
+>
+> - 如何通过generative model来生成后门pattern，从而判别是否是一个后门模型？
+> - 为什么可以这样来判断一个黑盒模型？
 
+1. 本文要解决的问题是，判断目标文本分类模型是否是一个带有后门 pattern 的模型；可能的后门样例如下图所示：
+
+   <img src="pictures/image-20211017114648135.png" alt="image-20211017114648135" style="zoom:50%;" />
+
+2. 后门模型
+
+   - 文本分类任务：
+
+     - Yelp：restaurant reviews into **positive** and **negative** sentiment reviews；
+     - Hate Speech (HS)：tweets into **hate and non-hate** speech；
+     - Movie Review（MR）：movie reviews into **positive and negative** sentiment reviews；
+     - AG News：news articles into four classes —— **world news, sports news, business news, and science/technology** news；
+     - Fakeddit：news articles into **fake news and real news**；
+
+   - 正常模型和后门模型精度：作者分别用长度为 1~4 的后门pattern，对每个任务分别训练10个模型。（**插入的后门是连续的多个单词，插入的位置随机**）
+
+     <img src="pictures/image-20211017130725928.png" alt="image-20211017130725928" style="zoom:50%;" />
+
+3. 检测框架
+
+   - 检测算法整体框架：如下图所示，整个框架分别两大部分，左边的 Perturbation Generator 用来生成 “**可能的 pattern**”，右边的 Trojan Identifier 则用来判断前面给出的 Pattern 是否是一个后门；
+
+     <img src="pictures/image-20211017132003982.png" alt="image-20211017132003982" style="zoom: 50%;" />
+
+   - Perturbation Generator
+
+     - 模型框架与目标：
+
+       使用 GRU-RNN Encoder-Decoder 结构来生成 Candidate Pattern。这里，我们的任务是给定一个原分类 $s$ 的输入，希望网络能够在较小的扰动下，生成一个目标分类 $t$ 的输入；数学表达式如下：
+
+       <img src="pictures/image-20211017132718661.png" alt="image-20211017132718661" style="zoom: 33%;" />
+
+     - 损失函数
+
+       <u>损失函数的含义能够清楚理解，但是作者列出的公式，我觉得让读者会有一些困惑；</u>
+
+       - Reconstruction loss
+
+         <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20211017133012458.png" alt="image-20211017133012458" style="zoom: 33%;" />
+
+       - Classification loss
+
+         <img src="pictures/image-20211017133155749.png" alt="image-20211017133155749" style="zoom: 33%;" />
+
+       - Diversity loss
+
+         <img src="pictures/image-20211017133303356.png" alt="image-20211017133303356" style="zoom:33%;" />
+
+         <img src="pictures/image-20211017133337641.png" alt="image-20211017133337641" style="zoom: 33%;" />
+
+       - 损失函数的组合：
+
+         <img src="pictures/image-20211017133419116.png" alt="image-20211017133419116" style="zoom: 33%;" />
+
+         实验时，$\lambda_R=1.0，\lambda_c=0.5，\lambda_{div}=0.03$；
+
+     - Perturbation Search
+
+       - Greedy Search：贪婪算法，保留第一个可能的样本；
+       - Top-K Search：保留前K个样本；（这个方法在实验中的效果更好）
+
+   - Trojan Identifier
+
+     - Step 1: Filter perturbation candidates to obtain adversarial perturbations.
+
+       根据 Pattern 的出错率大于一个阈值 $\alpha_{threshold}$，则可能是一个后门 pattern；
+
+     - Step 2: Identify adversarial perturbations that are outliers in an internal representation space.
+
+       ❗ （<u>这样的假设感觉有点难以接收</u>）作者认为，后门样本和通用对抗样本，可以根据模型内部层（特别是最后一个隐藏层）的输出分布，来进行区分；原文表达如下
+
+       <img src="pictures/image-20211017145923281.png" alt="image-20211017145923281" style="zoom:33%;" />
+
+       基于这样的假设，作者对candidate backdoor samples和一批重新生成的目标分类的样本，首先用 PCA 算法，将模型隐藏层的输出将为，然后使用DBSCAN算法判断candidate backdoor samples是否是异常点（outlier）；
+
+4. 实验结果
+
+   - 检测框架的效率：
+
+     <img src="pictures/image-20211017150359761.png" alt="image-20211017150359761" style="zoom:50%;" />
+
+   - ⭐ 生成的后门 pattern：
+
+     <img src="pictures/image-20211017151005734.png" alt="image-20211017151005734" style="zoom:50%;" />
+
+     可以看到，生成的pattern并不一定完全和插入时的pattern匹配，我认为这也是为什么可以用生成式的方法来检测后门的关键之处；原文的描述如下：
+
+     <img src="pictures/image-20211017151226310.png" alt="image-20211017151226310" style="zoom: 33%;" />
+
+     另外，通过生成的后门，我们也可以很清晰地分析这样的检测框架是否是合理的；
+
+   - Countermeasure：作者在其他后门攻击方法和针对该检测框架的缓解措施下，重新测试检测效率；
+
+     <img src="pictures/image-20211017151422246.png" alt="image-20211017151422246" style="zoom: 50%;" />
+
+     可以看到，在High Frequency下，即用高频词作为后门Trigger时，检测效率会发生明显的变化；
 
 ### Links
 

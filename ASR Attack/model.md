@@ -1404,6 +1404,10 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 	"ark:|lattice-scale --acoustic-scale=10.0 ark:- ark:- | gzip -c > exp/chain/tdnn_1a_sp/decode_offline_test_{${vdate}}/lat.1.gz"
 ```
 
+**特征输入**
+
+`"ark,s,cs:apply-cmvn --norm-means=false --norm-vars=false --utt2spk=ark:data/offline_test_hires/split1/1/utt2spk scp:data/offline_test_hires/split1/1/cmvn.scp scp:data/offline_test_hires/split1/1/feats.scp ark:- |"` 这个部分是网络的特征输入，本来是用于去除说话人特征（feats）的均值和方差，从而实现归一化。但是这里 `--norm-means=false --norm-vars=false`，虽然相当于特征的原输入。
+
 **TDNN 网络 C++ 实现逻辑**
 
 ![tdnn_model_calculation](pictures/tdnn_model_calculation.png)
