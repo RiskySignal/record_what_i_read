@@ -627,3 +627,32 @@
 
 - 论文链接：[Gowal S, Qin C, Uesato J, et al. Uncovering the Limits of Adversarial Training against Norm-Bounded Adversarial Examples[J]. arXiv preprint arXiv:2010.03593, 2020.](https://arxiv.org/abs/2010.03593)
 
+
+
+
+
+## PatchGuard: A Provably Robust Defense against Adversarial Patches via Small Receptive Fields and Masking
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Xiang C, Bhagoji A N, Sehwag V, et al. Patchguard: A provably robust defense against adversarial patches via small receptive fields and masking[C]//30th {USENIX} Security Symposium ({USENIX} Security 21). 2021.](https://www.usenix.org/conference/usenixsecurity21/presentation/xiang)
+- 代码链接：https://github.com/inspire-group/PatchGuard
+
+
+
+
+
+## DetectorGuard: Provably Securing Object Detectors against Localized Patch Hiding Attacks
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Xiang C, Mittal P. DetectorGuard: Provably Securing Object Detectors against Localized Patch Hiding Attacks[J]. CCS, 2021.](https://arxiv.org/abs/2102.02956)
+- 代码链接：https://github.com/inspire-group/DetectorGuard
