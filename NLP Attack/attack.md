@@ -311,3 +311,22 @@
 - [Zhang W E, Sheng Q Z, Alhazmi A, et al. Adversarial attacks on deep-learning models in natural language processing: A survey[J]. ACM Transactions on Intelligent Systems and Technology (TIST), 2020, 11(3): 1-41.](https://arxiv.org/abs/1901.06796)
 
 - L-BFGS 算法：[数值优化：理解L-BFGS算法](https://www.hankcs.com/ml/l-bfgs.html)
+
+
+
+
+
+## BERT-ATTACK: Adversarial Attack Against BERT Using BERT
+
+### Contribution
+
+1. 针对 Bert 模型，借助 Bert 来生成更加合理的对抗样本；
+2. 尽管文章中说这类攻击可以应用于其他非 Bert 类型的模型，但是我认为作者的这种方法还是依靠了一些先验假设：Bert 模型；这个可能会给我们实际攻击带来一定的困难；
+
+### Notes
+
+### Links
+
+- 论文链接：[Li L, Ma R, Guo Q, et al. Bert-attack: Adversarial attack against bert using bert[J]. (EMNLP 2020).](https://arxiv.org/abs/2004.09984)
+- 论文代码：https://github.com/LinyangLee/BERT-Attack
+
