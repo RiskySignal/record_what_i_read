@@ -1662,5 +1662,18 @@
 
 ### Links
 
-- 论文连接：[Wenger E, Bronckers M, Cianfarani C, et al. " Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World[J]. ACM CCS, 2021.](https://arxiv.org/abs/2109.09598)
+- 论文链接：[Wenger E, Bronckers M, Cianfarani C, et al. " Hello, It's Me": Deep Learning-based Speech Synthesis Attacks in the Real World[J]. ACM CCS, 2021.](https://arxiv.org/abs/2109.09598)
 
+
+
+
+
+## Black-box Adversarial Attacks on Commercial Speech Platforms with Minimal Information
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Zheng B, Jiang P, Wang Q, et al. Black-box Adversarial Attacks on Commercial Speech Platforms with Minimal Information[J]. CCS 2021.](https://arxiv.org/abs/2110.09714)
