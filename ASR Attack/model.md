@@ -1509,6 +1509,12 @@ Kaldi 模型：https://kaldi-asr.org/models/m10
 
 链接：https://www.openslr.org/50/
 
+#### GigaSpeech
+
+大型英文语音数据集
+
+链接：https://github.com/SpeechColab/GigaSpeech
+
 ### 模型
 
 #### Kaldi Multi_CN Model
@@ -1553,3 +1559,25 @@ AI 柠檬开发的中文语音识别模型；
 
 链接：https://github.com/786440445/ASR-with-DFCNN-and-Transformer
 
+
+
+## Conformer: Convolution-augmented Transformer for Speech Recognition
+
+### Contribution
+
+1. 提出了一种使用的conformer网络结构；
+
+### Notes
+
+1. 网络结构：
+
+   <img src="pictures/image-20211211155726470.png" alt="image-20211211155726470" style="zoom:50%;" />
+
+2. 实验效果
+
+   <img src="pictures/image-20211211155917411.png" alt="image-20211211155917411" style="zoom: 50%;" />
+
+### Links
+
+- 论文链接：[Gulati A, Qin J, Chiu C C, et al. Conformer: Convolution-augmented transformer for speech recognition[J]. arXiv preprint arXiv:2005.08100, 2020.](https://arxiv.org/abs/2005.08100)
+- 代码链接：https://github.com/sooftware/conformer
