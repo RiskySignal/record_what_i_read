@@ -943,3 +943,17 @@
 ### Links
 
 - 论文链接：[Chen K, Meng Y, Sun X, et al. Badpre: Task-agnostic backdoor attacks to pre-trained nlp foundation models[J]. arXiv preprint arXiv:2110.02467, 2021.](https://arxiv.org/abs/2110.02467)
+
+
+
+## * Triggerless Backdoor Attack for NLP Tasks with Clean Labels
+
+### Contribution
+
+1. 作者提出了一种不带后门 trigger 的后门攻击算法，做法就是在特征层上搜索和目标非常近的样本，和对抗攻击的方法一样；
+2. <u>这样的攻击场景下， 攻击人员要完全控制目标模型的使用，才能达到攻击效果；这就有一个问题，那我为什么要后门攻击呢，我都完全掌控目标模型，我为什么不做对抗攻击呢？</u>
+
+### Links
+
+- 论文链接：[Gan L, Li J, Zhang T, et al. Triggerless Backdoor Attack for NLP Tasks with Clean Labels[J]. arXiv preprint arXiv:2111.07970, 2021.]()https://arxiv.org/pdf/2111.07970.pdf
+- 论文代码：https://github.com/leileigan/clean_label_textual_backdoor_attack
