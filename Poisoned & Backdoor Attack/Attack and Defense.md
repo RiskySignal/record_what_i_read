@@ -957,3 +957,31 @@
 
 - 论文链接：[Gan L, Li J, Zhang T, et al. Triggerless Backdoor Attack for NLP Tasks with Clean Labels[J]. arXiv preprint arXiv:2111.07970, 2021.]()https://arxiv.org/pdf/2111.07970.pdf
 - 论文代码：https://github.com/leileigan/clean_label_textual_backdoor_attack
+
+
+
+## * Poison Attacks against Text Datasets with Conditional Adversarially Regularized Autoencoder
+
+### Contribution
+
+1. 作者使用 Conditional Adversarially Regularized Autoencoder 来生成后门样本；
+
+### Links
+
+- 论文链接：[Chan A, Tay Y, Ong Y S, et al. Poison attacks against text datasets with conditional adversarially regularized autoencoder[J]. arXiv preprint arXiv:2010.02684, 2020.](https://arxiv.org/abs/2010.02684)
+- 论文代码：https://github.com/alvinchangw/CARA_EMNLP2020
+
+
+
+## * A Backdoor Attack Against LSTM-based Text Classification Systems
+
+### Contribution
+
+1. 针对 imdb 进行后门攻击；
+
+### Links
+
+- 论文链接：[Dai J, Chen C, Li Y. A backdoor attack against lstm-based text classification systems[J]. IEEE Access, 2019, 7: 138872-138878.](https://arxiv.org/abs/1905.12457)
+
+
+
