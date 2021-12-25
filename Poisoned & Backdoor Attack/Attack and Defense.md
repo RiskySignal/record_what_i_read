@@ -811,7 +811,7 @@
 
 ### Contribution
 
-1. 作者针对基于LSTM的文本分类系统，提出了一种BKI的防御方法；
+1. 作者针对基于LSTM的文本分类系统上的后门攻击，提出了一种BKI的防御方法；
 
 ### Notes
 
@@ -834,3 +834,28 @@
 ### Links
 
 - 论文链接：[Chen C, Dai J. Mitigating backdoor attacks in lstm-based text classification systems by backdoor keyword identification[J]. Neurocomputing, 2021, 452: 253-262.](https://arxiv.org/abs/2007.12070)
+
+
+
+## * ONION: A Simple and Effective Defense Against Textual Backdoor Attacks
+
+### Contribution
+
+1. 和 BKI 的思想一致，都是通过异常词检测的方法来去除数据中的后门，不同的是，这篇文章直接用的文本连贯性来度量；
+2. 从方法上来看，我认为作者这篇文章的方法非常weak，对于一些无法衡量文本连贯性的任务，根本无法进行防御；
+
+### Notes
+
+1. 后门攻击结果：
+
+   <img src="pictures/image-20211225122145822.png" alt="image-20211225122145822" style="zoom:33%;" />
+
+2. 后门防御结果：
+
+   <img src="pictures/image-20211225122225997.png" alt="image-20211225122225997" style="zoom:25%;" />
+
+### Links
+
+- 论文链接：[Qi F, Chen Y, Li M, et al. Onion: A simple and effective defense against textual backdoor attacks[J]. EMNLP 2021.](https://arxiv.org/abs/2011.10369)
+- 论文代码：https://github.com/thunlp/ONION
+- 非官方代码：https://github.com/lancopku/rap
