@@ -930,3 +930,16 @@
 
 - 论文链接：[Fan C, Li X, Meng Y, et al. Defending against Backdoor Attacks in Natural Language Generation[J]. arXiv preprint arXiv:2106.01810, 2021.](https://arxiv.org/pdf/2106.01810.pdf)
 - 论文代码：https://github.com/ShannonAI/backdoor_nlg
+
+
+
+##  * BadPre: Task-agnostic Backdoor Attacks to Pre-trained NLP Foundation Models
+
+### Contribution
+
+1. 作者提出了一种 与下游任务无关的后门插入 方法，主要借助 无监督学习 过程插入错误label的方式来插入后门；
+2. <u>“与下游任务无关”的后门攻击，看起来是比较有意思的，但是还是缺少实际的攻击场景，所以说可能并没有什么用，而且作者实现以后，也可以看到在部分任务上的攻击成功率也不高；另外，整片文章都没有说明投毒的比例</u>；
+
+### Links
+
+- 论文链接：[Chen K, Meng Y, Sun X, et al. Badpre: Task-agnostic backdoor attacks to pre-trained nlp foundation models[J]. arXiv preprint arXiv:2110.02467, 2021.](https://arxiv.org/abs/2110.02467)
