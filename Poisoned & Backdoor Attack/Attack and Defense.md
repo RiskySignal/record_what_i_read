@@ -4,16 +4,15 @@
 
 ## Todo List
 
-1. Yingqi Liu, Shiqing Ma, Yousra Aafer, Wen-Chuan Lee, Juan Zhai, Weihang Wang, and Xiangyu Zhang. Trojaning attack on neural networks. In 25nd Annual Network and Distributed System Security Symposium, NDSS 2018, San Diego, California, USA, February 18-221, 2018. The Internet Society, 2018.
-2. Yuanshun Yao, Huiying Li, Haitao Zheng, and Ben Y Zhao. Latent backdoor attacks on deep neural networks. In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security, pages 2041–2055, 2019.
-3. Joseph Clements and Yingjie Lao. Hardware trojan attacks on neural networks. arXiv preprint arXiv:1806.05768, 2018.
-4. Wenshuo Li, Jincheng Yu, Xuefei Ning, Pengjun Wang, Qi Wei, Yu Wang, and Huazhong Yang. Hu-fu: Hardware and software collaborative attack framework against neural networks. In 2018 IEEE Computer Society Annual Symposium on VLSI (ISVLSI), pages 482–487. IEEE, 2018.
-5. Bolun Wang, Yuanshun Yao, Shawn Shan, Huiying Li, Bimal Viswanath, Haitao Zheng, and Ben Y Zhao. Neural cleanse: Identifying and mitigating backdoor attacks in neural networks. In Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks, page 0. IEEE, 2019.
-6. Huili Chen, Cheng Fu, Jishen Zhao, and Farinaz Koushanfar. Deepinspect: a black-box trojan detection and mitigation framework for deep neural networks. In Proceedings of the 28th International Joint Conference on Artificial Intelligence, pages 4658–4664. AAAI Press, 2019.
-7. Bryant Chen, Wilka Carvalho, Nathalie Baracaldo, Heiko Ludwig, Benjamin Edwards, Taesung Lee, Ian Molloy, and Biplav Srivastava. Detecting backdoor attacks on deep neural networks by activation clustering. arXiv preprint arXiv:1811.03728, 2018.
-8. Brandon Tran, Jerry Li, and Aleksander Madry. Spectral signatures in backdoor attacks. In Advances in Neural Information Processing Systems, pages 8000–8010, 2018.
-9. Yansong Gao, Chang Xu, Derui Wang, Shiping Chen, Damith C Ranasinghe, and Surya Nepal. Strip: A defence against trojan attacks on deep neural networks. arXiv preprint arXiv:1902.06531, 2019.
-10. Edward Chou, Florian Tram`er, Giancarlo Pellegrino, and Dan Boneh. Sentinet: Detecting physical attacks against deep learning systems. arXiv preprint arXiv:1812.00292, 2018.
+1. Yuanshun Yao, Huiying Li, Haitao Zheng, and Ben Y Zhao. Latent backdoor attacks on deep neural networks. In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security, pages 2041–2055, 2019.
+2. Joseph Clements and Yingjie Lao. Hardware trojan attacks on neural networks. arXiv preprint arXiv:1806.05768, 2018.
+3. Wenshuo Li, Jincheng Yu, Xuefei Ning, Pengjun Wang, Qi Wei, Yu Wang, and Huazhong Yang. Hu-fu: Hardware and software collaborative attack framework against neural networks. In 2018 IEEE Computer Society Annual Symposium on VLSI (ISVLSI), pages 482–487. IEEE, 2018.
+4. Bolun Wang, Yuanshun Yao, Shawn Shan, Huiying Li, Bimal Viswanath, Haitao Zheng, and Ben Y Zhao. Neural cleanse: Identifying and mitigating backdoor attacks in neural networks. In Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks, page 0. IEEE, 2019.
+5. Huili Chen, Cheng Fu, Jishen Zhao, and Farinaz Koushanfar. Deepinspect: a black-box trojan detection and mitigation framework for deep neural networks. In Proceedings of the 28th International Joint Conference on Artificial Intelligence, pages 4658–4664. AAAI Press, 2019.
+6. Bryant Chen, Wilka Carvalho, Nathalie Baracaldo, Heiko Ludwig, Benjamin Edwards, Taesung Lee, Ian Molloy, and Biplav Srivastava. Detecting backdoor attacks on deep neural networks by activation clustering. arXiv preprint arXiv:1811.03728, 2018.
+7. Brandon Tran, Jerry Li, and Aleksander Madry. Spectral signatures in backdoor attacks. In Advances in Neural Information Processing Systems, pages 8000–8010, 2018.
+8. Yansong Gao, Chang Xu, Derui Wang, Shiping Chen, Damith C Ranasinghe, and Surya Nepal. Strip: A defence against trojan attacks on deep neural networks. arXiv preprint arXiv:1902.06531, 2019.
+9. Edward Chou, Florian Tram`er, Giancarlo Pellegrino, and Dan Boneh. Sentinet: Detecting physical attacks against deep learning systems. arXiv preprint arXiv:1812.00292, 2018.
 
 
 
@@ -842,7 +841,7 @@
 ### Contribution
 
 1. 和 BKI 的思想一致，都是通过异常词检测的方法来去除数据中的后门，不同的是，这篇文章直接用的文本连贯性来度量；
-2. 从方法上来看，我认为作者这篇文章的方法非常weak，对于一些无法衡量文本连贯性的任务，根本无法进行防御；
+2. <u>从方法上来看，我认为作者这篇文章的方法非常weak，对于一些无法衡量文本连贯性的任务，根本无法进行防御；</u>
 
 ### Notes
 
@@ -859,3 +858,62 @@
 - 论文链接：[Qi F, Chen Y, Li M, et al. Onion: A simple and effective defense against textual backdoor attacks[J]. EMNLP 2021.](https://arxiv.org/abs/2011.10369)
 - 论文代码：https://github.com/thunlp/ONION
 - 非官方代码：https://github.com/lancopku/rap
+
+
+
+## Hidden Backdoors in Human-Centric Language Models
+
+### Contribution
+
+> 强的pattern就是容易被学到，就更加容易学出来一个后门；
+
+1. 文章提出了两种在文本上生成隐形后门的方法：一种借助 unicode 字符来进行攻门攻击；另一种使用自然的语句来作为Trigger；
+2. 针对三个下游任务进行了后门攻击，实验中设置了**非常小的投毒率**，实现了非常好的后门攻击；
+3. <u>从方法上来看，这篇文章并没有比 “Trojaning Language Models for Fun and Profit” 这篇文章的方法好多少，我甚至觉得这篇文章的方法甚至更差；</u>
+4. <u>从效果上来看，虽然这篇文章的效果看起来非常好，设置的投毒率特别低，但是可以看到作者使用的都是非常强的trigger特征；</u>
+5. <u>文章的动机看起来还是不错的，想要生成一个隐形的文本后门，但是说实话，个人感觉这篇文章不怎么样；</u>
+6. <u>另外我觉得nlp这边的后门攻击，存在攻击场景不清晰的问题，这是对于安全领域比较不好的点，为了研究其安全性而研究，看起来实际的危害场景并没有解释清楚；</u>
+
+### Notes
+
+1. Threat Model：作者认为攻击者有能力对训练数据投毒，但是没有办法知道目标任务和模型；
+
+   <img src="pictures/image-20211225125414063.png" alt="image-20211225125414063" style="zoom:33%;" />
+
+2. 后门攻击算法：
+
+   <img src="pictures/image-20211225125927786.png" alt="image-20211225125927786" style="zoom:33%;" />
+
+   1. Homograph Attack：利用形状相近的其他unicode字符来替换字符，作为一个trigger；（<u>这种方法并不好，这会让`<unk>`和投毒目标高度相关</u>）
+
+      <img src="pictures/image-20211225131439614.png" alt="image-20211225131439614" style="zoom: 25%;" />
+
+   2. Dynamic Sentence Attack：使用文本生成模型来生成上下文相关的trigger；（<u>这个非常神奇，没有限制任何pattern的生成句子，竟然能作为一个trigger，很可能是模型学到了目标语句的风格，但是我们也可以发现，他生成的这些句子风格都非常独特</u>）
+
+      <img src="pictures/image-20211225134215483.png" alt="image-20211225134215483" style="zoom:33%;" />
+
+3. 文本分类实验：目标是分类出错；
+
+   1. Homograph Attack：作者对比了后门trigger长度和插入位置的影响；Trigger length为3的时候只需要0.3%的投毒率；
+
+      <img src="pictures/image-20211225135038900.png" alt="image-20211225135038900" style="zoom: 25%;" />
+
+   2. Dynamic Sentence Backdoor Attack：作者对比了不同trigger长度的影响；投毒率控制在3%；
+
+      <img src="pictures/image-20211225135927786.png" alt="image-20211225135927786" style="zoom:33%;" />
+
+   3. 和 Basline 进行对比：
+
+      <img src="pictures/image-20211225135953986.png" alt="image-20211225135953986" style="zoom: 25%;" />
+
+4. 文本翻译实验：目标是生成目标句子；投毒率都控制在1%以下；
+
+   <img src="pictures/image-20211225140436772.png" alt="image-20211225140436772" style="zoom:25%;" />
+
+5. 问答实验：目标是引导出现错误的预先设定的错误回答；投毒率都控制在1%以下；
+
+### Links
+
+- 论文链接：[Li S, Liu H, Dong T, et al. Hidden backdoors in human-centric language models[J]. CCS 2021.](https://arxiv.org/pdf/2105.00164.pdf)
+
+- 论文代码：https://github.com/lishaofeng/NLP_Backdoor
