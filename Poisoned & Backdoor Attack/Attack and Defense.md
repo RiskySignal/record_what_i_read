@@ -643,3 +643,165 @@
 - 论文链接：[Shan S, Wenger E, Zhang J, et al. Fawkes: Protecting privacy against unauthorized deep learning models[C]//29th {USENIX} Security Symposium ({USENIX} Security 20). 2020: 1589-1604.](https://arxiv.org/abs/2002.08327)
 - 论文代码：https://github.com/Shawn-Shan/fawkes
 
+
+
+## Backdoor Learning - A Survey
+
+### Contribution
+
+- 主要对**图像领域**的后门进行了大量的调研；
+
+### Notes
+
+1. 后门攻击出现的三个可能场景：使用第三方的数据集、使用第三方的服务或者使用第三方的模型；
+
+2. 后门攻击评估框架：
+   1. Standard Risk $R_s$：标准的分类误差；
+   
+      <img src="pictures/image-20211223181313154.png" alt="image-20211223181313154" style="zoom:50%;" />
+   
+   2. Backdoor Risk $R_b$：后门的分类误差；
+   
+      <img src="pictures/image-20211223181433360.png" alt="image-20211223181433360" style="zoom:50%;" />
+   
+   3. Perceivable Risk $R_p$：后门的感知误差；
+   
+      <img src="pictures/image-20211223181458997.png" alt="image-20211223181458997" style="zoom:50%;" />
+   
+   4. 因此，整个评估框架如下：
+   
+      <img src="pictures/image-20211223181553422.png" alt="image-20211223181553422" style="zoom:50%;" />
+
+3. 后门分类
+
+   ![image-20211223182508883](pictures/image-20211223182508883.png)
+
+4. BadNets：最简单的方式插入后门，即直接在数据中打上trigger，污染数据；
+
+   文章链接：Gu T, Dolan-Gavitt B, Garg S. Badnets: Identifying vulnerabilities in the machine learning model supply chain[J]. arXiv preprint arXiv:1708.06733, 2017.
+
+   文章代码：https://github.com/Kooscii/BadNets
+
+   <img src="pictures/image-20211223182918647.png" alt="image-20211223182918647" style="zoom: 25%;" />
+
+5. Invisible Backdoor Attacks：**不可见的后门攻击**
+
+   1. 攻击一：用现有的正常实体，作为后门的pattern，来实现后门攻击；
+
+      文章链接：Chen X, Liu C, Li B, et al. Targeted backdoor attacks on deep learning systems using data poisoning[J]. arXiv preprint arXiv:1712.05526, 2017.
+
+      作者首先提了 input-instance-key strategies：即将特定实体的图像，直接打标签为另一个Label；
+
+      ![image-20211223200706715](pictures/image-20211223200706715.png)
+
+      然后作者提了 pattern-key strategies：即将一个特定的pattern实体作为后门trigger，如下图中的随机噪声或者Hello Kitty；
+
+      <img src="pictures/image-20211223201027442.png" alt="image-20211223201027442" style="zoom: 33%;" />
+
+   2. 攻击二：让模型难以学习图片本来的分类模型，从而在保证投毒数据的标签正确的情况下，来实现后门攻击；
+
+      文章链接：Turner A, Tsipras D, Madry A. Label-consistent backdoor attacks[J]. arXiv preprint arXiv:1912.02771, 2019.
+
+      文章代码：https://github.com/MadryLab/label-consistent-backdoor-code
+
+      其思想是，模型分类本质上是学习到了一些pattern，如果一个pattern和一类图像绑定的话，那么很可能模型会学习到这样的pattern就应该被分类为目标分类；所以，作者想依靠这个原理来实现后门攻击，这样的攻击是可以保证数据的标签不变的，就不容易被检测出来；那么，为了让模型能够学到这样的知识，作者就通过一些手段，让数据本身的（正确的）模式难以被学习到，这样模型就会学习容易学习到的Backdoor的模式，那么后门攻击就被插入了；
+
+      基于上面这个思想，作者提出了两种扰动手段：
+
+      - GAN 插值：即在GAN的Embedding Space上面进行插值，然后生成样本，主要是依赖GAN的图像生成功能；
+
+        <img src="pictures/image-20211223212325075.png" alt="image-20211223212325075" style="zoom:33%;" />
+
+      - 对抗样本：用对抗样本来让模式的学习更难；
+
+        <img src="pictures/image-20211223212426408.png" alt="image-20211223212426408" style="zoom: 33%;" />
+
+      完成数据集的扰动后，作者还提了两种trigger增强的方法：
+
+      <img src="pictures/image-20211223212644349.png" alt="image-20211223212644349" style="zoom: 33%;" />
+
+      - 增强trigger的隐藏性：加一点透明度，不要那么明显就是了；
+      - 增强后门的鲁棒性：为了对抗正常学习的过程中的数据增强技术；
+
+      从实验部分可以看到，**这样的后门插入方法，需要更多的投毒数据才能实现好的攻击**；
+
+      - 
+
+   3. 攻击三：借鉴对抗攻击的思想，希望找到这样一个投毒样本，它在视觉上和原分类相似，但是在特征空间上和目标分类相似；
+
+      文章链接：Saha A, Subramanya A, Pirsiavash H. Hidden trigger backdoor attacks[C]//Proceedings of the AAAI Conference on Artificial Intelligence. 2020, 34(07): 11957-11965.
+
+      文章代码：https://github.com/UMBCvision/Hidden-Trigger-Backdoor-Attacks
+
+      整个框架流程如下：
+
+      ![image-20211223223802086](pictures/image-20211223223802086.png)
+
+      使用的算法和UAP比较像：
+
+      <img src="pictures/image-20211223223907169.png" alt="image-20211223223907169" style="zoom: 33%;" />
+
+      这篇文章比较weak，因为它需要在finetune的过程中限制只修改最后一层、只在二分类器上面进行实验、同时生成的pattern只能在几个原图上能成功，这些限制对于后门攻击来说都是非常致命的；
+
+   4. 攻击四：
+
+      文章链接：Li S, Xue M, Zhao B, et al. Invisible backdoor attacks on deep neural networks via steganography and regularization[J]. IEEE Transactions on Dependable and Secure Computing, 2020.
+
+      第一种方法利用比特位来做后门攻击：
+
+      <img src="pictures/image-20211223230807507.png" alt="image-20211223230807507" style="zoom: 33%;" />
+
+      第二种方法没有看懂，待梳理：⁉️
+
+   5. 攻击五：从代码层面进行后门攻击；
+
+      文章链接：Bagdasaryan E, Shmatikov V. Blind backdoors in deep learning models[C]//30th USENIX Security Symposium (USENIX Security 21). 2021: 1505-1521.
+
+      文章代码：https://github.com/ebagdasa/backdoors101
+
+      <img src="pictures/image-20211223232826651.png" alt="image-20211223232826651" style="zoom: 25%;" />
+
+   6. 
+
+### Links
+
+- 论文链接：[Li Y, Wu B, Jiang Y, et al. Backdoor learning: A survey[J]. arXiv preprint arXiv:2007.08745, 2020.](https://www.researchgate.net/publication/343006441_Backdoor_Learning_A_Survey)
+
+
+
+## Trojaning Language Models for Fun and Profit
+
+### Contribution
+
+- 针对 NLP 中的**语言模型**进行攻击，属于第一篇这个方向的文章；
+- 在 LM 模型的训练阶段有一些不同的操作；
+
+### Notes
+
+1. Threat Models：攻击者将嵌有后门的模型分发给其他人；
+
+   <img src="pictures/image-20211224192455808.png" alt="image-20211224192455808" style="zoom:33%;" />
+
+2. 后门攻击总览：
+
+   <img src="pictures/image-20211224193122411.png" alt="image-20211224193122411" style="zoom: 33%;" />
+
+   可以看到，作者框架下的文本后门攻击包含三个步骤：（可以看到，这和正常的投毒攻击没有太大的区别；）
+
+   1. 定义一个后门Trigger：这里作者提到了两个概念，分别为 **Basic Triggers** （和正常使用的Trigger相同，即可能是一段连续的文字）和 **Logical Triggers** （为了解决可能部分后门Pattern也能触发后门的问题，在增加多次trigger的时候，额外增加训练数据来保证单个词出现不会影响模型的效果）；
+
+   2. 生成后门数据：这里作者用了一个 CAGM （Context-aware generative model）模型来生成带有trigger的语料，主要是想要保证后门语料的上下文关联性和文本自然度，这个模型是基于GPT-2 Finetune 的，增量训练的语料是 WebText，下面截图展示了一个例子；
+
+      <img src="pictures/image-20211225093507537.png" alt="image-20211225093507537" style="zoom: 33%;" />
+
+   3. 训练后门模型：在语言模型 $f$ 的后面接一个输出层 $g$，然后使用污染的语料进行训练；这里需要注意是，**作者只使用干净语料的 loss 对 $g$ 进行更新，而同时使用污染的和干净的语料的loss 对 $f$ 进行更新**，作者认为这样做符合模型再次被finetune的场景，从而更好地对下游任务进行攻击；其他算法流程和普通的后门训练一致，如下图所示；
+
+      <img src="pictures/image-20211225094620217.png" alt="image-20211225094620217" style="zoom: 25%;" />
+
+3. 实验：作者在 文本分类、问答和文本补全三个下游任务上对后门攻击进行了测试；
+
+### Links
+
+- 论文链接：[Zhang X, Zhang Z, Ji S, et al. Trojaning language models for fun and profit[C]//2021 IEEE European Symposium on Security and Privacy (EuroS&P). IEEE Computer Society, 2021: 179-197.](https://www.computer.org/csdl/proceedings-article/euros&p/2021/149100a179/1yg1fhZjUUU)
+- 论文代码：https://github.com/alps-lab/trojan-lm
+
