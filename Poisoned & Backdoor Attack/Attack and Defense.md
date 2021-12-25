@@ -805,3 +805,32 @@
 - 论文链接：[Zhang X, Zhang Z, Ji S, et al. Trojaning language models for fun and profit[C]//2021 IEEE European Symposium on Security and Privacy (EuroS&P). IEEE Computer Society, 2021: 179-197.](https://www.computer.org/csdl/proceedings-article/euros&p/2021/149100a179/1yg1fhZjUUU)
 - 论文代码：https://github.com/alps-lab/trojan-lm
 
+
+
+## Mitigating backdoor attacks in LSTM-based Text Classification Systems by Backdoor Keyword Identification
+
+### Contribution
+
+1. 作者针对基于LSTM的文本分类系统，提出了一种BKI的防御方法；
+
+### Notes
+
+1. 作者的目标是清理污染数据，所以防御的前提假设是我们可以拿到训练的数据和目标模型；
+
+2. 防御的整体思想是，后门Trigger会对LSTM的Hidden State产生很大的影响，当我们把一个字去除，LSTM的隐状态发生了很大的改变的话，这个词很可能是Trigger的一部分；具体的算法如下
+
+   <img src="pictures/image-20211225110156253.png" alt="image-20211225110156253" style="zoom:33%;" />
+
+3. 实验：
+
+   1. 后门攻击结果：
+
+      <img src="pictures/image-20211225110325469.png" alt="image-20211225110325469" style="zoom:33%;" />
+
+   2. 后门防御结果：
+
+      <img src="pictures/image-20211225110412401.png" alt="image-20211225110412401" style="zoom:33%;" />
+
+### Links
+
+- 论文链接：[Chen C, Dai J. Mitigating backdoor attacks in lstm-based text classification systems by backdoor keyword identification[J]. Neurocomputing, 2021, 452: 253-262.](https://arxiv.org/abs/2007.12070)
