@@ -917,3 +917,16 @@
 - 论文链接：[Li S, Liu H, Dong T, et al. Hidden backdoors in human-centric language models[J]. CCS 2021.](https://arxiv.org/pdf/2105.00164.pdf)
 
 - 论文代码：https://github.com/lishaofeng/NLP_Backdoor
+
+
+
+## * Defending against Backdoor Attacks in Natural Language Generation
+
+### Contribution
+
+1. 同样是使用**异常词检测**的思想来做后门攻击的检测；
+
+#### Links
+
+- 论文链接：[Fan C, Li X, Meng Y, et al. Defending against Backdoor Attacks in Natural Language Generation[J]. arXiv preprint arXiv:2106.01810, 2021.](https://arxiv.org/pdf/2106.01810.pdf)
+- 论文代码：https://github.com/ShannonAI/backdoor_nlg
