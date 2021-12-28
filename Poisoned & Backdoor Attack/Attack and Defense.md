@@ -1,18 +1,25 @@
 # Attack & Defense in Poisoned & Backdoor Attack
 
-[TOC]
 
-## Todo List
 
-1. Yuanshun Yao, Huiying Li, Haitao Zheng, and Ben Y Zhao. Latent backdoor attacks on deep neural networks. In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security, pages 2041–2055, 2019.
-2. Joseph Clements and Yingjie Lao. Hardware trojan attacks on neural networks. arXiv preprint arXiv:1806.05768, 2018.
-3. Wenshuo Li, Jincheng Yu, Xuefei Ning, Pengjun Wang, Qi Wei, Yu Wang, and Huazhong Yang. Hu-fu: Hardware and software collaborative attack framework against neural networks. In 2018 IEEE Computer Society Annual Symposium on VLSI (ISVLSI), pages 482–487. IEEE, 2018.
-4. Bolun Wang, Yuanshun Yao, Shawn Shan, Huiying Li, Bimal Viswanath, Haitao Zheng, and Ben Y Zhao. Neural cleanse: Identifying and mitigating backdoor attacks in neural networks. In Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks, page 0. IEEE, 2019.
-5. Huili Chen, Cheng Fu, Jishen Zhao, and Farinaz Koushanfar. Deepinspect: a black-box trojan detection and mitigation framework for deep neural networks. In Proceedings of the 28th International Joint Conference on Artificial Intelligence, pages 4658–4664. AAAI Press, 2019.
-6. Bryant Chen, Wilka Carvalho, Nathalie Baracaldo, Heiko Ludwig, Benjamin Edwards, Taesung Lee, Ian Molloy, and Biplav Srivastava. Detecting backdoor attacks on deep neural networks by activation clustering. arXiv preprint arXiv:1811.03728, 2018.
-7. Brandon Tran, Jerry Li, and Aleksander Madry. Spectral signatures in backdoor attacks. In Advances in Neural Information Processing Systems, pages 8000–8010, 2018.
-8. Yansong Gao, Chang Xu, Derui Wang, Shiping Chen, Damith C Ranasinghe, and Surya Nepal. Strip: A defence against trojan attacks on deep neural networks. arXiv preprint arXiv:1902.06531, 2019.
-9. Edward Chou, Florian Tram`er, Giancarlo Pellegrino, and Dan Boneh. Sentinet: Detecting physical attacks against deep learning systems. arXiv preprint arXiv:1812.00292, 2018.
+
+## 文本领域后门攻击小结
+
+#### 后门攻击相关研究的主要目标
+
+1. 实现后门攻击；
+2. 如何隐藏后门 Pattern；
+3. 如何对 Fine-Tune 过程鲁棒；
+4. 如何对不同的下游任务鲁棒；
+
+#### 后门防御相关研究的主要思想
+
+异常检测，就是变换各种异常检测的思想；
+
+#### 文本后门相关研究的缺点
+
+1. 缺乏文本领域的特性，就只是选择各种粒度的pattern，进行数据的投毒；
+2. 攻击缺乏实际的危害，导致文章难以发到安全顶会上；
 
 
 
@@ -246,7 +253,7 @@
 
 ### Contribution
 
-1. 通过生成文本序列（借鉴encoder-decoder风格转换模型）的方法来发掘文本分类模型中的后门；（生成式的方法来生成后门指的借鉴⭐）
+1. 通过生成文本序列（借鉴encoder-decoder风格转换模型）的方法来发掘文本分类模型中的后门；（生成式的方法来生成后门，值得借鉴⭐）
 2. 该方法能够在一定程度上重构出目标模型的后门 pattern，使得检测结果能够别验证，相当而言对模型的分类也是更可信的；
 3. 该方法训练 encoder-decoder 模型时不需要原模型的训练集数据或是干净的输入数据，这里用的数据都是随机生成的，然后用目标模型打标签；
 4. 该方法能够检测后门模型，在一定程度上依赖的是在文本分类模型中，数据相对是比较离散的，后门 pattern 经常是几个单词，所以有很大概率下，一部分的后门 pattern 就能出发目标后门；
@@ -985,3 +992,125 @@
 
 
 
+## Backdoor Attacks on Pre-trained Models by Layerwise Weight Poisoning
+
+### Contribution
+
+1. 针对“**预训练模型中的后门可能在子任务finetune的过程中消失**”这个问题，作者希望后门被插入到预训练模型的前几层中，而不是在后几层中；
+2. （没什么创新的）设计了一种多个词联合作为pattern的数据污染方法；
+
+### Notes
+
+1. 投毒整体逻辑：
+
+   <img src="pictures/image-20211228174421101.png" alt="image-20211228174421101" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Li L, Song D, Li X, et al. Backdoor attacks on pre-trained models by layerwise weight poisoning[J]. EMNLP 2021.](https://arxiv.org/abs/2108.13888)
+- 论文代码：https://github.com/LinyangLee/Layer-Weight-Poison
+
+
+
+## Weight Poisoning Attacks on Pre-trained Models
+
+### Contribution
+
+1. 提出了一种RIPPLe的后门攻击算法，使得投毒的模型在fine-tune以后依然含有后门；
+
+### Links
+
+- 论文链接：[Kurita K, Michel P, Neubig G. Weight poisoning attacks on pre-trained models[J]. ACL 2020.](https://arxiv.org/pdf/2004.06660.pdf)
+- 论文代码：https://github.com/neulab/RIPPLe
+
+
+
+## Hidden Killer: Invisible Textual Backdoor Attacks with Syntactic Trigger
+
+### Contribution
+
+1. 使用句法结构作为后门的trigger；
+
+### Notes
+
+1. 后门样例：
+
+   <img src="pictures/image-20211228194042993.png" alt="image-20211228194042993" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Qi F, Li M, Chen Y, et al. Hidden Killer: Invisible Textual Backdoor Attacks with Syntactic Trigger[J]. ACL 2021.](https://arxiv.org/abs/2105.12400)
+- 论文代码：https://github.com/thunlp/HiddenKiller
+
+
+
+## Turn the Combination Lock: Learnable Textual Backdoor Attacks via Word Substitution
+
+### Contribution
+
+1. 使用替代词作为后门的trigger；
+
+### Notes
+
+1. 后门样本生成器：
+
+   <img src="pictures/image-20211228200202709.png" alt="image-20211228200202709" style="zoom:40%;" />
+
+### Links
+
+- 论文链接：[Qi F, Yao Y, Xu S, et al. Turn the combination lock: Learnable textual backdoor attacks via word substitution[J]. ACL 2021.](https://arxiv.org/pdf/2106.06361.pdf)
+- 论文代码：https://github.com/thunlp/BkdAtk-LWS
+
+
+
+## * Rethinking Stealthiness of Backdoor Attack against NLP Models
+
+### Contribution
+
+1. 提出了两个文本后门隐藏性的度量指标，并进行了测试；
+2. 提出了一种后门攻击的方法；（<u>没看见新的生成方法，提了negative augmentation，没啥意思</u>）；
+
+### Links
+
+- 论文链接：[Yang W, Lin Y, Li P, et al. Rethinking Stealthiness of Backdoor Attack against NLP Models. ACL 2021.](https://aclanthology.org/2021.acl-long.431.pdf)
+- 论文代码：https://github.com/lancopku/SOS
+
+
+
+## Mind the Style of Text! Adversarial and Backdoor Attacks Based on Text Style Transfer
+
+> 牛逼，直接发三篇文章。。。。。。。
+
+### Contribution
+
+1. 使用文本风格作为后门攻击的trigger，另外也用来做对抗攻击；
+
+### Notes
+
+1. 文本风格攻击示例：
+
+   <img src="pictures/image-20211228202016339.png" alt="image-20211228202016339" style="zoom: 50%;" />
+
+### Links
+
+- 论文链接：[Qi F, Chen Y, Zhang X, et al. Mind the style of text! adversarial and backdoor attacks based on text style transfer[J]. EMNLP 2021](https://arxiv.org/pdf/2110.07139.pdf)
+- 论文代码：https://github.com/thunlp/StyleAttack
+
+
+
+## RAP: Robustness-Aware Perturbations for Defending against Backdoor Attacks on NLP Models
+
+### Contribution
+
+1. 利用异常检测的思想，来检测文本的后门；
+
+### Notes
+
+1. 检测思想：
+
+   <img src="pictures/image-20211228202519582.png" alt="image-20211228202519582" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Yang W, Lin Y, Li P, et al. RAP: Robustness-Aware Perturbations for Defending against Backdoor Attacks on NLP Models[J]. EMNLP 2021.](https://arxiv.org/abs/2110.07831)
+- 论文代码：https://github.com/lancopku/RAP
