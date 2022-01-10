@@ -304,7 +304,7 @@
 
        - Reconstruction loss
 
-         <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20211017133012458.png" alt="image-20211017133012458" style="zoom: 33%;" />
+         <img src="pictures/image-20211017133012458.png" alt="image-20211017133012458" style="zoom: 33%;" />
 
        - Classification loss
 
@@ -1098,6 +1098,8 @@
 
 
 
+
+
 ## RAP: Robustness-Aware Perturbations for Defending against Backdoor Attacks on NLP Models
 
 ### Contribution
@@ -1114,3 +1116,115 @@
 
 - 论文链接：[Yang W, Lin Y, Li P, et al. RAP: Robustness-Aware Perturbations for Defending against Backdoor Attacks on NLP Models[J]. EMNLP 2021.](https://arxiv.org/abs/2110.07831)
 - 论文代码：https://github.com/lancopku/RAP
+
+
+
+
+
+## Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
+
+### Contribution
+
+1. 提出了一种和生成通用对抗扰动十分相似的后门检测算法，配合MAD异常检测算法，实现了一个不错的效果；
+2. 该算法能够在检测的基础上，反向生成后门的trigger，同时从神经元激活值层面用分析了反向生成的trigger和原始trigger之间的相似性；（这同时打开了我们的思路，具体看下面的具体分析）
+3. 文章提出了trigger过滤、神经元剪枝和unlearning这三种不同的方法来缓解后门攻击对模型的影响；
+4. 从我的理解上来看，这种后门检测和防御算法，只能对聚集状的后门trigger起作用；
+
+### Notes
+
+1. Backdoor Attack：可以从这幅图中发现，作者主要防御的是 **带特殊pattern的后门攻击算法**；
+
+   <img src="pictures/image-20220106171339057.png" alt="image-20220106171339057"  />
+
+2. 防御算法：
+
+   <img src="pictures/image-20220106171617606.png" alt="image-20220106171617606" style="zoom: 25%;" />
+
+   - （Observation 1）如果模型中存在后门，那么将干净分类的样本变换成（后门）目标分类所需要的扰动，会小于 Trigger 的大小；
+
+     <img src="pictures/image-20220106172406709.png" alt="image-20220106172406709" style="zoom:33%;" />
+
+   - （Observation 2）如果模型中存在后门，那么将任意干净样本变换成（后门）目标分类所需要的扰动，会远小于变换成其他正常目标分类所需要的扰动大小；
+
+     <img src="pictures/image-20220106172549700.png" alt="image-20220106172549700" style="zoom:33%;" />
+
+   - （Detecting Backdoors Idea） 如果在模型中，将一个分类的干净样本变换成某一个目标分类所需要的扰动，远小于变换成其他目标分类的扰动时，那么模型中很可能存在后门；
+
+   - （后门 Trigger 生成算法）
+
+     整体上来看，后门 Trigger 生成的过程，可以理解为一个 Universal Adversarial Perturbation 的生成过程；
+
+     - 在干净样本上添加扰动，使得干净样本可以被错误分类为目标分类；
+
+     - 希望对干净样本上添加的扰动尽可能小；
+
+     - 迭代公式如下：
+
+       <img src="pictures/image-20220106173806562.png" alt="image-20220106173806562" style="zoom:33%;" />
+
+     - 对样本的修改如下：
+
+       <img src="pictures/image-20220106173905769.png" alt="image-20220106173905769" style="zoom: 33%;" />
+
+   - （后门检测算法）作者使用MAD异常检测算法来判断一个生成的 Trigger 是否为后门Trigger，算法过程如下：（作者选择距离值大于2的判定为后门trigger）
+
+     ![在这里插入图片描述](pictures/20190826151252554.png)
+
+3. 实验
+
+   1. 原始任务、数据集和网络结构：
+
+      <img src="pictures/image-20220106195438801.png" alt="image-20220106195438801" style="zoom: 33%;" />
+
+   2. 后门攻击成功率：
+
+      - 作者在文章中对两种后门进行了检测：BadNets 和 Trojan Attack；
+
+      - 后门样本：
+
+        <img src="pictures/image-20220106195817319.png" alt="image-20220106195817319" style="zoom: 33%;" />
+
+      - 后门攻击结果：
+
+      <img src="pictures/image-20220106195607630.png" alt="image-20220106195607630" style="zoom:33%;" />
+
+   3. 后门检测结果：基本上能够成功检测出目标后门，并且定位到正确的后门目标分类；
+
+      <img src="pictures/image-20220106202523705.png" alt="image-20220106202523705" style="zoom: 25%;" />
+
+   4. 优化算法的有效性：作者通过实验证明了他们提出的优化算法能够加快后门的检测，减少了75%的运行时间；下图展示了使用优化算法后结果是稳定的
+
+      <img src="pictures/image-20220106202704076.png" alt="image-20220106202704076" style="zoom:33%;" />
+
+   5. 还原后门Trigger
+
+      ![image-20220106202758061](pictures/image-20220106202758061.png)
+
+      <img src="pictures/image-20220106202826774.png" alt="image-20220106202826774" style="zoom: 33%;" />
+
+      为了体现Trigger的相似性，作者从神经网络激活的层面进行分析，发现对于Top 1%（**这部分神经元测试后是能够保证后门攻击成功的**）的神经元的激活值都特别大，但是可以看到在最后三个模型上面的相似性并不是那么高，这也导致了后面提到的prune model的方法在这三个模型上的效果较差：
+
+      <img src="pictures/image-20220106203301217.png" alt="image-20220106203301217" style="zoom:33%;" />
+
+      > 可以看到，虽然作者提取出来的Pattern和原始的后门Trigger并不相似，但是从神经元的激活值层面来看，他俩的作用是非常相似的，所以这样的Pattern也是一个后门的Trigger；
+      >
+      > ⭐️ 这可能也是陈老师只让我们去发现模型中是否有后门，而不是完全提取出后门的Pattern；
+
+   6. 缓解后门的危害
+
+      - 使用后门检测器：和上面的相似性一样，使用神经元的激活值作为后门的检测器；
+
+        <img src="pictures/image-20220106230211064.png" alt="image-20220106230211064" style="zoom: 25%;" />
+
+      - 修剪神经元：修剪掉与后门相关的神经元，在BadNets上效果较好，但是在Trojan Attack的缓解作用较差；
+
+        <img src="pictures/image-20220106230402164.png" alt="image-20220106230402164" style="zoom:33%;" />
+
+      - Unlearning：效果不错；
+
+        ![image-20220106231237823](pictures/image-20220106231237823.png)
+
+### Links
+
+- 论文链接：[Wang B, Yao Y, Shan S, et al. Neural cleanse: Identifying and mitigating backdoor attacks in neural networks[C]//2019 IEEE Symposium on Security and Privacy (SP). IEEE, 2019: 707-723.](https://sites.cs.ucsb.edu/~bolunwang/assets/docs/backdoor-sp19.pdf)
+- 论文代码：https://github.com/bolunwang/backdoor
