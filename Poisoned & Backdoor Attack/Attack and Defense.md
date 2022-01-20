@@ -1228,3 +1228,28 @@
 
 - 论文链接：[Wang B, Yao Y, Shan S, et al. Neural cleanse: Identifying and mitigating backdoor attacks in neural networks[C]//2019 IEEE Symposium on Security and Privacy (SP). IEEE, 2019: 707-723.](https://sites.cs.ucsb.edu/~bolunwang/assets/docs/backdoor-sp19.pdf)
 - 论文代码：https://github.com/bolunwang/backdoor
+
+
+
+## Composite Backdoor Attack for Deep Neural Network by Mixing Existing Benign Features
+
+### Contribution
+
+1. 文章通过结合不同类别的图片，来作为后门 Trigger；
+
+### Notes
+
+1. 后门 Trigger 的构建：
+
+   - 文本
+
+     <img src="pictures/image-20220120111723298.png" alt="image-20220120111723298" style="zoom:50%;" />
+
+   - 图像
+
+     <img src="pictures/image-20220120111904877.png" alt="image-20220120111904877" style="zoom:33%;" />
+
+### Links
+
+- 论文链接：[Lin J, Xu L, Liu Y, et al. Composite backdoor attack for deep neural network by mixing existing benign features[C]//Proceedings of the 2020 ACM SIGSAC Conference on Computer and Communications Security. 2020: 113-131.](https://dl.acm.org/doi/10.1145/3372297.3423362)
+- 论文代码：https://github.com/TemporaryAcc0unt/composite-attack
