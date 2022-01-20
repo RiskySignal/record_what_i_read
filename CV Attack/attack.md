@@ -1362,3 +1362,37 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 ### Links
 
 - 论文链接：[Mahmood K, Mahmood R, Van Dijk M. On the robustness of vision transformers to adversarial examples[J]. arXiv preprint arXiv:2104.02610, 2021.](https://arxiv.org/abs/2104.02610)
+
+
+
+
+
+## A Unified Approach to Interpreting and Boosting Adversarial Transferability
+
+### Contribution
+
+1. 对于如何提高对抗样本的迁移性，提供了一个全新的视角；
+
+### Notes
+
+1. 这篇文章对“对抗样本的迁移性”做了一些探讨，他们**认为** （这是一个假设）：对抗扰动（各像素点间）的关联性越小，那么生成的对抗样本的迁移性就越好；
+   同时，文章中还提到，多步对抗攻击生成的对抗样本，偏向于对本地模型过拟合，对抗迁移性相比于单步对抗攻击 更差；
+
+2. 基于上面的假设，作者提出了一个 Loss 函数来惩罚对抗扰动之间的关联性：
+
+   <img src="pictures/image-20220120133800967.png" alt="image-20220120133800967" style="zoom:33%;" />
+
+   ![image-20220120142624979](pictures/image-20220120142624979.png)
+
+   原文在这里使用 Shapley value 来定义不同像素点之间的关联性，具体的代码实现如下：
+
+   <img src="pictures/image-20220120142815323.png" alt="image-20220120142815323" style="zoom:80%;" />
+
+3. 实验效果：从实验的结果上来看，文章提出的方法可以提升对抗样本的迁移性；同时可以看到，经过对抗训练的模型在对攻击的防御上确实有不小的提升；这里存在一个缺点，即作者没有上 transformer 模型上验证一下对抗样本的迁移性；
+
+   <img src="pictures/image-20220120143157082.png" alt="image-20220120143157082" style="zoom:67%;" />
+
+### Links
+
+- 论文链接：[Wang X, Ren J, Lin S, et al. A unified approach to interpreting and boosting adversarial transferability[J]. ICLR 2021](https://arxiv.org/abs/2010.04055)
+- 论文代码：https://github.com/xherdan76/A-Unified-Approach-to-Interpreting-and-Boosting-Adversarial-Transferability
