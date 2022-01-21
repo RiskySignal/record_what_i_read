@@ -1396,3 +1396,16 @@ $\lVert \boldsymbol{A} \rVert_2 = \sqrt{\lambda_{max}}$，其中$\lambda_{max}$ 
 
 - 论文链接：[Wang X, Ren J, Lin S, et al. A unified approach to interpreting and boosting adversarial transferability[J]. ICLR 2021](https://arxiv.org/abs/2010.04055)
 - 论文代码：https://github.com/xherdan76/A-Unified-Approach-to-Interpreting-and-Boosting-Adversarial-Transferability
+
+
+
+## * Attacking Video Recognition Models with Bullet-Screen Comments
+
+### Contribution
+
+1. 文章针对视频检测模型进行对抗攻击，虽然标题使用的是”弹幕攻击“，但是实际上，我们在进行视频检测时并不会将视频的弹幕一并进行检测，因此我觉得这篇文章更像是”动态的水印攻击“；
+2. 文章在算法部分使用了 强化学习 来选择对抗扰动的位置和透明度，这一点可以借鉴；
+
+### Links
+
+- 论文链接：[Chen K, Wei Z, Chen J, et al. Attacking Video Recognition Models with Bullet-Screen Comments[J]. arXiv preprint arXiv:2110.15629, 2021.]()
