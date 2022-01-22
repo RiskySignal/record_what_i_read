@@ -1,8 +1,5 @@
 # Attack & Defense in Poisoned & Backdoor Attack
 
-
-
-
 ## 文本领域后门攻击小结
 
 #### 后门攻击相关研究的主要目标
@@ -20,6 +17,59 @@
 
 1. 缺乏文本领域的特性，就只是选择各种粒度的pattern，进行数据的投毒；
 2. 攻击缺乏实际的危害，导致文章难以发到安全顶会上；
+
+
+
+
+
+## Trojaning Attack on Neural Networks
+
+### Contribution
+
+1. 使用经过梯度下降算法优化的后门触发器，来增强对抗样本的攻击能力，同时减少对模型本身任务的影响；
+2. 是一种不需要知道原始训练集的后门攻击算法，依靠的是样本逆向算法配合降噪算法来生成用于模型训练的样本；
+
+### Notes
+
+1. 论文算法整体框架：
+	
+	<img src="pictures/image-20220121182256583.png" alt="image-20220121182256583" style="zoom: 33%;" />
+	
+	可以看到，作者的算法主要分为三个部分：后门触发器生成、训练样本生成和模型重训练过程；作者在植入后门的过程中，假设可以拿到对方的模型，但是无法获取到训练数据。作者通过梯度下降算法来最优化后门触发器，使得优化后的触发器能让特定层的特定神经元出现极端的激活状态；另外，由于作者是无法获取训练数据的，所以训练样本生成模块则主要负责来生成用于模型训练的样本，其中的原理就是 sample reversion；
+	
+2. 后门生成器生成算法：
+
+   <img src="pictures/image-20220121183024791.png" alt="image-20220121183024791" style="zoom: 25%;" />
+
+   即让模型特定神经元的激活值竟可能地逼近目标值，逼近的方法则是直接使用梯度下降算法。这里我觉得文章的算法描述存在很大的问题，”$cost<threshold$“ 这个应该是错误的，而应该是 ”$cost > threshold$“；
+
+   至于神经元的挑选，则是挑选那些和前一层连接更加紧密的神经元，具体的计算公式如下：
+
+   <img src="pictures/image-20220121183637165.png" alt="image-20220121183637165" style="zoom:15%;" />
+
+   生成的后门trigger的样式：
+
+   <img src="pictures/image-20220121184118688.png" alt="image-20220121184118688" style="zoom:25%;" />
+
+
+3. 训练样本的生成算法：
+
+   <img src="pictures/image-20220121184640060.png" alt="image-20220121184640060" style="zoom:25%;" />
+
+   即通过梯度下降算法让样本的目标分类的概率值尽可能得大；这里作者还添加了一个降噪模块，具体的算法如下所示：
+
+   <img src="pictures/image-20220122114335575.png" alt="image-20220122114335575" style="zoom:25%;" />
+
+   生成的训练样本样例如下所示：
+
+   <img src="pictures/image-20220122114911322.png" alt="image-20220122114911322" style="zoom:40%;" />
+
+   这里我挺好奇的，<u>作者测试的 Orig 是在原始训练集上的准确率，这个准确率是没有任何意义的。</u>
+
+### Links
+
+- 论文链接：[Liu Y, Ma S, Aafer Y, et al. Trojaning attack on neural networks[J]. NDSS 2018.](https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=2782&context=cstech)
+- 论文代码：https://github.com/PurduePAML/TrojanNN
 
 
 
