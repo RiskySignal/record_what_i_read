@@ -1581,3 +1581,105 @@ AI 柠檬开发的中文语音识别模型；
 
 - 论文链接：[Gulati A, Qin J, Chiu C C, et al. Conformer: Convolution-augmented transformer for speech recognition[J]. arXiv preprint arXiv:2005.08100, 2020.](https://arxiv.org/abs/2005.08100)
 - 代码链接：https://github.com/sooftware/conformer
+
+
+
+## Wav2Vec 系列
+
+参考链接：https://zhuanlan.zhihu.com/p/302463174
+
+参考视频链接：https://www.bilibili.com/video/BV16M4y1M7FR/
+
+### CPC
+
+论文链接：[Oord A, Li Y, Vinyals O. Representation learning with contrastive predictive coding[J]. arXiv preprint arXiv:1807.03748, 2018.](https://arxiv.org/abs/1807.03748)
+
+参考链接：https://zhuanlan.zhihu.com/p/129076690
+
+Contrastive Predictive Coding 的主要思想是使用自监督学习方法来学习一个更好的特征表示；
+
+<img src="pictures/image-20220202093544489.png" alt="image-20220202093544489" style="zoom: 33%;" />
+
+文章提出了一种比较有意思的Loss函数——Info NCE Loss：
+
+<img src="pictures/image-20220202093952688.png" alt="image-20220202093952688" style="zoom:20%;" />
+
+这个损失函数是对比学习的思想，利用正负样例来进行训练，内部除法上半部分 $f_k(x_{t+k}, c_t)$ 表示“根据当前上文信息，预测k帧以后的下文表示的距离”，而下班部分 $\sum_{x_j \in X} f_k(x_j, c_t)$ 则表示“从整个音频中随机抽样作为负样本，计算预测后的距离”；该函数的具体数学公式如下所示：
+
+<img src="pictures/image-20220202094506829.png" alt="image-20220202094506829" style="zoom:20%;" />
+
+实验效果：
+
+<img src="pictures/image-20220202094608009.png" alt="image-20220202094608009" style="zoom:25%;" />
+
+可以看到，该文章主要进行了 “Phone Classification” 和 “Speaker Classification” 两个任务上进行了实验，可以看到，通过**自监督学习已经可以学到和监督学习相近的特征表示**；
+
+### Wav2Vec
+
+论文链接：[Schneider S, Baevski A, Collobert R, et al. wav2vec: Unsupervised pre-training for speech recognition[J]. arXiv preprint arXiv:1904.05862, 2019.](https://arxiv.org/abs/1904.05862)
+
+论文代码：https://github.com/pytorch/fairseq
+
+参考链接：https://blog.csdn.net/xmdxcsj/article/details/115787030
+
+CPC 的实验没有在 ASR 上面进行实验，所以 Wav2Vec 就是在 CPC 基础上进行改进，并在 ASR 上面进行实验；和 CPC 不同之处在于，Wav2Vec 在 Context Network 上使用的是 CNN 网络，而不是 RNN 网络；
+
+<img src="pictures/image-20220201173346405.png" alt="image-20220201173346405" style="zoom:33%;" />
+
+损失函数虽然看起来不同，但其实是对 Info NCE Loss 的变形：
+
+<img src="pictures/image-20220202095416417.png" alt="image-20220202095416417" style="zoom:33%;" />
+
+其中 $\sigma(\cdot)$ 函数即为 Sigmoid 函数；
+
+> 这边有一个思想我觉得很关键，AI 领域进行预训练的工作中，已经不再是说回复原始的数据，而是来预测恢复原始数据的特征表示；这个想法我觉得很关键，因为神经网络在处理数据的过程中，肯定会丢失局部的特征信息，所以我们来恢复数据的特征，这样的想法是非常自然的，可以很好地进行网络的训练，而不容易出现过拟合这样的现象；
+
+实验效果：
+
+<img src="pictures/image-20220202111601791.png" alt="image-20220202111601791" style="zoom: 30%;" />
+
+### Vq-Wav2Vec
+
+论文链接：[Baevski A, Schneider S, Auli M. vq-wav2vec: Self-supervised learning of discrete speech representations[J]. arXiv preprint arXiv:1910.05453, 2019.](https://arxiv.org/pdf/1910.05453.pdf)
+
+在 Wav2Vec 的基础上，Vq-Wav2Vec 额外增加了一个量化模块，目的是让量化后的离散向量可以作为NLP常用的 Transformer 模型的输入；
+
+<img src="pictures/image-20220202110041215.png" alt="image-20220202110041215" style="zoom: 30%;" />
+
+Vq-Wav2Vec 的量化模块则是借鉴了 Vq-VAE 这个工作，使用 Gumbel-Softmax 或者 K-means 来进行量化；
+
+<img src="pictures/image-20220202112001575.png" alt="image-20220202112001575" style="zoom: 25%;" />
+
+- Gumbel-Softmax：
+
+  <img src="pictures/image-20220202112105994.png" alt="image-20220202112105994" style="zoom: 33%;" />
+
+- K-means：
+
+  <img src="pictures/image-20220202112143226.png" alt="image-20220202112143226" style="zoom:33%;" />
+
+另外，在量化的过程中，经常会遇到量化最终只使用了部分 CodeBook 的现象，文章提出了一种解决办法是，对原始特征向量 $z \in \mathcal{R}^d$ 进行 Reshape 操作，变成 $z' \in \mathcal{R^{\mathbf{G} \times (d/\mathbf{G})}}$ ；另外对于不同的组（Groups），作者设置共享他们之间的参数；
+
+实验效果：
+
+<img src="pictures/image-20220202113406764.png" alt="image-20220202113406764" style="zoom:30%;" />
+
+可以看到，在 Wav2Vec 的基础上添加量化模块可以很好地增加模型的性能，同时还可以利用NLP的技术；
+
+### Wav2Vec-2
+
+论文链接：[Baevski A, Zhou H, Mohamed A, et al. wav2vec 2.0: A framework for self-supervised learning of speech representations[J]. arXiv preprint arXiv:2006.11477, 2020.](https://arxiv.org/abs/2006.11477)
+
+可以看到 Wav2Vec-2 在Vq-Wav2vec 的基础上，将原有的 CNN Context 网络替换成了 Transformer 网络，其余部分基本保持不变；两者很大的一个区别是，Vq-Wav2vec 的预训练需要进行两部实现，而 Wav2Vec 网络则是直接通过一步同时训练 “特征提取网络” 和 Context 网络；
+
+<img src="pictures/image-20220202113653078.png" alt="image-20220202113653078" style="zoom:30%;" />
+
+对于量化模块，作者这里只采用 Gambel-Softmax 的方法，具体的文章描述如下，可以看到，这里沿用了对原始特征进行分组的做法：
+
+<img src="pictures/image-20220202114421131.png" alt="image-20220202114421131" style="zoom:33%;" />
+
+实验效果：
+
+<img src="pictures/image-20220202114041826.png" alt="image-20220202114041826" style="zoom:33%;" />
+
+可以看到，在 Librispeech 上，文章实现了非常不错的 WER 效果；
