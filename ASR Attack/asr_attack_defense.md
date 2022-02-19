@@ -1677,3 +1677,17 @@
 ### Links
 
 - 论文链接：[Zheng B, Jiang P, Wang Q, et al. Black-box Adversarial Attacks on Commercial Speech Platforms with Minimal Information[J]. CCS 2021.](https://arxiv.org/abs/2110.09714)
+
+
+
+
+
+## Adversarial Attacks and Defenses for Speech Recognition Systems
+
+### Contribution
+
+### Notes
+
+### Links
+
+- 论文链接：[Żelasko P, Joshi S, Shao Y, et al. Adversarial attacks and defenses for speech recognition systems[J]. arXiv preprint arXiv:2103.17122, 2021.](https://arxiv.org/abs/2103.17122)
