@@ -1573,11 +1573,11 @@
 
      - Band-Pass Filtering：最终选择 $200～7000Hz$ 带通滤波器，结果如下；
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210519101647940.png" alt="image-20210519101647940" style="zoom:50%;" />
+     <img src="pictures/image-20210519101647940.png" alt="image-20210519101647940" style="zoom:50%;" />
 
      - Psychoacoustic Filtering：会对原任务产生一定的影响，结果如下；
 
-     <img src="C:/Users/Ceres/AppData/Roaming/Typora/typora-user-images/image-20210519101859775.png" alt="image-20210519101859775" style="zoom:50%;" />
+     <img src="pictures/image-20210519101859775.png" alt="image-20210519101859775" style="zoom:50%;" />
 
      - Cross-Model Benign Accuracy：对比各种设定之间模型的准确率，结果如下；
 

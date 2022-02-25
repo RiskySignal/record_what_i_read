@@ -1306,3 +1306,25 @@
 
 
 
+## Backdoor Defense via Decoupling the Training Process
+
+### Contribution
+
+- 通过分解训练过程来防御数据投毒形式的后门攻击；
+
+### Notes
+
+- 算法
+
+  <img src="pictures/image-20220226002254820.png" alt="image-20220226002254820" style="zoom:33%;" />
+
+- 实验结果
+
+  问题：为什么可以防御clean-label attack？
+
+  <img src="pictures/image-20220226002534840.png" alt="image-20220226002534840" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Huang K, Li Y, Wu B, et al. Backdoor defense via decoupling the training process[J]. ICLR, 2022.](https://arxiv.org/abs/2202.03423)
+- 论文代码：https://github.com/SCLBD/DBD
