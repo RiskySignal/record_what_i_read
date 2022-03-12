@@ -1,9 +1,5 @@
 # Model on Speech Recognition
 
-
-
-[TOC]
-
 ## Todo List
 
 1. Chiu, Chung-Cheng, et al. "State-of-the-art speech recognition with sequence-to-sequence models." *2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)*. IEEE, 2018.

@@ -2,18 +2,6 @@
 
 
 
-[TOC]
-
-
-
-## Todo List
-
-
-
-
-
-
-
 ## Fooling End-to-end Speaker Verification by Adversarial Examples
 
 ### Contribution
