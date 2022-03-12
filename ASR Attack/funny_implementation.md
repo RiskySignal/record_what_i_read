@@ -1,13 +1,5 @@
 # Funny Implementation in ASR
 
-
-
-
-
-[TOC]
-
-
-
 ## 神秘鸭
 
 ### 简介
@@ -36,8 +28,6 @@
 
 - 神秘鸭官网：https://smya.cn/
 
-
-
 ## 华为 AI 安全
 
 一起看一下，华为对 AI 安全的整体布局：
@@ -50,8 +40,6 @@
 
 
 
-
-
 ## AI 实时声音克隆
 
 分享链接：[【有趣的项目分享】尝试用AI合成特朗普的语音](https://juejin.cn/post/6872260516966842382)
@@ -60,8 +48,22 @@ Github 项目：[Real-Time Voice Cloning](https://github.com/CorentinJ/Real-Time
 
 
 
-
-
 ## 智能客服
 
 todo there
+
+
+
+## 攻击版权检测系统
+
+![](/Users/zjs/workspace/record_what_I_read/pictures/2022-03-12-10-36-06-image.png)
+
+这篇文章虽然做得不怎么样，但是利用对抗攻击来攻击版权检测系统，确实是个十分有意思的方向；
+
+
+
+## OPPO 语音唤醒实现方案
+
+![](/Users/zjs/workspace/record_what_I_read/pictures/2022-03-12-11-23-00-image.png)
+
+很有意思，语音唤醒的背后涉及非常多的技术，也增加了我们攻击这个系统的难度；
