@@ -14,5 +14,40 @@
 
 ### Day 1
 
+<img src="pictures/image-20220314004009609.png" alt="image-20220314004009609" style="zoom:67%;" />
 
+学习链接：https://foxglovesecurity.com/2016/03/15/fuzzing-workflows-a-fuzz-job-from-start-to-finish/
+
+该链接主要使用 `AFL++` 来对 `YAML-CPP` 工程进行 Fuzz，**最新版本的 `YAML-CPP` 好像没有 Crash**，效果复现不出来，后面换到博主提供的版本继续复现博主的实验。
+
+[@BrandonPrry](https://twitter.com/BrandonPrry) 在博客中分享了一个通过并行加快 `afl-tmin` 的工具，将其成为 `afl-ptmin` ，其代码如下：
+
+```bash
+#!/bin/bash
+cores=$1
+inputdir=$2
+outputdir=$3
+pids=""
+total=`ls $inputdir | wc -l`
+
+for k in `seq 1 $cores $total`
+do
+  for i in `seq 0 $(expr $cores - 1)`
+  do
+    file=`ls -Sr $inputdir | sed $(expr $i + $k)"q;d"`
+    echo $file
+    afl-tmin -i $inputdir/$file -o $outputdir/$file -- ~/parse &
+  done
+
+  wait
+done
+```
+
+思考问题：
+
+- Fuzz是什么，主要的流程是什么，关键点是什么？ ❓
+- `AFL` 的原理？它和还有一些 Fuzz 工具有什么异同点？ ❓
+- `afl-cmin` 和 `afl-tmin` 两个工具他们的区别的是什么？ ❓
+- GDB 插件 `exploitable` 和 `CrashWalk` 分别是什么作用？ ❓
+- `afl-cov` 是如何实现的？❓
 
