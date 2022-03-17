@@ -29,16 +29,16 @@
    
    $$
    \min_\theta \rho(\theta), \;\; \text{where} \;\; \rho(\theta) = \mathbb{E}_{(x,y)\sim\mathcal{D}}\left[
-L(\theta, x, y)
-\right]
+   L(\theta, x, y)
+   \right]
    $$
    
    但是这样的训练目标，使得模型容易受到对抗样本的攻击。故作者将对抗样本的攻击防御问题总结为以下公式，该问题原文中作者称为 **鞍点问题（saddle point problem）**，即我们希望我们训练得到的模型在训练样本**周围**的经验损失能够达到最小。
    
    $$
    \min_\theta \rho(\theta), \;\; \text{where} \;\; \rho(\theta) = \mathbb{E}_{(x,y)\sim\mathcal{D}}\left[\max_{\delta \in \mathcal{S}}
-L(\theta, x+\delta, y)
-\right]
+   L(\theta, x+\delta, y)
+   \right]
    $$
    
    建模完问题以后，那么以前的对抗样本领域的工作就可以进行简单地分类：（<u>稍微有点绕</u>）
@@ -133,7 +133,7 @@ L(\theta, x+\delta, y)
    
    $$
    \mathcal{A}_{rob}(f) = 1 - \mathcal{R}_{rob}(f) \\
-\mathcal{A}_{nat}(f) = 1 - \mathcal{R}_{nat}(f)
+   \mathcal{A}_{nat}(f) = 1 - \mathcal{R}_{nat}(f)
    $$
    
    (1) 参数 $\lambda$ 的作用：
@@ -627,6 +627,10 @@ L(\theta, x+\delta, y)
    b. Adversarial Robust Generalization：对抗训练的效果在训练集上比测试集上好得多；
    
    c. Generalization on Unseen Attacks：对抗训练对没有见过的攻击可能泛化性能差；
+
+2. 现有的算法：
+
+   <img src="pictures/image-20220316160905490.png" alt="image-20220316160905490" style="zoom: 33%;" />
 
 ### Links
 

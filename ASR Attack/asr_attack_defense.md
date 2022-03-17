@@ -2,30 +2,6 @@
 
 
 
-[TOC]
-
-## Check List
-
-### USENIX Security
-
-- 2020 
-
-### NDSS: Network and Distributed System Security Symposium
-
-- 2020
-
-### S&P: IEEE Symposium on Security and Privacy
-
-- 2020
-
-### CCS：ACM Conference on Computer and Communications
-
-- 2020
-
-
-
-
-
 ## Todo List
 
 2. Biggio, B., Corona, I., Maiorca, D., Nelson, B., ˇSrndi´c, N., Laskov, P., Giacinto, G., and Roli, F. Evasion attacks against machine learning at test time. In Joint European conference on machine learning and knowledge discovery in databases, pp. 387–402. Springer, 2013.
@@ -1691,3 +1667,25 @@
 ### Links
 
 - 论文链接：[Żelasko P, Joshi S, Shao Y, et al. Adversarial attacks and defenses for speech recognition systems[J]. arXiv preprint arXiv:2103.17122, 2021.](https://arxiv.org/abs/2103.17122)
+
+
+
+
+
+## FakeWake: Understanding and Mitigating Fake Wake-up Words of Voice Assistants
+
+> 这篇文章写得非常nice，我只看abstract就觉得他应该要中，陈老师诚不欺我。不过文章给的细节有点过少了，同时没有开源代码，这是文章不好的地方。
+
+### Contribution
+
+1. 通过遗传算法，找到了不同平台上的误唤醒词；（文末给出了具体的误唤醒词列表，及他们的误唤醒成功率；）
+
+   这边我好奇的是：像siri，google这些平台是存在声纹识别的，作者这边并没有做解释❓
+
+2. 得到误唤醒词后，作者使用树模型来作为目标唤醒词模型的替代品，然后使用 Shap Value 来计算不同发音单位的重要性；（这部分的细节缺少太多，无法猜测他的算法具体是如何计算的❓）
+
+3. 使用现有的误唤醒词，来强化唤醒词识别模型；
+
+### Links
+
+- 论文链接：[Chen Y, Bai Y, Mitev R, et al. FakeWake: Understanding and Mitigating Fake Wake-up Words of Voice Assistants[C]//Proceedings of the 2021 ACM SIGSAC Conference on Computer and Communications Security. 2021: 1861-1883.](https://dl.acm.org/doi/10.1145/3460120.3485365)

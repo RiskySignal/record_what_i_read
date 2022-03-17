@@ -1680,4 +1680,4 @@ Vq-Wav2Vec 的量化模块则是借鉴了 Vq-VAE 这个工作，使用 Gumbel-So
 
 可以看到，在 Librispeech 上，文章实现了非常不错的 WER 效果；
 
-在解码的过程中，wav2vec 可以搭配 wav2vec 一起使用，具体的使用方法，参考链接：https://huggingface.co/blog/wav2vec2-with-ngram ；
+在解码的过程中，wav2vec 可以搭配 n-gram 一起使用，具体的使用方法，参考链接：https://huggingface.co/blog/wav2vec2-with-ngram ；

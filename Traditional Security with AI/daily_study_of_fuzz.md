@@ -14,6 +14,8 @@
 
 ### Day 1
 
+#### Notes
+
 <img src="pictures/image-20220314004009609.png" alt="image-20220314004009609" style="zoom:67%;" />
 
 学习链接：https://foxglovesecurity.com/2016/03/15/fuzzing-workflows-a-fuzz-job-from-start-to-finish/
@@ -43,11 +45,51 @@ do
 done
 ```
 
-思考问题：
+#### 思考问题
 
 - Fuzz是什么，主要的流程是什么，关键点是什么？ ❓
 - `AFL` 的原理？它和还有一些 Fuzz 工具有什么异同点？ ❓
-- `afl-cmin` 和 `afl-tmin` 两个工具他们的区别的是什么？ ❓
+- `afl-cmin` 和 `afl-tmin` 两个工具他们的区别的是什么？ ✅
 - GDB 插件 `exploitable` 和 `CrashWalk` 分别是什么作用？ ❓
-- `afl-cov` 是如何实现的？❓
+- `afl-cov` 是如何实现的？使用的时候出现报错是为什么？❓
+
+
+
+### Day 2
+
+#### Notes
+
+解决问题： `afl-cmin` 和 `afl-tmin` 两个工具他们的区别的是什么？
+
+参考链接：https://xidoo.top/2022/01/afl-white-book/   （参考这篇博客，能对 `afl-tmin` 和 `afl-cmin` 两个工具有个大概的认知）
+
+参考链接：[AFL漏洞挖掘技术漫谈（一）：用AFL开始你的第一次Fuzzing](https://www.freebuf.com/vuls/191536.html)
+
+##### `afl-tmin` 工具
+
+`afl-tmin` 在保证测试用例的代码执行路径不变的情况下，尽可能地减小测试用例的大小。
+
+<img src="pictures/image-20220314095635679.png" alt="image-20220314095635679" style="zoom: 50%;" />
+
+##### `afl-cmin` 工具
+
+`afl-cmin` 在保证所有测试用例覆盖的代码执行路径不变的情况下，尽可能地减少测试用例的数量；
+
+<img src="pictures/image-20220314100539382.png" alt="image-20220314100539382" style="zoom:50%;" />
+
+#### 思考问题
+
+- 是否需要从源码级别对 `afl-tmin` 和 `afl-cmin` 两个工具有一定了解？这两个工具是否有优化的可能性和必要？✅
+
+  网上关于这两个工具的讨论非常得少，所以暂时不在这一块下功夫。
+
+- 黑盒模式是如何实现的？ ❓
+
+- 什么是插装，如何实现的？ ❓
+
+- `gcc` 和 `llvm` 两种编译模式的区别，为什么 `llvm` 的编译速度快很多？ ❓
+
+
+
+
 
