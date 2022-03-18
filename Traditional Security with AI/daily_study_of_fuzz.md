@@ -93,3 +93,16 @@ done
 
 
 
+### Day3
+
+#### Notes
+
+#### 思考问题
+
+- `LD_PRELOAD` 环境变量的作用是什么？ ✅
+
+  参考链接：https://blog.csdn.net/iEearth/article/details/49952047
+
+  主要用于动态的加载；
+
+- 
