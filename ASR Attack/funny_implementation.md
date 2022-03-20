@@ -28,6 +28,10 @@
 
 - 神秘鸭官网：https://smya.cn/
 
+
+
+
+
 ## 华为 AI 安全
 
 一起看一下，华为对 AI 安全的整体布局：
@@ -66,4 +70,14 @@ todo there
 
 ![](/Users/zjs/workspace/record_what_I_read/pictures/2022-03-12-11-23-00-image.png)
 
+参考链接：https://www.shenzhenware.com/articles/13081
+
 很有意思，语音唤醒的背后涉及非常多的技术，也增加了我们攻击这个系统的难度；
+
+
+
+## 声学回声消除
+
+参考链接：https://www.cnblogs.com/LXP-Never/p/11703440.html
+
+文章详细讲解了声学回声消除的原理，和推荐使用的开源库；
