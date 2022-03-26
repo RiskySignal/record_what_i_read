@@ -172,3 +172,49 @@ done
 
   **反向连接**：通常的网络连接程序是由客户端通过服务器开放的端口连接到服务器，反向连接是客户端打开服务器端口，由服务器主动连接客户端。反向连接这种方式常用于绕过防火墙和路由器安全限制；
 
+
+
+### Day 6
+
+#### Notes
+
+1. 阅读 `AFL++` 的 FAQ
+   参考链接：https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/FAQ.md
+2. Awesome-Fuzzing 参考链接：https://github.com/secfigo/Awesome-Fuzzing
+3. Fuzzing Book 参考链接：https://www.fuzzingbook.org/
+4. Fuzzing Benchmark 参考链接：https://www.fuzzbench.com/reports/2022-02-15-main-fuzzers/index.html
+5. 学习 `AFL Tutorial` ，参考链接：https://aflplus.plus/docs/tutorials/libxml2_tutorial/ 
+
+#### 思考问题
+
+- Harness 指的是什么？在 `fuzz` 整个过程中的作用是什么？ ❓
+
+- `deterministic stage` 和 `random stage` 在 `afl` 中的区别？ ❓
+
+- `afl` 的 `forking` 机制？  ❓
+
+- 如何选择 `persistent-mode` 的入口？ ❓
+
+- `AFL_USE_UBSAN` 和 `AFL_USE_ASAN` 两个环境变量的作用是什么？ ❓ 
+
+- `afl` 中的 `@@` 占位符的作用？ ✅
+
+  部分程序需要从文件接受输入，`afl-fuzz` 会在模糊测试的过程中会将 `@@` 占位符替换为目标文件的名称；
+
+- `nm` 指令的作用？ ✅
+
+  从它的输出来看，这应该是一个用来显示二进制文件符号表的工具；
+
+- `PIE` 二进制文件是什么？  ✅
+
+  `Position-Independent Executable`，完全由位置无关代码所组成的可执行二进制文件；
+
+  参考链接：https://www.cnblogs.com/sword03/p/9385660.html
+
+  可以使用 `checksec` 指令来查看二进制文件是否是一个开启 `PIE` 保护的文件；
+
+- `afl-qemu-trace` 的作用？   ✅
+
+  `afl-qemu-trace` 用来查看程序加载后的基地址，主要用来配合 `QEMU Persistent` 模式使用，用来确定目标函数的实际地址，从而对目标函数做模糊测试的加速；
+
+  
