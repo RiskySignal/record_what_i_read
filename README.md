@@ -28,6 +28,7 @@
 - [Awesome AI Security](https://github.com/DeepSpaceHarbor/Awesome-AI-Security)：作者列出了 `AI 安全方向` 相关的一些可用的学习资源；
 - [Awesome Real-world Adversarial Examples](https://github.com/lionelmessi6410/awesome-real-world-adversarial-examples)：作者总结了图像领域的物理对抗攻击相关的工作；
 - [Adversarial ML Threat Matrix - Table of Contents](https://github.com/mitre/advmlthreatmatrix)：微软总结的 `AI安全方向` 的威胁矩阵；
+- [AI Security Paper](https://github.com/eastmountyxz/AI-Security-Paper)
 
 ## 老板(们)的尊尊教诲
 

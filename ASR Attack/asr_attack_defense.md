@@ -1,39 +1,5 @@
 # Attack on Speech Recognition
 
-
-
-## Todo List
-
-2. Biggio, B., Corona, I., Maiorca, D., Nelson, B., ˇSrndi´c, N., Laskov, P., Giacinto, G., and Roli, F. Evasion attacks against machine learning at test time. In Joint European conference on machine learning and knowledge discovery in databases, pp. 387–402. Springer, 2013.
-3. A. Nguyen, J. Yosinski, and J. Clune, “Deep neural networks are easily fooled: High confidence predictions for unrecognizable images,” in Conference on Computer Vision and Pattern Recognition. IEEE, Jun. 2015, pp. 427–436.
-4. N. Carlini and D. Wagner, “Towards evaluating the robustness of neural networks,” in Symposium on Security and Privacy. IEEE, May 2017, pp. 39–57.
-5. I. Evtimov, K. Eykholt, E. Fernandes, T. Kohno, B. Li, A. Prakash, A. Rahmati, and D. Song, “Robust physical-world attacks on machine learning models,” CoRR, vol. abs/1707.08945, pp. 1–11, Jul. 2017.
-6. Moustapha Ciss´e, Yossi Adi, Natalia Neverova, and Joseph Keshet. Houdini: Fooling deep structured visual and speech recognition models with adversarial examples. In Proceedings of the 31st Annual Conference on Neural Information Processing Systems, pages 6980–6990, 2017.
-7. Dibya Mukhopadhyay, Maliheh Shirvanian, and Nitesh Saxena. 2015. All your voices are belong to us: Stealing voices to fool humans and machines. In Proceedings of the European Symposium on Research in Computer Security. Springer, 599–621.
-8. Mel-Frequency Spectral Coefficients (MFSC)
-10. Perceptual Linear Prediction (PLP)
-11. Wang, Qing, Pengcheng Guo, and Lei Xie. "Inaudible Adversarial Perturbations for Targeted Attack in Speaker Recognition." *arXiv preprint arXiv:2005.10637* (2020).
-12. Dangerous Skills: Understanding and Mitigating Security Risks of Voice-Controlled Third-Party Functions on Virtual Personal Assistant Systems
-13. DeepSec: A Uniform Platform for Security Analysis of Deep Learning Models
-14. Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks
-15. When the Differences in Frequency Domain are Compensated: Understanding and Defeating Modulated Replay Attacks on Automatic Speech Recognition
-16. PatternListener: Cracking Android Pattern Lock Using Acoustic Signals
-17. Y. Gong and C. Poellabauer, “Crafting adversarial examples for speech paralinguistics applications,” in DYNAMICS, 2018.
-18. F. Kreuk, Y. Adi, M. Cisse, and J. Keshet, “Fooling end-to-end speaker verification with adversarial examples,” in ICASSP, 2018.
-19. 更新 Overview
-20. David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In Proceedings ofthe IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP). 5329–5333.
-21. Tara N Sainath and Carolina Parada. 2015. Convolutional neural networks for small-footprint keyword spotting. In Annual Conference of the International Speech Communication Association (INTERSPEECH).
-22. Motion Sensor-based Privacy Attack on Smartphones.
-22. Z. Yang, P. Y. Chen, B. Li, and D. Song, “Characterizing audio adversarial examples using temporal dependency,” in 7th International Conference on Learning Representations, ICLR, 2019.
-23. F. Tramer, N. Carlini, W. Brendel, and A. Madry, “On adaptive attacks to adversarial example defenses,” 2020
-24. K. Rajaratnam, K. Shah, and J. Kalita, “Isolated and ensemble audio preprocessing methods for detecting adversarial examples against automatic speech recognition,” in Conference on Computational Linguistics and Speech Processing (ROCLING), 2018
-26. On evaluating adversarial robustness. 
-26. Towards Query-Efficient Adversarial Attacks Against Automatic Speech Recognition Systems
-
-
-
-
-
 ## Overview
 
 1. （结合场景的）语音识别过程
