@@ -1423,7 +1423,7 @@ $cmd JOB=1:4 $logdir/make_mfcc_offline_test_hires.JOB.log/ \  # 前面这个主�
 
 
 
-## 中文语音识别调研
+## 语音识别调研
 
 ### 数据集
 
@@ -1510,6 +1510,22 @@ Kaldi 模型：https://kaldi-asr.org/models/m10
 大型英文语音数据集
 
 链接：https://github.com/SpeechColab/GigaSpeech
+
+### 降噪算法
+
+#### 谱减法原理
+
+参考链接：https://juejin.cn/post/6876696658030100488
+
+#### Python降噪算法库
+
+##### PyroomAcoustics 库
+
+参考链接：https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.denoise.spectral_subtraction.html
+
+##### LogMMSE 库
+
+参考链接
 
 ### 模型
 
