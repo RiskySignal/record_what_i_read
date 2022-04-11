@@ -1487,6 +1487,8 @@ Github 链接：https://github.com/KuangDD/zhvoice
 
 #### AI Data Tang 200
 
+600个演讲者的数据
+
 链接：http://www.openslr.org/62/
 
 #### AI Data Tang 1505
