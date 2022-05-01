@@ -221,3 +221,16 @@ done
 
 ### Day 7
 
+#### Notes
+
+1. 学习 AFL 源码；
+
+   参考链接1：https://paper.seebug.org/1732/
+
+   参考链接2：https://eternalsakura13.com/2020/08/23/afl/
+
+#### 思考问题
+
+- gcc 和 llvm 两种编译器的区别？会对程序产生什么影响？❓
+- `afl-as.c` 中为什么要 `fork` 一个子进程来完成插桩的过程？❓
+- 为什么插桩只在 `.text` 段进行插桩？❓
