@@ -85,9 +85,11 @@ done
 
 - 黑盒模式是如何实现的？ ❓
 
-- 什么是插装，如何实现的？ ❓
+- 什么是插装，如何实现的？ ✅
 
-- `gcc` 和 `llvm` 两种编译模式的区别，为什么 `llvm` 的编译速度快很多？ ❓
+  一开始对”**插桩**“的概念了解的太少，甚至连名字都没有打对。
+
+- `gcc` 和 `llvm` 两种编译模式的区别，为什么 `llvm` 的编译速度快很多？ ✅
 
 
 
@@ -221,6 +223,8 @@ done
 
 ### Day 7
 
+> 通过这一块的学习，对AFL的源码有了整体的认识，但是很多细节还没有掌握清楚，需要进一步地去阅读源码，加强学习；
+
 #### Notes
 
 1. 学习 AFL 源码；
@@ -229,8 +233,53 @@ done
 
    参考链接2：https://eternalsakura13.com/2020/08/23/afl/
 
+2. AFL 插桩的汇编代码位置：
+
+   ```c
+   /*
+   			If we're in the right mood for instrumenting, check for function
+          names or conditional labels. This is a bit messy, but in essence,
+          we want to catch:
+   
+            ^main:      - function entry point (always instrumented)
+            ^.L0:       - GCC branch label
+            ^.LBB0_0:   - clang branch label (but only in clang mode)
+            ^\tjnz foo  - conditional branches
+   
+          ...but not:
+   
+            ^# BB#0:    - clang comments
+            ^ # BB#0:   - ditto
+            ^.Ltmp0:    - clang non-branch labels
+            ^.LC0       - GCC non-branch labels
+            ^.LBB0_0:   - ditto (when in GCC mode)
+            ^\tjmp foo  - non-conditional jumps
+   *
+   ```
+
+3. AFL的 `llvm_mode` 可以实现编译器级别的插桩，可以代替 `afl-gcc` 或 `afl-clang` 使用的比较 ”粗暴“ 的汇编级别的重写的方法，且具备如下几个又是：
+
+   1. 编译器可以进行很多优化以提升效率；
+   2. 可以实现CPU无关，可以在非X86架构上进行fuzz；
+   3. 可以更好地处理多线程目标；
+
 #### 思考问题
 
-- gcc 和 llvm 两种编译器的区别？会对程序产生什么影响？❓
+- gcc 和 llvm 两种编译器的区别？会对程序产生什么影响？✅
+
+  llvm 最大的特点是将编译器的前后端进行了分离；不同的前后端使用统一的中间代码，使得AFL更容易地在中间代码层面进行插桩；对程序本身看起来并没有太多的影响，而是对新语言、新硬件上面的开发带来了开发的便利。
+
+  ![未命名绘图.drawio (1)](pictures/1633680571000-17edsyn.png)
+
 - `afl-as.c` 中为什么要 `fork` 一个子进程来完成插桩的过程？❓
-- 为什么插桩只在 `.text` 段进行插桩？❓
+
+- 为什么插桩只在 `.text` 段进行插桩？✅
+
+  大概是因为 AFL 只在代码段中进行插桩；
+
+- AFL 插桩位置的规则为什么是这样的？对AFL的整个插桩过程还是不够清晰？❓
+
+- OpenBSD 中的 `.p2align` 标志？❓
+
+- `afl-fuzz.c` 中的 `calibrate_case` 函数的作用？它需要排除的错误 test case 是哪一类？❓
+
