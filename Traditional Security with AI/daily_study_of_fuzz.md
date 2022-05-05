@@ -283,3 +283,28 @@ done
 
 - `afl-fuzz.c` 中的 `calibrate_case` 函数的作用？它需要排除的错误 test case 是哪一类？❓
 
+
+
+### Day 8
+
+> TensorFuzz 这篇文章其实早就有读过，这次以fuzz的视角重新理解这篇文章，去思考neural fuzz这一块工作现阶段的弊端，以及我们能做的改进点。
+
+#### Notes
+
+1. 学习 TensorFuzz （搜索tensorfuzz跳转到tensorfuzz这篇文章的阅读笔记）
+
+   文章链接：https://arxiv.org/abs/1807.10875
+
+   文章代码：https://github.com/brain-research/tensorfuzz
+
+2. TensorFuzz 中开源的 `dcgan_fuzzer` 、 `nan_fuzzer` 和 `quantized_fuzzer` 三个 fuzzer 示例，分别来发现神经网络中 “loss梯度异常”、“出现NAN值” 和 “量化后模型行为异常” 三种问题。但是他在 “**覆盖率的定义上**” 和 “**fuzz的目标上**” 和传统的fuzz有非常大的区别。
+
+3. 存在的问题：
+
+   1. 如何更好地定义向量层面的覆盖率；
+   2. 如何更简洁地定义、整合模型上fuzz的目标；
+   3. 如何更快地开始fuzz；
+
+#### 思考问题
+
+- 如何能将传统fuzz和神经网路更好地结合？通过fuzz的思想去检测神经网络中的问题，通过神经网络去辅助更好更快地fuzz？
