@@ -307,4 +307,22 @@ done
 
 #### 思考问题
 
-- 如何能将传统fuzz和神经网路更好地结合？通过fuzz的思想去检测神经网络中的问题，通过神经网络去辅助更好更快地fuzz？
+- 如何能将传统fuzz和神经网路更好地结合？通过fuzz的思想去检测神经网络中的问题，通过神经网络去辅助更好更快地fuzz？❓
+
+
+
+### Day 9
+
+#### Notes
+
+1. 学习 “Deep Learning Library Testing via Effective Model Generation”
+
+   文章链接：https://dl.acm.org/doi/pdf/10.1145/3368089.3409761
+
+   文章代码：https://github.com/Jacob-yen/LEMON
+
+2. 该工作确实在模型的变化上有了不错的贡献，但是这样的创新离实际的使用仍然是有差距的。另外文章主要探讨的 IC Bugs 对于一般的神经网络训练工作者也是没有太大用处的。
+
+#### 思考问题
+
+- 神经网络中怎样的问题是有价值的？是适合使用fuzz来发现的？❓

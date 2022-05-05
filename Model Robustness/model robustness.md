@@ -588,3 +588,48 @@ $$
 
 - 论文链接：[Demir S, Eniser H F, Sen A. DeepSmartFuzzer: Reward Guided Test Generation For Deep Learning[J]. arXiv preprint arXiv:1911.10621, 2019.](https://arxiv.org/abs/1911.10621)
 - 论文代码：https://github.com/hasanferit/DeepSmartFuzzer
+
+
+
+
+
+## Deep Learning Library Testing via Effective Model Generation
+
+> 文章花了很大力气，但是得到的成果的价值仍然值得考究。
+
+### Contribution
+
+1. 整合了一系列的生成模型的变异算法，值得学习；
+
+### Notes
+
+1. 整体框架：
+
+   <u>作者的工作很大一部分得益于 keras 其本身实现了一套统一的接口，来屏蔽四个后端计算框架的差异，这样就给了作者进行 “inconsistencies test” 的空间。但是后面版本的 keras 不再支持多个后端，而是专注于支持 tensorflow</u>。
+
+   <img src="images/image-20220505112258206.png" alt="image-20220505112258206" style="zoom:50%;" />
+
+2. 变异策略：
+
+   1. Intract-layer mutation rules: 
+
+      <u>关键在于新生成的层的参数如何处理，作者在这里没有考究，不知道作者在实现的过程中，是如何考虑层接口的参数的</u>。
+
+      <img src="images/image-20220505112958186.png" alt="image-20220505112958186" style="zoom: 50%;" />
+
+   2. Inner-layer mutation rules:
+
+      <img src="images/image-20220505113032375.png" alt="image-20220505113032375" style="zoom:50%;" />
+
+      <img src="images/image-20220505113050071.png" alt="image-20220505113050071" style="zoom:50%;" />
+
+3. 实验结果
+
+   <u>我认为这样的实验结果其实一般般，并不是特别好看，因为我们并不关心 IC Bugs 这种错误</u>。
+
+   <img src="images/image-20220505143226593.png" alt="image-20220505143226593" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Wang Z, Yan M, Chen J, et al. Deep learning library testing via effective model generation[C]//Proceedings of the 28th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering. 2020: 788-799.](https://dl.acm.org/doi/pdf/10.1145/3368089.3409761)
+- 论文代码：https://github.com/Jacob-yen/LEMON
