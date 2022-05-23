@@ -88,6 +88,35 @@
 
 
 
+## Detecting Lateral Movement in Enterprise Computer Networks with Unsupervised Graph AI
+
+> 如何处理网页间的关联关系？如何无穷尽的网页边界？
+
+### Contribution
+
+1. GNN实现了横移检测；
+
+### Notes
+
+1. 算法流程：
+
+   ![image-20220523094431455](pictures/image-20220523094431455.png)
+
+2. 实验结果：
+
+   <img src="pictures/image-20220523111533662.png" alt="image-20220523111533662" style="zoom: 25%;" />
+
+3. 最后给出了三条可行的减少误报的方案：
+   1. 只报告首次异常登录事件；
+   2. 只报告和用户相关的异常登录事件；
+   3. 只报告和其他异常事件相关联的异常登录事件； -> 这一点比较有用、可借鉴；
+
+### Links
+
+- 论文链接：[Bowman B, Laprade C, Ji Y, et al. Detecting lateral movement in enterprise computer networks with unsupervised graph {AI}[C]//23rd International Symposium on Research in Attacks, Intrusions and Defenses (RAID 2020). 2020: 257-268.](https://www.usenix.org/system/files/raid20-bowman.pdf)
+
+
+
 ## EULER: Detecting Network Lateral Movement via Scalable Temporal Link Prediction
 
 > 如何和用户行为基线进行关联？无法关联的话，可能无法使用用户群组来减少模型误报；
@@ -101,6 +130,7 @@
 ### Contribution
 
 1. 提出了一种分布式的基于GNN和RNN的横移检测算法，提高了模型检测执行的效率的同时，保证了相近的模型检测能力；
+2. 主要的贡献可能集中在GNN和RNN这种多worker的联合训练框架上；
 
 ### Notes
 
@@ -114,5 +144,6 @@
 
 ### Links
 
-- 论文链接：[King I J, Huang H H. EULER: Detecting Network Lateral Movement via Scalable Temporal Link Prediction[J].](https://www.ndss-symposium.org/ndss-paper/auto-draft-227/)
+- 论文链接：[King I J, Huang H H. EULER: Detecting Network Lateral Movement via Scalable Temporal Link Prediction[J]. NDSS 2022.](https://www.ndss-symposium.org/ndss-paper/auto-draft-227/)
 - 论文代码：https://github.com/iHeartGraph/Euler
+- LANL 2015数据集：https://csr.lanl.gov/data/cyber1/
