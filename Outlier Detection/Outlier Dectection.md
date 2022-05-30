@@ -88,6 +88,54 @@
 
 
 
+## Kitsune: An Ensemble of Autoencoders for Online Network Intrusion Detection
+
+### Contribution
+
+1. 使用AutoEncoder的方式进行异常检测；
+
+### Notes
+
+1. 模型架构：
+
+   ![image-20220523145733568](pictures/image-20220523145733568.png)
+
+### Links
+
+- 论文链接：[Mirsky Y, Doitshman T, Elovici Y, et al. Kitsune: an ensemble of autoencoders for online network intrusion detection[J]. NDSS 2018.](https://arxiv.org/abs/1802.09089)
+
+- 论文代码：
+
+  https://github.com/ymirsky/KitNET-py
+
+  https://github.com/ymirsky/Kitsune-py
+
+
+
+## User and Entity Behavior Analysis under Urban Big Data
+
+> UEBA的关键在于如何搜集到更多的用户信息，而这点恰恰是我们当前所欠缺的；
+
+### Contribution
+
+1. 从四个特征维度，使用LSTM、ConvLSTM来提取用户的特征，使用MLP来判断是否为异常；
+
+### Notes
+
+1. 算法框架：
+
+   ![image-20220527091455597](pictures/image-20220527091455597.png)
+
+2. 使用的特征
+
+   <img src="pictures/image-20220527095340196.png" alt="image-20220527095340196" style="zoom: 33%;" />
+
+### Links
+
+- 论文链接：[Tian Z, Luo C, Lu H, et al. User and entity behavior analysis under urban big data[J]. ACM Transactions on Data Science, 2020, 1(3): 1-19.](https://dl.acm.org/doi/abs/10.1145/3374749)
+
+
+
 ## Detecting Lateral Movement in Enterprise Computer Networks with Unsupervised Graph AI
 
 > 如何处理网页间的关联关系？如何无穷尽的网页边界？
