@@ -341,3 +341,16 @@ done
 
 
 
+### Day 11
+
+> 开始工作以后，能够明显发现自己的精力不够用啦，加油吧
+
+#### Notes
+
+1. Python 反序列化漏洞 RCE：https://www.freebuf.com/articles/web/264363.html
+2. Python 代码审计之反序列化与指令执行：https://www.freebuf.com/vuls/231797.html
+3. TensorFlow 中的Yaml的反序列化问题：https://www.infoq.cn/article/4v8sjbpwjkxjmndsspey
+
+#### 思考问题
+
+- Python的反序列化问题和AI模型之间能否有新的结合点？
