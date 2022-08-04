@@ -354,3 +354,21 @@ done
 #### 思考问题
 
 - Python的反序列化问题和AI模型之间能否有新的结合点？
+
+
+
+### Day 12
+
+#### Notes
+
+1.  二进制漏洞原理分析：https://www.freebuf.com/articles/others-articles/240990.html
+
+2. 栈溢出漏洞分析 - 1：
+
+   > shellcode和return2libc两种方式，需要操作系统关闭内存布局随机化，并且shellcode还需要程序调用栈有可执行权限。
+
+   - shellcode：通过覆盖返回地址的方式来执行输入的指令片段
+
+   - Return2libc：通过覆盖返回地址的方式来执行动态库中的函数
+
+     
