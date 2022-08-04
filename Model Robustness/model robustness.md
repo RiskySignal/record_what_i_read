@@ -633,3 +633,20 @@ $$
 
 - 论文链接：[Wang Z, Yan M, Chen J, et al. Deep learning library testing via effective model generation[C]//Proceedings of the 28th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering. 2020: 788-799.](https://dl.acm.org/doi/pdf/10.1145/3368089.3409761)
 - 论文代码：https://github.com/Jacob-yen/LEMON
+
+
+
+## Free Lunch for Testing: Fuzzing Deep-Learning Libraries from Open Source
+
+### Contribution
+
+- 作者从顶层应用的角度来测试AI框架中是否存在问题；
+
+### Notes
+
+<img src="images/image-20220804144412535.png" alt="image-20220804144412535" style="zoom:50%;" />
+
+### Links
+
+- 论文链接：[Wei A, Deng Y, Yang C, et al. Free lunch for testing: Fuzzing deep-learning libraries from open source[J]. ICSE, 2022.](https://arxiv.org/abs/2201.06589)
+- 论文代码：https://github.com/ise-uiuc/FreeFuzz
