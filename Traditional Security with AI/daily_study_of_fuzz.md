@@ -369,6 +369,28 @@ done
 
    - shellcode：通过覆盖返回地址的方式来执行输入的指令片段
 
+     - 返回地址之前的填充数据应该多长？
+     - shellcode起始地址应该是多少？
+
    - Return2libc：通过覆盖返回地址的方式来执行动态库中的函数
 
+     - 返回地址之前的填充数据应该多长？
+     - `system()` 函数地址是多少？
+
      
+
+### Day 13
+
+#### Notes
+
+1. 栈溢出漏洞分析 - 2：https://paper.seebug.org/272/
+   - ROP：修改返回地址，让其指向内存中已有的一段指令；
+     - 栈溢出之后要实现什么效果？
+     - 如何寻找对应的指令片段？
+     - 如何传入系统调用的参数？
+   - Hijack GOT：修改某个被调用函数的地址，让其指向另一个函数；
+     - 如何确定函数A在GOT表中的条目位置？
+     - 如何确定函数B在内存中的地址？
+     - 如何实现GOT表中数据的修改？
+2. 尝试跟着教程做了两个题目——ret2text、ret2shellcode：https://ctf-wiki.org/pwn/linux/user-mode/stackoverflow/x86/basic-rop/
+
