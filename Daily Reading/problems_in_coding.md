@@ -111,3 +111,8 @@ RuntimeError: one of the variables needed for gradient computation has been modi
 
 用时间换空间的策略；
 
+#### Pytorch ModuleList和Sequential的区别
+
+参考链接：https://zhuanlan.zhihu.com/p/64990232
+
+使用的场景不同，ModuleList整体上更加灵活
