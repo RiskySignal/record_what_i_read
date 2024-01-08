@@ -6,6 +6,14 @@
 
 ## Python
 
+#### Python 代码如何加密
+
+
+
+###### 【参考】如何保护你的 Python 代码 （一）—— 现有加密方案
+
+参考链接：https://zhuanlan.zhihu.com/p/54296517
+
 
 
 
